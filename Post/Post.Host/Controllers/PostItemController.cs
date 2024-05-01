@@ -37,7 +37,6 @@ namespace Post.Host.Controllers
             if (request == null)
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
 
-
             var result = await _postItemService.AddAsync(new PostItemEntity
             {
                 Content = request.Content,
@@ -68,7 +67,7 @@ namespace Post.Host.Controllers
                 CategoryId = request.CategoryId,
                 Content = request.Content,
                 Title = request.Title,
-                UserId= User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
+                UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
             });
 
             if (result == null)

@@ -98,7 +98,6 @@ void CreateDbIfNotExists(IHost host)
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
             context.Database.EnsureCreated();
-
         }
         catch (Exception ex)
         {
@@ -107,6 +106,7 @@ void CreateDbIfNotExists(IHost host)
         }
     }
 }
+
 IConfiguration GetConfiguration()
 {
     var builder = new ConfigurationBuilder()

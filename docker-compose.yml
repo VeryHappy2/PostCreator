@@ -15,7 +15,7 @@ services:
     ports:
       - 5100:5100
   post.api:
-    container_name: lde.identityserver.api
+    container_name: lde.post.api
     build:
       context: .
       dockerfile: Post/Post.Host/Dockerfile

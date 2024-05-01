@@ -14,6 +14,7 @@ namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
+    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
     public class Post—ommentController : ControllerBase
     {

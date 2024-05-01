@@ -31,7 +31,7 @@ namespace Post.Host.Controllers
         {
             var result = await _postBffService.GetPostByIdAsync(request.Id);
 
-            if (result == null) 
+            if (result == null)
                 return NotFound(new GeneralResponse(false, $"Id: {request.Id} wasn't found any post"));
 
             return Ok(result);

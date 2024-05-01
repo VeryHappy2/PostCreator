@@ -12,7 +12,7 @@ using System.Text;
 
 namespace IdentityServerApi.Host.Models.Contracts
 {
-    public class UserAccountRepository(UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository 
+    public class UserAccountRepository(UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository
     {
         public async Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest)
         {
@@ -44,12 +44,12 @@ namespace IdentityServerApi.Host.Models.Contracts
 
             var userEmail = await userManager.FindByEmailAsync(newUser.Email);
 
-            if (userEmail != null) 
+            if (userEmail != null)
                 return new GeneralResponse(false, "User registered already");
 
             var createUser = await userManager.CreateAsync(newUser!, userRequest.Password);
 
-            if (!createUser.Succeeded) 
+            if (!createUser.Succeeded)
                 return new GeneralResponse(false, "Error occured.. please try again");
 
             var checkUser = await roleManager.FindByNameAsync(AuthRoles.User);
@@ -82,7 +82,7 @@ namespace IdentityServerApi.Host.Models.Contracts
 
         private string GenerateToken(UserSession user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] !));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var userClaims = new[]
             {
@@ -96,8 +96,7 @@ namespace IdentityServerApi.Host.Models.Contracts
                 audience: config["Jwt:Audience"],
                 claims: userClaims,
                 expires: DateTime.Now.AddDays(1),
-                signingCredentials: credentials
-                );
+                signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
