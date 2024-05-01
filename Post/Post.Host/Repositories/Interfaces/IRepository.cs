@@ -5,7 +5,7 @@ namespace Post.Host.Repositories.Interfaces
     public interface IRepository<T>
     {
         Task<int?> AddAsync(T entity);
-        Task<int?> UpdateAsync(int id, T entity);
-        Task<string> DeleteAsync(int id);
+        Task<int?> UpdateAsync(T entity);
+        Task<string?> DeleteAsync(int id);
     }
 }

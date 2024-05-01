@@ -32,9 +32,9 @@ namespace Post.Host.Repositories
             return item.Entity.Id;
         }
 
-        public async Task<int?> UpdateAsync(int id, T entity)
+        public async Task<int?> UpdateAsync(T entity)
         {
-			var item = await _dbset.FindAsync(id);
+			var item = await _dbset.FindAsync(entity.Id);
 
             if (item != null)
             {
@@ -53,7 +53,7 @@ namespace Post.Host.Repositories
 
             if (_result != null)
             {
-                _dbset.Remove(_result);
+                var result = _dbset.Remove(_result);
                 await _dbContext.SaveChangesAsync();
                 return $"Object with id: {id} was successfully removed";
             }

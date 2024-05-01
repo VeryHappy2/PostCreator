@@ -1,14 +1,16 @@
 using Infrastructure.Extensions;
 using Infrastructure.Filters;
+using Infrastructure.Services;
+using Infrastructure.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Order.Host.Configurations;
-using Order.Host.Data;
-using Order.Host.Data.Entities;
-using Order.Host.Repositories;
-using Order.Host.Repositories.Interfaces;
-using Order.Host.Services;
-using Order.Host.Services.Interfaces;
 using Post.Host.Configurations;
+using Post.Host.Data;
+using Post.Host.Data.Entities;
+using Post.Host.Repositories;
+using Post.Host.Repositories.Interfaces;
+using Post.Host.Services;
+using Post.Host.Services.Interfaces;
 
 var configuration = GetConfiguration();
 
@@ -20,16 +22,16 @@ builder.Services.AddControllers(options =>
 {
 	options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 })
-	.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddSwaggerGen(options =>
 {
 	options.SwaggerDoc("v1", new OpenApiInfo
 	{
-		Title = "eShop- Order HTTP API",
+		Title = "Post HTTP API",
 		Version = "v1",
-		Description = "The Order Service HTTP API"
-	});
+		Description = "The Post Service HTTP API"
+    });
 
 	var authority = configuration["Authorization:Authority"];
 	options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -41,12 +43,6 @@ builder.Services.AddSwaggerGen(options =>
 			{
 				AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
 				TokenUrl = new Uri($"{authority}/connect/token"),
-				Scopes = new Dictionary<string, string>()
-				{
-					{ "mvc", "website" },
-					{ "order.item", "order.item" },
-					{ "order.order", "order.order" },
-				}
 			}
 		}
 	});
@@ -59,11 +55,11 @@ builder.Services.Configure<PostConfig>(configuration);
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddTransient<IOrderBffRepository,  PostBffRepository>();
-builder.Services.AddTransient<IRepository<OrderItemEntity>, OrderItemRepository>();
-builder.Services.AddTransient<IOrderBffService, PostBffService>();
-builder.Services.AddTransient<IService<OrderItemEntity>, PostItemService>();
-builder.Services.AddTransient<IService<OrderEntity>, PostCommentService>();
+builder.Services.AddTransient<IPostBffRepository,  PostBffRepository>();
+builder.Services.AddTransient<IPostBffService, PostBffService>();
+builder.Services.AddTransient<IService<PostItemEntity>, PostItemService>();
+builder.Services.AddTransient<IService<PostCommentEntity>, PostCommentService>();
+builder.Services.AddTransient<IService<PostCategoryEntity>, PostCategoryService>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseNpgsql(configuration["ConnectionString"]));
 builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
@@ -84,12 +80,13 @@ builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
 
-app.UseSwagger()
+app
+	.UseSwagger()
 	.UseSwaggerUI(setup =>
 	{
-		setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Order.API V1");
-		setup.OAuthClientId("orderswaggerui");
-		setup.OAuthAppName("Order Swagger UI");
+		setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
+		setup.OAuthClientId("postswaggerui");
+		setup.OAuthAppName("Post Swagger UI");
 	});
 
 app.Use(async (context, next) =>
@@ -98,7 +95,6 @@ app.Use(async (context, next) =>
 	var id = Guid.NewGuid();
     LogRequest(logger, context.Request, id);
 
-    // Call the next middleware in the pipeline
     await next.Invoke();
 
     LogResponse(logger, context.Response, id);

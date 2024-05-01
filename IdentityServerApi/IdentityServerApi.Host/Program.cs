@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -27,12 +28,15 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey,
     });
 });
+
 builder.Services.AddTransient<IUserAccountRepository, UserAccountRepository>();
 builder.Services.Configure<IdentityServerApiConfig>(configuration);
+
 builder.Services.AddIdentity<UserEnity, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,6 +54,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));
 
@@ -65,7 +70,24 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 app.UseAuthentication();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute();
+    endpoints.MapControllers();
+});
+
 app.MapControllers();
+
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    var id = Guid.NewGuid();
+    LogRequest(logger, context.Request, id);
+
+    await next.Invoke();
+
+    LogResponse(logger, context.Response, id);
+});
 
 void CreateDbIfNotExists(IHost host)
 {
@@ -94,4 +116,15 @@ IConfiguration GetConfiguration()
 
     return builder.Build();
 }
+
+void LogRequest(ILogger<Program> logger, HttpRequest request, Guid id)
+{
+    logger.LogInformation($"Request id:{id}, Method: {request.Method}, Path {request.Path}");
+}
+
+void LogResponse(ILogger<Program> logger, HttpResponse response, Guid id)
+{
+    logger.LogInformation($"Response id: {id}, Status: {response.StatusCode}");
+}
+
 app.Run();

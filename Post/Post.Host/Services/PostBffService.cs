@@ -1,13 +1,12 @@
 using AutoMapper;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
-using Order.Host.Services.Interfaces;
 using Post.Host.Data;
 using Post.Host.Models.Dtos;
 using Post.Host.Repositories.Interfaces;
 using Post.Host.Services.Interfaces;
 
-namespace Order.Host.Services;
+namespace Post.Host.Services;
 
 public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffService
 {

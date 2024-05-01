@@ -7,6 +7,6 @@ namespace IdentityServerApi.Host.Repositories.Interfaces
     {
         Task<GeneralResponse> CreateUserAccount(UserRequest userDTO);
         Task<LoginResponse> LoginAccount(LoginRequest loginDTO);
+        Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest);
     }
-    
 }

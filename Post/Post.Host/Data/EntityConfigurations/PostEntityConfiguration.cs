@@ -20,6 +20,9 @@ public class PostEntityConfiguration
         builder.Property(ci => ci.UserId)
             .IsRequired();
 
+        builder.Property(ci => ci.Date)
+            .IsRequired();
+
         builder.Property(cb => cb.Title)
             .HasMaxLength(120)
             .IsRequired();

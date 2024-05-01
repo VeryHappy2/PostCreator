@@ -9,13 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace IdentityServerApi.Host.Models.Contracts
 {
     public class UserAccountRepository(UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository 
     {
-        public async Task<GeneralResponse> AddRoleAccount(ChangeRoleRequest changeRoleRequest)
+        public async Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest)
         {
             if (changeRoleRequest.Role != AuthRoles.Admin || changeRoleRequest.Role != AuthRoles.User)
                 return new GeneralResponse(false, $"Such role: {changeRoleRequest.Role}, doesn't exist");
@@ -42,21 +41,23 @@ namespace IdentityServerApi.Host.Models.Contracts
                 PasswordHash = userRequest.Password,
                 UserName = userRequest.Email
             };
-            var user = await userManager.FindByEmailAsync(newUser.Email);
 
-            if (user != null) 
+            var userEmail = await userManager.FindByEmailAsync(newUser.Email);
+
+            if (userEmail != null) 
                 return new GeneralResponse(false, "User registered already");
 
             var createUser = await userManager.CreateAsync(newUser!, userRequest.Password);
+
             if (!createUser.Succeeded) 
                 return new GeneralResponse(false, "Error occured.. please try again");
 
             var checkUser = await roleManager.FindByNameAsync(AuthRoles.User);
+
             if (checkUser == null)
                 await roleManager.CreateAsync(new IdentityRole() { Name = AuthRoles.User });
 
             await userManager.AddToRoleAsync(newUser, AuthRoles.User);
-            //logger.LogInformation($"User was created");
             return new GeneralResponse(true, "Account Created");
         }
 

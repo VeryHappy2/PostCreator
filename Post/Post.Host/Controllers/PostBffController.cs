@@ -1,29 +1,70 @@
+using Catalog.Host.Models.Requests;
 using Infrastructure;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Post.Host.Models.Responses;
+using Post.Host.Services.Interfaces;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
+    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    [Authorize(Roles = AuthRoles.User)]
     public class PostBffController : ControllerBase
     {
         private readonly ILogger<PostBffController> _logger;
+        private readonly IPostBffService _postBffService;
 
-        public PostBffController(ILogger<PostBffController> logger)
+        public PostBffController(
+            ILogger<PostBffController> logger,
+            IPostBffService postBffService)
         {
             _logger = logger;
+            _postBffService = postBffService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> GetPostById()
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPostById(ByIdRequest<int> request)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var result = await _postBffService.GetPostByIdAsync(request.Id);
+
+            if (result == null) 
+                return NotFound(new GeneralResponse(false, $"Id: {request.Id} wasn't found any post"));
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPostByOwnUserId()
+        {
+            string userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+
+            if (userId == null)
+                return BadRequest(new GeneralResponse(false, "User id is empty"));
+
+            var result = await _postBffService.GetPostsByUserIdAsync(userId);
+
+            if (result == null)
+                return NotFound(new GeneralResponse(false, $"User id: {userId} wasn't found any posts"));
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPostByUserId(ByIdRequest<string> userId)
+        {
+            if (userId == null)
+                return BadRequest(new GeneralResponse(false, "User id is empty"));
+
+            var result = await _postBffService.GetPostsByUserIdAsync(userId.Id);
+
+            if (result == null)
+                return NotFound(new GeneralResponse(false, $"User id: {userId} wasn't found any posts"));
+
+            return Ok(result);
         }
     }
 }

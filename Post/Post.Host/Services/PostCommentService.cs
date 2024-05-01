@@ -6,7 +6,7 @@ using Post.Host.Data.Entities;
 using Post.Host.Repositories.Interfaces;
 using Post.Host.Services.Interfaces;
 
-namespace Order.Host.Services;
+namespace Post.Host.Services;
 
 public class PostCommentService : BaseDataService<ApplicationDbContext>, IService<PostCommentEntity>
 {
@@ -40,11 +40,11 @@ public class PostCommentService : BaseDataService<ApplicationDbContext>, IServic
         });
     }
 
-    public async Task<int?> UpdateAsync(int id, PostCommentEntity entity)
+    public async Task<int?> UpdateAsync(PostCommentEntity entity)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            return await _repository.UpdateAsync(id, entity);
+            return await _repository.UpdateAsync(entity);
         });
     }
 }
