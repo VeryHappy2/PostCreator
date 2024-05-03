@@ -33,19 +33,12 @@ builder.Services.AddSwaggerGen(options =>
 		Description = "The Post Service HTTP API"
     });
 
-	var authority = configuration["Authorization:Authority"];
 	options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
 	{
-		Type = SecuritySchemeType.OAuth2,
-		Flows = new OpenApiOAuthFlows()
-		{
-			Implicit = new OpenApiOAuthFlow()
-			{
-				AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
-				TokenUrl = new Uri($"{authority}/connect/token"),
-			}
-		}
-	});
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+    });
 
 	options.OperationFilter<AuthorizeCheckOperationFilter>();
 });
@@ -69,8 +62,8 @@ builder.Services.AddCors(options =>
 	options.AddPolicy(
 		"CorsPolicy",
 		builder => builder
-			.SetIsOriginAllowed((host) => true)
-			.AllowAnyMethod()
+            .SetIsOriginAllowed((host) => true)
+            .AllowAnyMethod()
 			.AllowAnyHeader()
 			.AllowCredentials());
 });
@@ -81,13 +74,13 @@ builder.Services.AddAuthorization(configuration);
 var app = builder.Build();
 
 app
-	.UseSwagger()
-	.UseSwaggerUI(setup =>
-	{
-		setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
-		setup.OAuthClientId("postswaggerui");
-		setup.OAuthAppName("Post Swagger UI");
-	});
+.UseSwagger()
+.UseSwaggerUI(setup =>
+{
+	setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
+	setup.OAuthClientId("postswaggerui");
+	setup.OAuthAppName("Post Swagger UI");
+});
 
 app.Use(async (context, next) =>
 {
@@ -113,8 +106,6 @@ app.UseEndpoints(endpoints =>
 });
 
 CreateDbIfNotExists(app);
-
-app.Run();
 
 IConfiguration GetConfiguration()
 {
@@ -146,8 +137,7 @@ void CreateDbIfNotExists(IHost host)
 		{
 			var context = services.GetRequiredService<ApplicationDbContext>();
 
-			var check = context.Database.EnsureCreated();
-			logger.LogInformation($"Status: {check}");
+			context.Database.EnsureCreatedAsync().Wait();
 		}
 		catch (Exception ex)
 		{
@@ -155,3 +145,5 @@ void CreateDbIfNotExists(IHost host)
 		}
 	}
 }
+
+app.Run();

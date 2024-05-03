@@ -1,103 +1,82 @@
-using Catalog.Host.Models.Requests;
+ï»¿using Infrastructure.Identity;
 using Infrastructure;
-using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Post.Host.Data.Entities;
-using Post.Host.Models.Dtos;
-using Post.Host.Models.Requests.Bases;
-using Post.Host.Models.Responses;
-using Post.Host.Services;
 using Post.Host.Services.Interfaces;
-using System.Net;
+using Post.Host.Data.Entities;
+using Post.Host.Models.Responses;
+using Catalog.Host.Models.Requests;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
+    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
     public class PostItemController : ControllerBase
     {
-        private readonly ILogger<PostÑommentController> _logger;
+        private readonly ILogger<PostBffController> _logger;
         private readonly IService<PostItemEntity> _postItemService;
 
         public PostItemController(
-            ILogger<PostÑommentController> logger,
+            ILogger<PostBffController> logger,
             IService<PostItemEntity> postItemService)
         {
-            _postItemService = postItemService;
             _logger = logger;
+            _postItemService = postItemService;
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Add(BasePostItemRequest request)
         {
-            if (request == null)
-                return BadRequest(new GeneralResponse(false, "Request is empty"));
-
-            var result = await _postItemService.AddAsync(new PostItemEntity
+            var response = await _postItemService.AddAsync(new PostItemEntity
             {
-                Content = request.Content,
                 Date = DateTime.Now.ToString("dd.MM.yyyy"),
-                CategoryId = request.CategoryId,
                 Title = request.Title,
+                Content = request.Content,
                 UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
+                CategoryId = request.CategoryId,
             });
-
-            if (result == null)
+            if (response == null)
                 return BadRequest(new GeneralResponse(false, "Post wasn't created"));
 
-            return Ok(new GeneralResponse<int>(true, "Post was created", result.Value));
+            return Ok(response);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Update(UpdatePostItemRequest request)
         {
             if (request == null)
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
 
-            var result = await _postItemService.UpdateAsync(new PostItemEntity
+            var response = await _postItemService.UpdateAsync(new PostItemEntity
             {
-                Date = request.Date,
-                CategoryId = request.CategoryId,
-                Content = request.Content,
+                Date = DateTime.Now.ToString("dd.MM.yyyy"),
                 Title = request.Title,
+                Content = request.Content,
                 UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
+                Id = request.Id,
+                CategoryId = request.CategoryId,
             });
 
-            if (result == null)
-            {
-                _logger.LogError($"Post wasn't found, id: {request.Id}");
-                return NotFound(new GeneralResponse(false, $"Post wasn't updated, id: {request.Id}"));
-            }
+            if (response == null)
+                return NotFound(new GeneralResponse(false, $"Post wasn't update, not found id: {request.Id}"));
 
-            return Ok(new GeneralResponse<int>(true, "Post was updated", result.Value));
+            return Ok(new GeneralResponse<int>(true, "Post was updated", response.Value!));
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
             if (request == null)
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
 
-            var result = await _postItemService.DeleteAsync(request.Id);
+            var response = await _postItemService.DeleteAsync(request.Id);
 
-            if (result == null)
-            {
-                _logger.LogError($"Post wasn't found, id: {request.Id}");
-                return NotFound(new GeneralResponse(false, $"Post wasn't deleted, id: {request.Id}"));
-            }
+            if (response == null)
+                return NotFound(new GeneralResponse(false, $"Post wasn't update, not found id: {request.Id}"));
 
-            _logger.LogInformation(result);
-            return Ok(new GeneralResponse<string>(true, "Post was updated", result));
+            return Ok(new GeneralResponse(true, $"Post was deleted, {response.ToLower()}"));
         }
     }
 }

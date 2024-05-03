@@ -3,21 +3,23 @@ using IdentityServerApi.Host.Data;
 using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Contracts;
 using IdentityServerApi.Host.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Infrastructure.Filters;
+using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -37,26 +39,21 @@ builder.Services.AddIdentity<UserEnity, IdentityRole>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+builder.Services.AddAuthorization(configuration);
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "CorsPolicy",
+        builder => builder
+            .SetIsOriginAllowed((host) => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
 
 var app = builder.Build();
 CreateDbIfNotExists(app);
@@ -64,18 +61,28 @@ CreateDbIfNotExists(app);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app
+    .UseSwagger()
+    .UseSwaggerUI(setup =>
+    {
+        setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Identityserver.API V1");
+        setup.OAuthClientId("Identityserverswaggerui");
+        setup.OAuthAppName("Identityserver Swagger UI");
+    });
 }
 
 app.UseAuthorization();
 app.UseAuthentication();
 
+app.UseRouting();
+app.UseCors("CorsPolicy");
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
     endpoints.MapControllers();
 });
 
+await AddAdmin(app);
 app.MapControllers();
 
 app.Use(async (context, next) =>
@@ -125,6 +132,51 @@ void LogRequest(ILogger<Program> logger, HttpRequest request, Guid id)
 void LogResponse(ILogger<Program> logger, HttpResponse response, Guid id)
 {
     logger.LogInformation($"Response id: {id}, Status: {response.StatusCode}");
+}
+
+async Task AddAdmin(IHost host)
+{
+    using (var scope = host.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var userManager = services.GetRequiredService<UserManager<UserEnity>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            var adminRoleExists = await roleManager.RoleExistsAsync("Admin");
+
+            if (!adminRoleExists)
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            var adminUserExists = await userManager.FindByEmailAsync("admin@super.com");
+
+            if (adminUserExists == null)
+            {
+                var newAdmin = new UserEnity()
+                {
+                    Name = "admin",
+                    Email = "admin@super1.com",
+                    PasswordHash = "super",
+                    UserName = "adminName"
+                };
+                var result = await userManager.CreateAsync(newAdmin);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(newAdmin, "Admin");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while seeding the database.");
+        }
+    }
 }
 
 app.Run();

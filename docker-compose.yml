@@ -9,7 +9,7 @@ services:
     environment:
        - ASPNETCORE_ENVIRONMENT=Development
        - ASPNETCORE_URLS=http://+:5100
-       - ConnectionString=server=host.docker.internal;port=5433;database=identityserver;uid=postgres;password=postgres;
+       - ConnectionString=server=www.postcreator.com;port=5435;database=identityserver;uid=postgres;password=postgres;
     depends_on:
       - identitypostgres
     ports:
@@ -22,9 +22,10 @@ services:
     environment:
        - ASPNETCORE_ENVIRONMENT=Development
        - ASPNETCORE_URLS=http://+:5101
-       - ConnectionString=server=host.docker.internal;port=5436;database=post;uid=postgres;password=postgres;
+       - ConnectionString=server=www.postcreator.com;port=5433;database=posts;uid=postgres;password=postgres;
     depends_on:
-      - postpostgres
+      - postpostgresq
+      - identityserver.api
     ports:
       - 5101:5101    
   pgadmin4:
@@ -43,14 +44,14 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     ports:
-      - 5433:5432
-  postpostgres:
+      - 5435:5432
+  postpostgresq:
     image: postgres
     container_name: lde.postpostgres
     environment:
       POSTGRES_PASSWORD: postgres
     ports:
-      - 5436:5435    
+      - 5433:5432   
 networks:
   default:
     driver: bridge
@@ -59,5 +60,5 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.16.0.0/24
-          gateway: 172.16.0.1 
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.4
