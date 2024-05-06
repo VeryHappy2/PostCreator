@@ -22,7 +22,7 @@ services:
     environment:
        - ASPNETCORE_ENVIRONMENT=Development
        - ASPNETCORE_URLS=http://+:5101
-       - ConnectionString=server=www.postcreator.com;port=5433;database=posts;uid=postgres;password=postgres;
+       - ConnectionString=server=www.postcreator.com;port=5433;database=post;uid=postgres;password=postgres;
     depends_on:
       - postpostgresq
       - identityserver.api
@@ -36,6 +36,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: postgres
     depends_on:
       - identitypostgres
+      - postpostgres
     ports:
       - 8001:80 
   identitypostgres:
@@ -45,7 +46,7 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5435:5432
-  postpostgresq:
+  postpostgres:
     image: postgres
     container_name: lde.postpostgres
     environment:

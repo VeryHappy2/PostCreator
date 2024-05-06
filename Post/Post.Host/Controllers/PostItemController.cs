@@ -13,13 +13,14 @@ namespace Post.Host.Controllers
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
+    [Authorize(Roles = AuthRoles.Admin)]
     public class PostItemController : ControllerBase
     {
-        private readonly ILogger<PostBffController> _logger;
+        private readonly ILogger<PostItemController> _logger;
         private readonly IService<PostItemEntity> _postItemService;
 
         public PostItemController(
-            ILogger<PostBffController> logger,
+            ILogger<PostItemController> logger,
             IService<PostItemEntity> postItemService)
         {
             _logger = logger;
@@ -40,7 +41,7 @@ namespace Post.Host.Controllers
             if (response == null)
                 return BadRequest(new GeneralResponse(false, "Post wasn't created"));
 
-            return Ok(response);
+            return Ok(new GeneralResponse<int>(true, "Post was created", response.Value!));
         }
 
         [HttpPost]

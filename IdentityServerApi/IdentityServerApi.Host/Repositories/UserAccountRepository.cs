@@ -12,7 +12,7 @@ using System.Text;
 
 namespace IdentityServerApi.Host.Models.Contracts
 {
-    public class UserAccountRepository(UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository
+    public class UserAccountRepository(SignInManager<UserEnity> signInManager, UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository
     {
         public async Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest)
         {
@@ -75,6 +75,7 @@ namespace IdentityServerApi.Host.Models.Contracts
                 return new LoginResponse(false, null!, "Invalid email/password");
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
+
             var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
             string token = GenerateToken(userSession);
             return new LoginResponse(true, token!, "Login completed");
@@ -95,8 +96,9 @@ namespace IdentityServerApi.Host.Models.Contracts
                 issuer: config["Jwt:Issuer"],
                 audience: config["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: credentials);
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

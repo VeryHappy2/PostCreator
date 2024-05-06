@@ -17,7 +17,7 @@ public class PostCategoryConfiguration
         builder.Property(ci => ci.Id)
             .IsRequired();
 
-        builder.Property(ci => ci.Catagory)
+        builder.Property(ci => ci.Category)
             .HasMaxLength(100)
             .IsRequired();
     }

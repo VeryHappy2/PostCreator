@@ -12,6 +12,7 @@ namespace Post.Host.Controllers
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
+    [Authorize(Roles = AuthRoles.Admin)]
     public class PostBffController : ControllerBase
     {
         private readonly ILogger<PostBffController> _logger;
@@ -38,7 +39,7 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPostByOwnUserId()
+        public async Task<IActionResult> GetPostsByOwnUserId()
         {
             string userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
 
@@ -54,7 +55,8 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPostByUserId(ByIdRequest<string> userId)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPostsByUserId(ByIdRequest<string> userId)
         {
             if (userId == null)
                 return BadRequest(new GeneralResponse(false, "User id is empty"));

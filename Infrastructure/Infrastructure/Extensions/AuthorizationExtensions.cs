@@ -16,7 +16,6 @@ public static class AuthorizationExtensions
         var authority = configuration["Authorization:Authority"];
         var siteAudience = configuration["Authorization:SiteAudience"];
 
-        services.AddSingleton<IAuthorizationHandler, ScopeHandler>();
         services
             .AddAuthentication(options =>
             {

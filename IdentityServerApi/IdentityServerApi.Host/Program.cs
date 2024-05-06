@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Data;
+using Infrastructure.Identity;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -145,11 +147,14 @@ async Task AddAdmin(IHost host)
             var userManager = services.GetRequiredService<UserManager<UserEnity>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-            var adminRoleExists = await roleManager.RoleExistsAsync("Admin");
-
-            if (!adminRoleExists)
+            if (!await roleManager.RoleExistsAsync(AuthRoles.Admin))
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new IdentityRole(AuthRoles.Admin));
+            }
+
+            if (!await roleManager.RoleExistsAsync(AuthRoles.User))
+            {
+                await roleManager.CreateAsync(new IdentityRole(AuthRoles.User));
             }
 
             var adminUserExists = await userManager.FindByEmailAsync("admin@super.com");
@@ -161,7 +166,7 @@ async Task AddAdmin(IHost host)
                     Name = "admin",
                     Email = "admin@super1.com",
                     PasswordHash = "super",
-                    UserName = "adminName"
+                    UserName = "adminName",
                 };
                 var result = await userManager.CreateAsync(newAdmin);
 

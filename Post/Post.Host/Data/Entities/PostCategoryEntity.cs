@@ -2,6 +2,6 @@
 {
     public class PostCategoryEntity : BaseEntity
     {
-        public string Catagory { get; set; }
+        public string Category { get; set; }
     }
 }
