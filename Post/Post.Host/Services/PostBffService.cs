@@ -1,8 +1,10 @@
 using AutoMapper;
+using Catalog.Host.Models.Requests;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Post.Host.Data;
 using Post.Host.Models.Dtos;
+using Post.Host.Models.Response;
 using Post.Host.Repositories.Interfaces;
 using Post.Host.Services.Interfaces;
 
@@ -51,4 +53,37 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
             return _mapper.Map<PostItemDto?>(result);
 		});
 	}
+
+    public async Task<PaginatedItemsResponse<PostItemDto>?> GetPostByPageAsync(PageItemRequest pageItemRequest)
+    {
+        return await ExecuteSafeAsync(async () =>
+		{
+            var result = await _postBffRepository.GetByPageAsync(pageItemRequest);
+
+            if (result == null)
+                return null;
+
+            return new PaginatedItemsResponse<PostItemDto>()
+            {
+                Count = result.TotalCount,
+                Data = result.Data.Select(s => _mapper.Map<PostItemDto>(s)).ToList(),
+                Search = pageItemRequest.Search,
+                PageIndex = pageItemRequest.PageIndex,
+                PageSize = pageItemRequest.PageSize,
+            };
+        });
+    }
+
+    public async Task<List<PostCategoryDto>?> GetPostCategoriesAsync()
+    {
+        return await ExecuteSafeAsync(async () =>
+		{
+            var result = await _postBffRepository.GetPostCategoriesAsync();
+
+            if (result == null)
+                return null;
+
+            return _mapper.Map<List<PostCategoryDto>>(result).ToList();
+        });
+    }
 }

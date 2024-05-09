@@ -1,1 +1,16 @@
-<p>post-item works!</p>
+@if (post$ | async; as post) {
+    <h1>{{post.title}}</h1>
+    <mat-divider></mat-divider>
+    <h2>{{post.date}}</h2>
+    <mat-divider></mat-divider>
+    <h3>{{post.date}}</h3>
+    <mat-divider></mat-divider>
+    <p>{{post.content}}</p>
+    <mat-divider></mat-divider>
+    @for (comment of post.comments; track comment.id) 
+    {
+        <mat-list-item>{{comment.comment}}</mat-list-item>
+        <mat-divider></mat-divider>
+    }
+}
+

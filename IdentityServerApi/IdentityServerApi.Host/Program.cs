@@ -8,8 +8,6 @@ using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using System.Data;
 using Infrastructure.Identity;
 
 var configuration = GetConfiguration();
@@ -73,11 +71,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseRouting();
+app.UseCors("CorsPolicy");
+
 app.UseAuthorization();
 app.UseAuthentication();
 
-app.UseRouting();
-app.UseCors("CorsPolicy");
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
@@ -165,7 +164,7 @@ async Task AddAdmin(IHost host)
                 {
                     Name = "admin",
                     Email = "admin@super1.com",
-                    PasswordHash = "super",
+                    PasswordHash = "s@dE12uper",
                     UserName = "adminName",
                 };
                 var result = await userManager.CreateAsync(newAdmin);

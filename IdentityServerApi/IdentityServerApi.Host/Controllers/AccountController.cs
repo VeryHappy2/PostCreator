@@ -13,14 +13,18 @@ namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    public class AccountController(IUserAccountRepository userAccount, SignInManager<UserEnity> signInManager) : ControllerBase
+    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    public class AccountController(
+        IUserAccountRepository userAccount,
+        SignInManager<UserEnity> signInManager) : ControllerBase
     {
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Register(UserRequest userRequest)
         {
-            var response = await userAccount.CreateUserAccount(userRequest);
+            var response = await userAccount.CreateUserAccountAsync(userRequest);
             if (!response.Flag)
                 return BadRequest(response);
 
@@ -28,11 +32,12 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            var response = await userAccount.LoginAccount(loginRequest);
+            var response = await userAccount.LoginAccountAsync(loginRequest);
             if (!response.Flag)
                 return BadRequest(response);
 
@@ -40,7 +45,6 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> LogOut()
         {
@@ -50,12 +54,24 @@ namespace IdentityServerApi.Host.Controllers
 
         [HttpPost]
         [Authorize(Roles = AuthRoles.Admin)]
-        [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> ChangeRole(ChangeRoleRequest loginRequest)
+        public async Task<IActionResult> AddRoleToAccount(RoleRequest roleRequest)
         {
-            var response = await userAccount.ChangeRoleAccount(loginRequest);
+            var response = await userAccount.AddRoleAccountAsync(roleRequest);
+            if (!response.Flag)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = AuthRoles.Admin)]
+        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RemoveRoleFromAccount(RoleRequest roleRequest)
+        {
+            var response = await userAccount.RemoveRoleAccountAsync(roleRequest);
             if (!response.Flag)
                 return BadRequest(response);
 

@@ -1,4 +1,4 @@
-<form class="example-form" [formGroup]="userGroup">
+<form class="form" [formGroup]="userGroup">
     <mat-form-field class="example-full-width">
       <mat-label>Email</mat-label>
       <input type="email" matInput formControlName="email" placeholder="Ex. pat@example.com">
@@ -19,5 +19,5 @@
           <mat-error>Password is <strong>required</strong></mat-error>
         }
       </mat-form-field>
-    <button mat-flat-button>Log in</button>
+    <button mat-flat-button (click)="logIn()">Log in</button>
 </form>

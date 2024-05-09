@@ -13,7 +13,6 @@ namespace Post.Host.Controllers
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
-    [Authorize(Roles = AuthRoles.Admin)]
     public class PostItemController : ControllerBase
     {
         private readonly ILogger<PostItemController> _logger;
@@ -32,7 +31,7 @@ namespace Post.Host.Controllers
         {
             var response = await _postItemService.AddAsync(new PostItemEntity
             {
-                Date = DateTime.Now.ToString("dd.MM.yyyy"),
+                Date = DateTime.Now.Date,
                 Title = request.Title,
                 Content = request.Content,
                 UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
@@ -52,7 +51,7 @@ namespace Post.Host.Controllers
 
             var response = await _postItemService.UpdateAsync(new PostItemEntity
             {
-                Date = DateTime.Now.ToString("dd.MM.yyyy"),
+                Date = DateTime.Now.Date,
                 Title = request.Title,
                 Content = request.Content,
                 UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,

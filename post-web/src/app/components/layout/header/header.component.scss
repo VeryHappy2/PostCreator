@@ -7,3 +7,29 @@
         width: 1050px;
     }
 }
+
+@media screen and (max-width: 764px) {
+    .toolbar {
+        width: 854px;
+    }
+    a {
+        margin-right: 8px;
+    }
+}
+
+@media screen and (max-width: 486px) {
+    .toolbar {
+        width: 654px;
+    }
+}
+a {
+    margin-right: 10px;
+}
+.spacer {
+    flex: 1; /* Займає доступний вільний простір */
+}
+
+.flex {
+    display: flex;
+    align-items: center; /* Вирівнює елементи вертикально */
+}

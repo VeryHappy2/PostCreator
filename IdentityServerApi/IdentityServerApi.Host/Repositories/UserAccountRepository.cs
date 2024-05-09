@@ -12,9 +12,35 @@ using System.Text;
 
 namespace IdentityServerApi.Host.Models.Contracts
 {
-    public class UserAccountRepository(SignInManager<UserEnity> signInManager, UserManager<UserEnity> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config) : IUserAccountRepository
+    public class UserAccountRepository(
+        SignInManager<UserEnity> signInManager,
+        UserManager<UserEnity> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IConfiguration config) : IUserAccountRepository
     {
-        public async Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest)
+        public async Task<GeneralResponse> AddRoleAccountAsync(RoleRequest changeRoleRequest)
+        {
+            if (changeRoleRequest.Role != AuthRoles.Admin || changeRoleRequest.Role != AuthRoles.User)
+                return new GeneralResponse(false, $"Such role: {changeRoleRequest.Role}, doesn't exist");
+
+            var user = await userManager.FindByNameAsync(changeRoleRequest.UserName);
+            if (user == null)
+                return new GeneralResponse(false, "User not found");
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            if (userRoles.Contains(changeRoleRequest.Role))
+                return new GeneralResponse(false, "User already has such role");
+
+            var result = await userManager.AddToRoleAsync(user, changeRoleRequest.Role);
+
+            if (!result.Succeeded)
+                return new GeneralResponse(false, "Error occured.. please try again");
+
+            return new GeneralResponse(true, $"Role was change in {changeRoleRequest.UserName}");
+        }
+
+        public async Task<GeneralResponse> RemoveRoleAccountAsync(RoleRequest changeRoleRequest)
         {
             if (changeRoleRequest.Role != AuthRoles.Admin || changeRoleRequest.Role != AuthRoles.User)
                 return new GeneralResponse(false, $"Such role: {changeRoleRequest.Role}, doesn't exist");
@@ -24,22 +50,29 @@ namespace IdentityServerApi.Host.Models.Contracts
             if (user == null)
                 return new GeneralResponse(false, "User not found");
 
-            await userManager.AddToRoleAsync(user, changeRoleRequest.Role);
+            var userRoles = await userManager.GetRolesAsync(user);
 
-            return new GeneralResponse(true, $"Role was change in {changeRoleRequest.UserName}");
+            if (!userRoles.Contains(changeRoleRequest.Role))
+                return new GeneralResponse(false, "User already hasn't such role");
+
+            var result = await userManager.RemoveFromRoleAsync(user, changeRoleRequest.Role);
+
+            if (!result.Succeeded)
+                return new GeneralResponse(false, "Error occured.. please try again");
+
+            return new GeneralResponse(true, $"Role was change at {changeRoleRequest.UserName}");
         }
 
-        public async Task<GeneralResponse> CreateUserAccount(UserRequest userRequest)
+        public async Task<GeneralResponse> CreateUserAccountAsync(UserRequest userRequest)
         {
             if (userRequest is null)
                 return new GeneralResponse(false, "Model is empty");
 
             var newUser = new UserEnity()
             {
-                Name = userRequest.Name,
                 Email = userRequest.Email,
                 PasswordHash = userRequest.Password,
-                UserName = userRequest.Email
+                UserName = userRequest.Name,
             };
 
             var userEmail = await userManager.FindByEmailAsync(newUser.Email);
@@ -61,7 +94,7 @@ namespace IdentityServerApi.Host.Models.Contracts
             return new GeneralResponse(true, "Account Created");
         }
 
-        public async Task<LoginResponse> LoginAccount(LoginRequest loginRequest)
+        public async Task<LoginResponse> LoginAccountAsync(LoginRequest loginRequest)
         {
             if (loginRequest == null)
                 return new LoginResponse(false, null!, "Login container is empty");
@@ -76,7 +109,7 @@ namespace IdentityServerApi.Host.Models.Contracts
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
 
-            var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
+            var userSession = new UserSession(getUser.Id, getUser.UserName, getUser.Email, getUserRole);
             string token = GenerateToken(userSession);
             return new LoginResponse(true, token!, "Login completed");
         }
@@ -85,13 +118,14 @@ namespace IdentityServerApi.Host.Models.Contracts
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] !));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
             var userClaims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
+                new Claim(ClaimTypes.Email, user.Email)
+            }.Concat(user.Role.Select(role => new Claim(ClaimTypes.Role, role))).ToArray();
+
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],
                 audience: config["Jwt:Audience"],

@@ -138,6 +138,7 @@ void CreateDbIfNotExists(IHost host)
 			var context = services.GetRequiredService<ApplicationDbContext>();
 
 			context.Database.EnsureCreatedAsync().Wait();
+			DbInitializer.Initialize(context).Wait();
 		}
 		catch (Exception ex)
 		{

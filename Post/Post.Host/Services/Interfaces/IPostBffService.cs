@@ -1,4 +1,6 @@
-﻿using Post.Host.Models.Dtos;
+﻿using Catalog.Host.Models.Requests;
+using Post.Host.Models.Dtos;
+using Post.Host.Models.Response;
 
 namespace Post.Host.Services.Interfaces
 {
@@ -6,5 +8,7 @@ namespace Post.Host.Services.Interfaces
     {
 		Task<List<PostItemDto>?> GetPostsByUserIdAsync(string userId);
 		Task<PostItemDto?> GetPostByIdAsync(int id);
+		Task<PaginatedItemsResponse<PostItemDto>> GetPostByPageAsync(PageItemRequest pageItemRequest);
+		Task<List<PostCategoryDto>?> GetPostCategoriesAsync();
 	}
 }

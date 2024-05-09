@@ -7,10 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { AuthService } from './services/auth.service';
-import { AuthGuardService } from './services/auth-guard.service';
-
-
+import { CommonModule } from '@angular/common';
+import { JwtService } from './services/jwt.service';
 
 @NgModule({
   declarations: [
@@ -19,6 +17,7 @@ import { AuthGuardService } from './services/auth-guard.service';
   ],
   imports: [
     FormsModule,
+    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -27,8 +26,7 @@ import { AuthGuardService } from './services/auth-guard.service';
     MatButtonModule
   ],
   providers: [
-    AuthService,
-    AuthGuardService
+    JwtService
   ]
 })
 export class AuthModule { }

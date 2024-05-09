@@ -1,0 +1,9 @@
+.container {
+    display: flex;
+    height: 100%; /* Равная высота для обоих контейнеров */
+    
+    .content {
+        flex-grow: 1;
+        padding: 20px;
+    }
+}

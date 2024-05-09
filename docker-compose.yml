@@ -24,7 +24,7 @@ services:
        - ASPNETCORE_URLS=http://+:5101
        - ConnectionString=server=www.postcreator.com;port=5433;database=post;uid=postgres;password=postgres;
     depends_on:
-      - postpostgresq
+      - postpostgres
       - identityserver.api
     ports:
       - 5101:5101    

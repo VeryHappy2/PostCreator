@@ -5,8 +5,9 @@ namespace IdentityServerApi.Host.Repositories.Interfaces
 {
     public interface IUserAccountRepository
     {
-        Task<GeneralResponse> CreateUserAccount(UserRequest userDTO);
-        Task<LoginResponse> LoginAccount(LoginRequest loginDTO);
-        Task<GeneralResponse> ChangeRoleAccount(ChangeRoleRequest changeRoleRequest);
+        Task<GeneralResponse> CreateUserAccountAsync(UserRequest userDTO);
+        Task<LoginResponse> LoginAccountAsync(LoginRequest loginDTO);
+        Task<GeneralResponse> AddRoleAccountAsync(RoleRequest changeRoleRequest);
+        Task<GeneralResponse> RemoveRoleAccountAsync(RoleRequest changeRoleRequest);
     }
 }
