@@ -18,8 +18,11 @@ public static class AuthorizationExtensions
 
         services
             .AddAuthentication()
-            .AddJwtBearer(options =>
+            .AddJwtBearer(AuthScheme.Site, options =>
             {
+                options.Authority = authority;
+                options.Audience = siteAudience;
+                options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

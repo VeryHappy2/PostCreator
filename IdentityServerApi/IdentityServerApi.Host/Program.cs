@@ -39,8 +39,6 @@ builder.Services.AddIdentity<UserEnity, IdentityRole>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
 
-builder.Services.AddAuthorization(configuration);
-
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));
 
@@ -54,6 +52,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowCredentials());
 });
+builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
 CreateDbIfNotExists(app);
@@ -162,10 +161,9 @@ async Task AddAdmin(IHost host)
             {
                 var newAdmin = new UserEnity()
                 {
-                    Name = "admin",
+                    UserName = "admin",
                     Email = "admin@super1.com",
                     PasswordHash = "s@dE12uper",
-                    UserName = "adminName",
                 };
                 var result = await userManager.CreateAsync(newAdmin);
 

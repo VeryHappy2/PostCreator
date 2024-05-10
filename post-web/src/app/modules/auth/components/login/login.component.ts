@@ -22,7 +22,6 @@ export class LoginComponent {
 
   constructor(
     private http: HttpService,
-    private route: ActivatedRoute,
     private router: Router,
     private jwt: JwtService,
     private tokenStorage: TokenStorageService) { }

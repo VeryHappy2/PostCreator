@@ -8,14 +8,15 @@ import { User } from '../../../../general-models/User';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-  public user!: User
+  public user?: User
   constructor(private tokenStorage: TokenStorageService) { }
 
   ngOnInit(): void {
     this.user = {
       name: this.tokenStorage.getUsername(),
       role: this.tokenStorage.getAuthorities(),
-      
+      id: null,
+      email: null
     }
   }
 }

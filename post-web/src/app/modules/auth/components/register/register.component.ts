@@ -34,7 +34,7 @@ export class RegisterComponent {
     }
 
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
-      this.http.post<UserRegisterRequest, GeneralResponse<null>>(`${identityServer}/account/login`, userRegister)
+      this.http.post<UserRegisterRequest, GeneralResponse<null>>(`${identityServer}/account/register`, userRegister)
         .subscribe((value: GeneralResponse<null>) => {
           if (value.flag) {
             this.router.navigate(['auth/login'])

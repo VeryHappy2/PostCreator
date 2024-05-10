@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IdentityServerApi.Host.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240502194829_InitialCreate")]
+    [Migration("20240510210948_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,9 +49,6 @@ namespace IdentityServerApi.Host.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

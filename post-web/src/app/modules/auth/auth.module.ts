@@ -23,7 +23,7 @@ import { JwtService } from './services/jwt.service';
     MatInputModule,
     MatButtonModule,
     AuthRoutingModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   providers: [
     JwtService
