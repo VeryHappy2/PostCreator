@@ -1,0 +1,22 @@
+<app-menu/>
+<p>Title</p>
+<mat-form-field appearance="outline">
+    <mat-label>Your title</mat-label>
+    <input matInput placeholder="Title" maxlength="50"> 
+    @if (postGroup.hasError('maxLength') && !postGroup.hasError('required')) {
+        <mat-error>Please enter a valid title</mat-error>
+    }
+    @if (postGroup.hasError('required')) {
+        <mat-error>Title is <strong>required</strong></mat-error>
+    }
+</mat-form-field>
+<mat-form-field appearance="outline">
+    <mat-label>Your content</mat-label>
+    <input matInput placeholder="Content" maxlength="3000" style="height: auto; width: auto;"> 
+    @if (postGroup.hasError('maxLength') && !postGroup.hasError('required')) {
+        <mat-error>Please enter a valid title</mat-error>
+    }
+    @if (postGroup.hasError('required')) {
+        <mat-error>Title is <strong>required</strong></mat-error>
+    }
+</mat-form-field>

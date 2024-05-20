@@ -2,6 +2,7 @@ using Infrastructure.Extensions;
 using Infrastructure.Filters;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Post.Host.Configurations;
@@ -30,18 +31,34 @@ builder.Services.AddSwaggerGen(options =>
 	{
 		Title = "Post HTTP API",
 		Version = "v1",
-		Description = "The Post Service HTTP API"
+		Description = "The Post Service HTTP API",
     });
 
-	options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-	{
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+    var authority = configuration["Authorization:Authority"];
+
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows
+        {
+            Password = new OpenApiOAuthFlow
+            {
+                TokenUrl = new Uri($"{authority}/account/login"),
+                Scopes = new Dictionary<string, string>
+                {
+                    { "postItem", "postItem" },
+                    { "postComment", "postComment" },
+                    { "postCategory", "postCategory" }
+                }
+            }
+        }
     });
 
-	options.OperationFilter<AuthorizeCheckOperationFilter>();
+    options.OperationFilter<AuthorizeCheckOperationFilter>();
 });
+
+builder.Services.AddAuthentication()
+  .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddControllers();
 builder.Services.Configure<PostConfig>(configuration);
@@ -72,7 +89,7 @@ builder.Services.AddAuthorization(configuration);
 //app option
 
 var app = builder.Build();
-
+app.UseCookiePolicy();
 app
 .UseSwagger()
 .UseSwaggerUI(setup =>

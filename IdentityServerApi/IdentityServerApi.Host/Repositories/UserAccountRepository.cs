@@ -1,4 +1,5 @@
-﻿using IdentityServerApi.Host.Data.Entities;
+﻿using IdentityModel;
+using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Dtos;
 using IdentityServerApi.Host.Models.Requests;
 using IdentityServerApi.Host.Models.Responses;
@@ -13,8 +14,8 @@ using System.Text;
 namespace IdentityServerApi.Host.Models.Contracts
 {
     public class UserAccountRepository(
-        SignInManager<UserEnity> signInManager,
-        UserManager<UserEnity> userManager,
+        SignInManager<UserApp> signInManager,
+        UserManager<UserApp> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration config) : IUserAccountRepository
     {
@@ -68,7 +69,7 @@ namespace IdentityServerApi.Host.Models.Contracts
             if (userRequest is null)
                 return new GeneralResponse(false, "Model is empty");
 
-            var newUser = new UserEnity()
+            var newUser = new UserApp()
             {
                 Email = userRequest.Email,
                 PasswordHash = userRequest.Password,
@@ -99,9 +100,17 @@ namespace IdentityServerApi.Host.Models.Contracts
             if (loginRequest == null)
                 return new LoginResponse(false, null!, "Login container is empty");
 
-            var getUser = await userManager.FindByEmailAsync(loginRequest.Email);
+            UserApp getUser;
+
+            getUser = await userManager.FindByEmailAsync(loginRequest.UserName);
+
             if (getUser is null)
-                return new LoginResponse(false, null!, "User not found");
+            {
+                getUser = await userManager.FindByNameAsync(loginRequest.UserName);
+
+                if (getUser == null)
+                    return new LoginResponse(false, null!, "User not found");
+            }
 
             bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, loginRequest.Password);
             if (!checkUserPasswords)
@@ -121,10 +130,10 @@ namespace IdentityServerApi.Host.Models.Contracts
 
             var userClaims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email)
-            }.Concat(user.Role.Select(role => new Claim(ClaimTypes.Role, role))).ToArray();
+                new Claim(JwtClaimTypes.Id, user.Id),
+                new Claim(JwtClaimTypes.Name, user.Name),
+                new Claim(JwtClaimTypes.Email, user.Email)
+            }.Concat(user.Role.Select(role => new Claim(JwtClaimTypes.Role, role))).ToArray();
 
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],

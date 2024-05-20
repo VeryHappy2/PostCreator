@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServerApi.Host.Data;
 
-public class ApplicationDbContext : IdentityDbContext<UserEnity>
+public class ApplicationDbContext : IdentityDbContext<UserApp>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

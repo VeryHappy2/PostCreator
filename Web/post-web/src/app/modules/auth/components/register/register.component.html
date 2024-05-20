@@ -1,0 +1,46 @@
+<form class="form" [formGroup]="userGroup">
+  <mat-form-field class="input-width">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" placeholder="Ex. Bob">
+    @if (userGroup.hasError('name') && !userGroup.hasError('required')) {
+      <mat-error>Please enter a valid name</mat-error>
+    }
+    @if (userGroup.hasError('required')) {
+      <mat-error>Email is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+    <mat-form-field class="input-width">
+      <mat-label>Email</mat-label>
+      <input type="email" matInput formControlName="email" placeholder="Ex. pat@example.com">
+      @if (userGroup.hasError('email') && !userGroup.hasError('required')) {
+        <mat-error>Please enter a valid email address</mat-error>
+      }
+      @if (userGroup.hasError('required')) {
+        <mat-error>Email is <strong>required</strong></mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="input-width">
+        <mat-label>Password</mat-label>
+        <input type="password" matInput formControlName="password" placeholder="Ex. User13%cd42">
+        @if (userGroup.hasError('password') && !userGroup.hasError('required')) {
+          <mat-error>Please enter a valid password</mat-error>
+        }
+        @if (userGroup.hasError('required')) {
+          <mat-error>Password is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+    <mat-form-field class="input-width">
+        <mat-label>Confirm password</mat-label>
+        <input type="password" matInput formControlName="confirmPassword" placeholder="Ex. User13%cd42">
+        @if (userGroup.hasError('confirmPassword') && !userGroup.hasError('required')) {
+          <mat-error>Please enter a valid confirm password</mat-error>
+        }
+        @if (userGroup.hasError('required')) {
+          <mat-error>Password is <strong>required</strong></mat-error>
+        }
+    </mat-form-field>
+    <button mat-flat-button (click)="signUp()">Sign up</button>
+    @if (!check?.flag){
+      <p><b style="color: red;">{{check?.message}}</b></p>
+    }
+</form>

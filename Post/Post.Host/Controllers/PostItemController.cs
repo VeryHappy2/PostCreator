@@ -37,6 +37,7 @@ namespace Post.Host.Controllers
                 UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
                 CategoryId = request.CategoryId,
             });
+
             if (response == null)
                 return BadRequest(new GeneralResponse(false, "Post wasn't created"));
 

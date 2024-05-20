@@ -1,0 +1,11 @@
+@if (user) {
+    <div class="container">
+        <app-menu></app-menu>
+        <div class="content">
+            {{user.name}}
+            {{user.role}}
+            <app-posts></app-posts>
+        </div>
+    </div>
+}
+

@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		settings.ruleset = settings.ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "IdentityServer\IdentityServer\IdentityServer.csproj", "{DE716E34-A8E7-4903-BB2A-377ED9251A52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{76AD4570-1BF8-4EAA-9275-D30BEC6284E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76AD4570-1BF8-4EAA-9275-D30BEC6284E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76AD4570-1BF8-4EAA-9275-D30BEC6284E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE716E34-A8E7-4903-BB2A-377ED9251A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE716E34-A8E7-4903-BB2A-377ED9251A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE716E34-A8E7-4903-BB2A-377ED9251A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE716E34-A8E7-4903-BB2A-377ED9251A52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

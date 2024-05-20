@@ -1,43 +1,42 @@
+using IdentityServerApi.Host;
 using IdentityServerApi.Host.Configurations;
 using IdentityServerApi.Host.Data;
 using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Contracts;
 using IdentityServerApi.Host.Repositories.Interfaces;
-using Infrastructure.Filters;
 using Infrastructure.Extensions;
+using Infrastructure.Filters;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Infrastructure.Identity;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 });
-
-builder.Services.AddSwaggerGen(options =>
+builder.Services.AddSwaggerGen(c =>
 {
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-    });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identityserver.API", Version = "v1" });
 });
-
 builder.Services.AddTransient<IUserAccountRepository, UserAccountRepository>();
 builder.Services.Configure<IdentityServerApiConfig>(configuration);
 
-builder.Services.AddIdentity<UserEnity, IdentityRole>()
+builder.Services.AddIdentity<UserApp, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
+
+builder.Services.AddIdentityServer()
+    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+    .AddInMemoryApiResources(Config.GetApis())
+    .AddInMemoryClients(Config.GetClients(configuration))
+    .AddDeveloperSigningCredential();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));
@@ -52,24 +51,20 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowCredentials());
 });
+
 builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
 CreateDbIfNotExists(app);
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app
+app
     .UseSwagger()
     .UseSwaggerUI(setup =>
     {
         setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Identityserver.API V1");
-        setup.OAuthClientId("Identityserverswaggerui");
         setup.OAuthAppName("Identityserver Swagger UI");
     });
-}
 
+app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict });
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
@@ -83,7 +78,6 @@ app.UseEndpoints(endpoints =>
 });
 
 await AddAdmin(app);
-app.MapControllers();
 
 app.Use(async (context, next) =>
 {
@@ -142,7 +136,7 @@ async Task AddAdmin(IHost host)
 
         try
         {
-            var userManager = services.GetRequiredService<UserManager<UserEnity>>();
+            var userManager = services.GetRequiredService<UserManager<UserApp>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             if (!await roleManager.RoleExistsAsync(AuthRoles.Admin))
@@ -159,13 +153,13 @@ async Task AddAdmin(IHost host)
 
             if (adminUserExists == null)
             {
-                var newAdmin = new UserEnity()
+                var newAdmin = new UserApp()
                 {
                     UserName = "admin",
                     Email = "admin@super1.com",
-                    PasswordHash = "s@dE12uper",
                 };
-                var result = await userManager.CreateAsync(newAdmin);
+
+                var result = await userManager.CreateAsync(newAdmin, "s@dE12upe");
 
                 if (result.Succeeded)
                 {

@@ -1,0 +1,40 @@
+<mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]"
+              [pageIndex]="1"
+              (page)="onPageChange($event)"
+              aria-label="Select page">
+</mat-paginator>
+
+@if(categories$ | async; as categories){
+  <mat-form-field>
+    <mat-label>Categories of posts</mat-label>
+    <mat-select (selectionChange)="onSelectChange($event)">
+      <mat-option [value]="">None</mat-option>
+      @for (category of categories; track category.id) {
+        <mat-option [value]="category.id">{{category.category}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+}
+
+
+<mat-grid-list cols="2" rowHeight="2:1">
+  @if(pageItemResponse$ | async; as pageItemResponse){
+    @for (item of pageItemResponse.data; track item.id) {
+      <mat-grid-tile>
+        <mat-card class="example-card">
+          <mat-card-header>
+            <mat-card-title>{{item.title}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            {{item.date}}
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile> 
+    }
+  }
+</mat-grid-list>

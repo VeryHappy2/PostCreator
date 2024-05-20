@@ -16,7 +16,7 @@ namespace IdentityServerApi.Host.Controllers
     [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     public class AccountController(
         IUserAccountRepository userAccount,
-        SignInManager<UserEnity> signInManager) : ControllerBase
+        SignInManager<UserApp> signInManager) : ControllerBase
     {
         [HttpPost]
         [AllowAnonymous]

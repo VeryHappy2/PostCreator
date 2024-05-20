@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using static System.Net.WebRequestMethods;
 
 namespace Infrastructure.Extensions;
 
@@ -20,7 +21,7 @@ public static class AuthorizationExtensions
             .AddAuthentication()
             .AddJwtBearer(AuthScheme.Site, options =>
             {
-                options.Authority = authority;
+                options.Authority = "http://www.postcreator.com:5100";
                 options.Audience = siteAudience;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -34,7 +35,7 @@ public static class AuthorizationExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                 };
             });
-        services.AddAuthorization(options =>
+                services.AddAuthorization(options =>
         {
             options.AddPolicy(AuthPolicy.AllowEndUserPolicy, policy =>
             {
