@@ -8,12 +8,13 @@ using Post.Host.Models.Responses;
 using Catalog.Host.Models.Requests;
 using Post.Host.Models.Requests.Bases;
 using Post.Host.Models.Dtos;
+using System.Net;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    [Authorize]
     [Authorize(Roles = AuthRoles.User)]
     public class PostCommentController : ControllerBase
     {
@@ -29,6 +30,9 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Add(BasePostCommentRequest request)
         {
             if (request == null)
@@ -47,6 +51,9 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Update(UpdatePostCommentRequest request)
         {
             if (request == null)
@@ -60,12 +67,15 @@ namespace Post.Host.Controllers
             });
 
             if (response == null)
-                return NotFound(new GeneralResponse(false, $"Comment wasn't update, not found id: {request.Id}"));
+                return NotFound(new GeneralResponse(false, $"Comment wasn't update, not found, id of item: {request.Id}"));
 
             return Ok(new GeneralResponse<int>(true, "Comment was updated", response.Value!));
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
             if (request == null)

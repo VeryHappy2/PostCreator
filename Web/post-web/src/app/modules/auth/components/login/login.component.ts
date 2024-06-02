@@ -17,7 +17,7 @@ import { UserLoginRequest } from '../../../../models/requests/user/UserLoginRequ
 })
 export class LoginComponent {
   public userGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
   public check?: LogInResponse
@@ -32,18 +32,18 @@ export class LoginComponent {
   logIn(): void {
     const user: UserLoginRequest = {
       password: this.userGroup.value.password!,
-      email: this.userGroup.value.email!
+      userName: this.userGroup.value.userName!
     };
 
-    if (user.email && user.password) {
+    if (user.userName && user.password) {
       console.log(user.password)
-      this.http.post<UserLoginRequest, LogInResponse>(`${identityServerUrl}/account/login`, user).subscribe((response: LogInResponse) =>{
-        if(response.flag) {
+      this.http.post<UserLoginRequest, LogInResponse>(`${identityServerUrl}/account/login`, user)
+        .subscribe((response: LogInResponse) => {
           let decodedToken: JwtClaims | null = this.jwt.decodeToken<JwtClaims>(response.token)
 
           if (decodedToken) {
-            debugger
             console.log(JSON.stringify(decodedToken))
+            
             this.tokenStorage.saveId(decodedToken.nameid);
             this.tokenStorage.saveAuthorities(decodedToken.role);
             this.tokenStorage.saveUsername(decodedToken.name);
@@ -54,8 +54,9 @@ export class LoginComponent {
           else {
             this.check = response
           }
-        }
-      })
+        },
+        (error: any) => 
+          this.check == error)
     } 
   }
 }

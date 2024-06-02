@@ -10,7 +10,7 @@ import { HeaderComponent } from './components/layout/header/header.component';
 import { NavigationComponent } from './components/layout/navigation/navigation.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { HttpClientModule } from '@angular/common/http';
-import { AuthConfigModule } from './auth/auth-config.module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import { AuthConfigModule } from './auth/auth-config.module';
     MatToolbarModule,
     MatButtonModule,
     MatDividerModule,
-    AuthConfigModule,
+    AppRoutingModule
   ],
   providers: [
     provideAnimationsAsync(),

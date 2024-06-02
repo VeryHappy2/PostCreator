@@ -98,27 +98,21 @@ namespace IdentityServerApi.Host.Models.Contracts
         public async Task<LoginResponse> LoginAccountAsync(LoginRequest loginRequest)
         {
             if (loginRequest == null)
-                return new LoginResponse(false, null!, "Login container is empty");
+                return new LoginResponse(false, null!, "Login request is empty");
 
-            UserApp getUser;
-
-            getUser = await userManager.FindByEmailAsync(loginRequest.UserName);
-
-            if (getUser is null)
+            GeneralResponse<UserApp> response = await CheckUser(new CheckRequest
             {
-                getUser = await userManager.FindByNameAsync(loginRequest.UserName);
-
-                if (getUser == null)
-                    return new LoginResponse(false, null!, "User not found");
+                Email = loginRequest.Email,
+                Password = loginRequest.Password,
+            });
+            if (!response.Flag)
+            {
+                return new LoginResponse(false, null!, response.Message);
             }
 
-            bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, loginRequest.Password);
-            if (!checkUserPasswords)
-                return new LoginResponse(false, null!, "Invalid email/password");
+            var getUserRole = await userManager.GetRolesAsync(response.Data);
 
-            var getUserRole = await userManager.GetRolesAsync(getUser);
-
-            var userSession = new UserSession(getUser.Id, getUser.UserName, getUser.Email, getUserRole);
+            var userSession = new UserSession(response.Data.Id, response.Data.UserName, response.Data.Email, getUserRole.FirstOrDefault(x => x == AuthRoles.User));
             string token = GenerateToken(userSession);
             return new LoginResponse(true, token!, "Login completed");
         }
@@ -128,12 +122,13 @@ namespace IdentityServerApi.Host.Models.Contracts
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] !));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var userClaims = new[]
+            var userClaims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Id, user.Id),
                 new Claim(JwtClaimTypes.Name, user.Name),
-                new Claim(JwtClaimTypes.Email, user.Email)
-            }.Concat(user.Role.Select(role => new Claim(JwtClaimTypes.Role, role))).ToArray();
+                new Claim(JwtClaimTypes.Email, user.Email),
+                new Claim(JwtClaimTypes.Role, user.Role)
+            };
 
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],
@@ -143,6 +138,21 @@ namespace IdentityServerApi.Host.Models.Contracts
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<GeneralResponse<UserApp>> CheckUser(CheckRequest user)
+        {
+            var getUser = await userManager.FindByEmailAsync(user.Email);
+
+            if (getUser == null)
+                return new GeneralResponse<UserApp>(false, "Invalid email", null!);
+
+            bool checkUserPasswords = await userManager.CheckPasswordAsync(getUser, user.Password);
+
+            if (!checkUserPasswords)
+                return new GeneralResponse<UserApp>(false, "Invalid password", null!);
+
+            return new GeneralResponse<UserApp>(true, "Authentication successful", getUser);
         }
     }
 }

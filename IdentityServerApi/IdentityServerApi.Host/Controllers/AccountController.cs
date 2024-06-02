@@ -13,7 +13,7 @@ namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    [Authorize]
     public class AccountController(
         IUserAccountRepository userAccount,
         SignInManager<UserApp> signInManager) : ControllerBase
@@ -35,7 +35,7 @@ namespace IdentityServerApi.Host.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             var response = await userAccount.LoginAccountAsync(loginRequest);
             if (!response.Flag)

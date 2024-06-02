@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using static System.Net.WebRequestMethods;
 
 namespace Infrastructure.Extensions;
 
@@ -14,15 +13,14 @@ public static class AuthorizationExtensions
 {
     public static void AddAuthorization(this IServiceCollection services, IConfiguration configuration)
     {
-        var authority = configuration["Authorization:Authority"];
-        var siteAudience = configuration["Authorization:SiteAudience"];
-
         services
-            .AddAuthentication()
-            .AddJwtBearer(AuthScheme.Site, options =>
+            .AddAuthentication(options =>
             {
-                options.Authority = "http://www.postcreator.com:5100";
-                options.Audience = siteAudience;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -35,15 +33,6 @@ public static class AuthorizationExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                 };
             });
-                services.AddAuthorization(options =>
-        {
-            options.AddPolicy(AuthPolicy.AllowEndUserPolicy, policy =>
-            {
-                policy.AuthenticationSchemes.Add(AuthScheme.Site);
-                policy.RequireClaim(JwtRegisteredClaimNames.Sub);
-            });
-        });
-
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthorization();
     }
 }

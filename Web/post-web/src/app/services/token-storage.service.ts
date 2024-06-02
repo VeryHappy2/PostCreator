@@ -10,9 +10,6 @@ const AUTHORITIES_KEY = "authauthorities";
 })
 
 export class TokenStorageService {
-  private roles: Array<string> = [];
-  constructor() { }
-
   signOut() {
     window.sessionStorage.clear();
   }
@@ -40,21 +37,12 @@ export class TokenStorageService {
     return sessionStorage.getItem(USERNAME_KEY);
   }
 
-  public saveAuthorities(authorities: string[]) {
+  public saveAuthorities(authorities: string) {
     window.sessionStorage.removeItem(AUTHORITIES_KEY);
-    window.sessionStorage.setItem(AUTHORITIES_KEY, JSON.stringify(authorities));
+    window.sessionStorage.setItem(AUTHORITIES_KEY, authorities);
   }
 
-  public getAuthorities(): string[] | null{
-    this.roles = [];
-
-    if (sessionStorage.getItem(TOKEN_KEY)) {
-      const authorities = JSON.parse(AUTHORITIES_KEY);
-      authorities.forEach((authority: string) => {
-        this.roles.push(authority);
-      });
-    }
-
-    return this.roles;
+  public getAuthorities(): string | null {
+    return window.sessionStorage.getItem(AUTHORITIES_KEY)
   }
 }

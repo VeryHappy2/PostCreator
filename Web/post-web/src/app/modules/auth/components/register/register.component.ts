@@ -42,7 +42,7 @@ export class RegisterComponent {
             this.check = value
           }
         },
-        (error: GeneralResponse<null>) => {
+        (error: any) => {
           this.check = error
         });
     }

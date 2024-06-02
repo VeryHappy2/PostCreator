@@ -1,5 +1,6 @@
 using System.Net;
 using Catalog.Host.Models.Requests;
+using IdentityModel;
 using Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,7 @@ namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    [Authorize]
     [Authorize(Roles = AuthRoles.User)]
     public class PostBffController : ControllerBase
     {
@@ -44,7 +45,7 @@ namespace Post.Host.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPostsByOwnUserId()
         {
-            string? userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+            string? userId = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Id)?.Value;
 
             if (userId == null)
                 return BadRequest(new GeneralResponse(false, "User id is empty"));

@@ -12,12 +12,9 @@ export class DashboardComponent implements OnInit {
   constructor(private tokenStorage: TokenStorageService) { }
 
   ngOnInit(): void {
-    debugger
     this.user = {
       name: this.tokenStorage.getUsername(),
       role: this.tokenStorage.getAuthorities(),
-      id: null,
-      email: null
     }
   }
 }

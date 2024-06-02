@@ -6,12 +6,13 @@ using Post.Host.Services.Interfaces;
 using Post.Host.Data.Entities;
 using Post.Host.Models.Responses;
 using Catalog.Host.Models.Requests;
+using IdentityModel;
+using System.Net;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
     [Authorize(Roles = AuthRoles.User)]
     public class PostItemController : ControllerBase
     {
@@ -27,6 +28,9 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Add(BasePostItemRequest request)
         {
             var response = await _postItemService.AddAsync(new PostItemEntity
@@ -34,7 +38,7 @@ namespace Post.Host.Controllers
                 Date = DateTime.Now.Date,
                 Title = request.Title,
                 Content = request.Content,
-                UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
+                UserId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value,
                 CategoryId = request.CategoryId,
             });
 
@@ -45,6 +49,9 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Update(UpdatePostItemRequest request)
         {
             if (request == null)
@@ -55,7 +62,7 @@ namespace Post.Host.Controllers
                 Date = DateTime.Now.Date,
                 Title = request.Title,
                 Content = request.Content,
-                UserId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value,
+                UserId = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Id)?.Value,
                 Id = request.Id,
                 CategoryId = request.CategoryId,
             });
@@ -67,6 +74,9 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
             if (request == null)

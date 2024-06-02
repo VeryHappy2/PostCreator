@@ -14,12 +14,11 @@ using Microsoft.OpenApi.Models;
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 });
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identityserver.API", Version = "v1" });
@@ -31,12 +30,6 @@ builder.Services.AddIdentity<UserApp, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
-
-builder.Services.AddIdentityServer()
-    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-    .AddInMemoryApiResources(Config.GetApis())
-    .AddInMemoryClients(Config.GetClients(configuration))
-    .AddDeveloperSigningCredential();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));

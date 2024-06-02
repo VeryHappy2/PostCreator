@@ -1,12 +1,12 @@
 <form class="form" [formGroup]="userGroup">
     <mat-form-field class="input-width">
-      <mat-label>Email</mat-label>
-      <input type="email" matInput formControlName="email" placeholder="Ex. pat@example.com">
-      @if (userGroup.hasError('email') && !userGroup.hasError('required')) {
-        <mat-error>Please enter a valid email address</mat-error>
+      <mat-label>User name</mat-label>
+      <input type="text" matInput formControlName="userName" placeholder="Here your email address or user name">
+      @if (userGroup.hasError('userName') && !userGroup.hasError('required')) {
+        <mat-error>Please enter a valid email address or name</mat-error>
       }
       @if (userGroup.hasError('required')) {
-        <mat-error>Email is <strong>required</strong></mat-error>
+        <mat-error>User name is <strong>required</strong></mat-error>
       }
     </mat-form-field>
     <mat-form-field class="input-width">
