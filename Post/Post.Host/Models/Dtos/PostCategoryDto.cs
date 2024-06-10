@@ -2,6 +2,6 @@
 {
     public class PostCategoryDto : BaseDto
     {
-        public string Catagory { get; set; }
+        public string Category { get; set; }
     }
 }

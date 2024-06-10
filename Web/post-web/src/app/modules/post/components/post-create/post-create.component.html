@@ -1,22 +1,36 @@
 <app-menu/>
-<p>Title</p>
-<mat-form-field appearance="outline">
-    <mat-label>Your title</mat-label>
-    <input matInput placeholder="Title" maxlength="50"> 
-    @if (postGroup.hasError('maxLength') && !postGroup.hasError('required')) {
-        <mat-error>Please enter a valid title</mat-error>
+
+
+
+<div [formGroup]="postGroup">
+    @if (categories) {
+        <p>Category</p>
+        <p>Recommened choose some category but it isn't required</p>
+        <mat-form-field formControlName="categoryId" class="selecter">
+            <mat-label>Categories of posts</mat-label>
+            <mat-select>
+            <mat-option [value]="null">None</mat-option>
+            @for (category of categories.data; track category.id) {
+                <mat-option [value]="category.id">{{category.category}}</mat-option>
+            }
+            </mat-select>
+        </mat-form-field>
     }
-    @if (postGroup.hasError('required')) {
-        <mat-error>Title is <strong>required</strong></mat-error>
+    @else {
+        Not found any categories
     }
-</mat-form-field>
-<mat-form-field appearance="outline">
-    <mat-label>Your content</mat-label>
-    <input matInput placeholder="Content" maxlength="3000" style="height: auto; width: auto;"> 
-    @if (postGroup.hasError('maxLength') && !postGroup.hasError('required')) {
-        <mat-error>Please enter a valid title</mat-error>
-    }
-    @if (postGroup.hasError('required')) {
-        <mat-error>Title is <strong>required</strong></mat-error>
-    }
-</mat-form-field>
+    <p>Title</p>
+    <mat-form-field>
+        <mat-label>Your title</mat-label>
+        <input matInput formControlName="title" placeholder="Title" maxlength="50" > 
+    </mat-form-field>
+    <p>Content</p>
+    <mat-form-field>
+        <mat-label>Your content</mat-label>
+        <input matInput formControlName="content" placeholder="Content" maxlength="3000" style="height: auto; width: auto;"> 
+    </mat-form-field>
+</div>
+<button mat-button (click)="createPost()">Create post</button>
+@if (errorMessage) {
+    <p><b style="color:rgb(236, 0, 0);">{{errorMessage}}</b></p>
+}

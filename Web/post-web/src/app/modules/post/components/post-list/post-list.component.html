@@ -1,40 +1,46 @@
 <mat-paginator [length]="100"
               [pageSize]="10"
               [pageSizeOptions]="[5, 10, 25, 100]"
-              [pageIndex]="1"
+              [pageIndex]="0"
               (page)="onPageChange($event)"
               aria-label="Select page">
 </mat-paginator>
 
-@if(categories$ | async; as categories){
-  <mat-form-field>
+@if (categories$ | async; as categories) {
+  <mat-form-field class="selecter">
     <mat-label>Categories of posts</mat-label>
     <mat-select (selectionChange)="onSelectChange($event)">
-      <mat-option [value]="">None</mat-option>
-      @for (category of categories; track category.id) {
+      <mat-option [value]="null">None</mat-option>
+      @for (category of categories.data; track category.id) {
         <mat-option [value]="category.id">{{category.category}}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 }
+@else {
+  <p>Not found any categories</p>
+}
 
-
-<mat-grid-list cols="2" rowHeight="2:1">
-  @if(pageItemResponse$ | async; as pageItemResponse){
-    @for (item of pageItemResponse.data; track item.id) {
-      <mat-grid-tile>
-        <mat-card class="example-card">
-          <mat-card-header>
-            <mat-card-title>{{item.title}}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
+<mat-grid-list cols="4" rowHeight="3:3">
+  @if(pageItemResponse){
+    @for (item of pageItemResponse.data?.data; track item.id) {
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <div class="card">
+          <div class="card-title">
+            {{item.title}}
             {{item.date}}
-          </mat-card-content>
-          <mat-card-actions>
+          </div>
+          <div class="card-content">
+            {{item.category}}
+          </div>
+          <div>
             <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
-          </mat-card-actions>
-        </mat-card>
+          </div>
+        </div>
       </mat-grid-tile> 
     }
+  }
+  @else {
+    <h2>Not found any posts</h2>
   }
 </mat-grid-list>

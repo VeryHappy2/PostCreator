@@ -1,15 +1,7 @@
 <mat-toolbar class="toolbar">
     <span style="margin-right: 10px;">PostCreator</span>
     <a mat-stroked-button [routerLink]="['home']">Home</a>
-    <a mat-stroked-button routerLink="post/post-list">Posts</a>
+    <a mat-stroked-button [routerLink]="['post/post-list']">Posts</a>
     <span class="spacer"></span> 
-    @if (token){
-        <a mat-stroked-button [routerLink]="['user/dashboard']">{{userName}}</a>
-    }
-    @else {
-        <div class="flex">
-            <a mat-stroked-button [routerLink]="['auth/login']">Log in</a>
-            <a mat-stroked-button [routerLink]="['auth/register']">Register</a>
-        </div>
-    }
+    <app-navigation/>
 </mat-toolbar>

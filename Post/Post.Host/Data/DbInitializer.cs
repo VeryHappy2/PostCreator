@@ -34,7 +34,7 @@ public static class DbInitializer
 	{
 		return new List<PostItemEntity>()
 		{
-			new PostItemEntity { Date = DateTime.Now.Date, CategoryId = 1, Content = "Super content", UserId = "example", Title = "Super post", Comments = new List<PostCommentEntity>() },
+			new PostItemEntity { Date = DateTime.Now.Date.ToUniversalTime(), CategoryId = 1, Content = "Super content", UserId = "example", Title = "Super post", Comments = new List<PostCommentEntity>() },
 		};
 	}
 }

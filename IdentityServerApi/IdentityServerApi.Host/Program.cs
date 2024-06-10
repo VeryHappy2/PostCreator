@@ -49,15 +49,15 @@ builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
 CreateDbIfNotExists(app);
-app
-    .UseSwagger()
-    .UseSwaggerUI(setup =>
-    {
-        setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Identityserver.API V1");
-        setup.OAuthAppName("Identityserver Swagger UI");
-    });
 
-app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict });
+app
+.UseSwagger()
+.UseSwaggerUI(setup =>
+{
+    setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Identityserver.API V1");
+    setup.OAuthAppName("Identityserver Swagger UI");
+});
+
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
@@ -70,7 +70,8 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-await AddAdmin(app);
+await AddRolesAsync(app);
+await AddAdminAsync(app);
 
 app.Use(async (context, next) =>
 {
@@ -121,26 +122,15 @@ void LogResponse(ILogger<Program> logger, HttpResponse response, Guid id)
     logger.LogInformation($"Response id: {id}, Status: {response.StatusCode}");
 }
 
-async Task AddAdmin(IHost host)
+async Task AddAdminAsync(IHost host)
 {
     using (var scope = host.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-
+        var logger = services.GetRequiredService<ILogger<Program>>();
         try
         {
             var userManager = services.GetRequiredService<UserManager<UserApp>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-            if (!await roleManager.RoleExistsAsync(AuthRoles.Admin))
-            {
-                await roleManager.CreateAsync(new IdentityRole(AuthRoles.Admin));
-            }
-
-            if (!await roleManager.RoleExistsAsync(AuthRoles.User))
-            {
-                await roleManager.CreateAsync(new IdentityRole(AuthRoles.User));
-            }
 
             var adminUserExists = await userManager.FindByEmailAsync("admin@super.com");
 
@@ -158,12 +148,42 @@ async Task AddAdmin(IHost host)
                 {
                     await userManager.AddToRoleAsync(newAdmin, "Admin");
                 }
+                else
+                {
+                    logger.LogError("An error occured while adding admin");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while admin.");
+        }
+    }
+}
+
+async Task AddRolesAsync(IHost host)
+{
+    using (var scope = host.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            string[] roles = { AuthRoles.Admin, AuthRoles.User };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
             }
         }
         catch (Exception ex)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred while seeding the database.");
+            logger.LogError(ex, "An error occurred while adding roles.");
         }
     }
 }

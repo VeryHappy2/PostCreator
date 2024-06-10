@@ -7,10 +7,6 @@ const routes: Routes = [
     path: "dashboard",
     component: DashboardComponent
   },
-  {
-    path: "post/post-create",
-    loadChildren: () => import('../post/post.module').then((m) => m.PostModule)
-  },
 ];
 
 @NgModule({

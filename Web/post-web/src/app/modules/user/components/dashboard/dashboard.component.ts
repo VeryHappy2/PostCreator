@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
     this.user = {
       name: this.tokenStorage.getUsername(),
       role: this.tokenStorage.getAuthorities(),
+      token: null
     }
   }
 }

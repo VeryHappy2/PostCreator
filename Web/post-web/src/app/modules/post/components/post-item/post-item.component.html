@@ -1,16 +1,22 @@
 @if (post$ | async; as post) {
-    <h1>{{post.title}}</h1>
-    <mat-divider></mat-divider>
-    <h2>{{post.date}}</h2>
-    <mat-divider></mat-divider>
-    <h3>{{post.date}}</h3>
-    <mat-divider></mat-divider>
-    <p>{{post.content}}</p>
-    <mat-divider></mat-divider>
-    @for (comment of post.comments; track comment.id) 
-    {
-        <mat-list-item>{{comment.comment}}</mat-list-item>
-        <mat-divider></mat-divider>
+    <button mat-flat-button (click)="back()">To back</button>
+    <h1>{{post.data?.title}}</h1>
+    <mat-divider/>
+    <h2>{{post.data?.date}}</h2>
+    <mat-divider/>
+    <h3>{{post.data?.category?.category}}</h3>
+    <mat-divider/>
+    <p>{{post.data?.content}}</p>
+    <mat-divider/>
+    @if (post.data?.comments) {
+        @for (comment of post.data?.comments; track comment.id) 
+        {
+            <mat-list-item>{{comment.comment}}</mat-list-item>
+            <mat-divider></mat-divider>
+        }
     }
+}
+@else {
+    <p>Not found</p>
 }
 

@@ -1,5 +1,5 @@
 export interface JwtClaims {
-   nameid: string,
+   id: string,
    name: string,
    emailaddress: string,
    role: string

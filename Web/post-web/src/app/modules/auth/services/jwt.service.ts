@@ -7,7 +7,7 @@ export class JwtService {
   
   constructor() { }
 
-  decodeToken<T>(token: string): T | null {
+  public decodeToken<T>(token: string): T | null {
     return this.jwtHelper.decodeToken(token)
   }
 }

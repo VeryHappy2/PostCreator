@@ -8,7 +8,6 @@ export interface PostItem {
     userId: string;
     content: string;
     date: string;
-    categoryId: number;
-    comments: PostComment[];
+    comments: Array<PostComment>;
     category: PostCategory;
 }

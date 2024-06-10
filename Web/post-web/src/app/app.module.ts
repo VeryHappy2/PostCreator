@@ -10,7 +10,6 @@ import { HeaderComponent } from './components/layout/header/header.component';
 import { NavigationComponent } from './components/layout/navigation/navigation.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [

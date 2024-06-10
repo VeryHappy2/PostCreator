@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using Infrastructure.Extensions;
 using Infrastructure.Filters;
 using Infrastructure.Services;
@@ -16,8 +15,6 @@ using Post.Host.Services.Interfaces;
 using Swashbuckle.AspNetCore.Filters;
 
 var configuration = GetConfiguration();
-
-//build config
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,24 +36,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     var authority = configuration["Authorization:Authority"];
-
-    // options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    // {
-    //     Type = SecuritySchemeType.OAuth2,
-    //     Flows = new OpenApiOAuthFlows
-    //     {
-    //         Password = new OpenApiOAuthFlow
-    //         {
-    //             TokenUrl = new Uri($"{authority}/api/v1/account/login"),
-    //             Scopes = new Dictionary<string, string>
-    //             {
-    //                 { "postItem", "postItem" },
-    //                 { "postComment", "postComment" },
-    //                 { "postCategory", "postCategory" }
-    //             }
-    //         }
-    //     }
-    // });
 
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
@@ -97,8 +76,6 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddAuthorization(configuration);
 
-//app option
-
 var app = builder.Build();
 app.UseCookiePolicy();
 app
@@ -108,6 +85,17 @@ app
 	setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
 	setup.OAuthClientId("postswaggerui");
 	setup.OAuthAppName("Post Swagger UI");
+});
+
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    var id = Guid.NewGuid();
+    LogRequest(logger, context.Request, id);
+
+    await next.Invoke();
+
+    LogResponse(logger, context.Response, id);
 });
 
 app.UseRouting();

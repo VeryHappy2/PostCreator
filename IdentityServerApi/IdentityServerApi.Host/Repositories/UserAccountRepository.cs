@@ -14,7 +14,6 @@ using System.Text;
 namespace IdentityServerApi.Host.Models.Contracts
 {
     public class UserAccountRepository(
-        SignInManager<UserApp> signInManager,
         UserManager<UserApp> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration config) : IUserAccountRepository
@@ -25,6 +24,7 @@ namespace IdentityServerApi.Host.Models.Contracts
                 return new GeneralResponse(false, $"Such role: {changeRoleRequest.Role}, doesn't exist");
 
             var user = await userManager.FindByNameAsync(changeRoleRequest.UserName);
+
             if (user == null)
                 return new GeneralResponse(false, "User not found");
 
@@ -105,14 +105,24 @@ namespace IdentityServerApi.Host.Models.Contracts
                 Email = loginRequest.Email,
                 Password = loginRequest.Password,
             });
+
             if (!response.Flag)
             {
                 return new LoginResponse(false, null!, response.Message);
             }
 
             var getUserRole = await userManager.GetRolesAsync(response.Data);
+            UserSession userSession;
 
-            var userSession = new UserSession(response.Data.Id, response.Data.UserName, response.Data.Email, getUserRole.FirstOrDefault(x => x == AuthRoles.User));
+            if (getUserRole.Contains(AuthRoles.Admin))
+            {
+                userSession = new UserSession(response.Data.Id, response.Data.UserName, response.Data.Email, getUserRole.FirstOrDefault(x => x == AuthRoles.Admin));
+            }
+            else
+            {
+                userSession = new UserSession(response.Data.Id, response.Data.UserName, response.Data.Email, getUserRole.FirstOrDefault(x => x == AuthRoles.User));
+            }
+
             string token = GenerateToken(userSession);
             return new LoginResponse(true, token!, "Login completed");
         }

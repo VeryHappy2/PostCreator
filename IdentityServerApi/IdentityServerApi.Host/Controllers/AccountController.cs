@@ -35,7 +35,7 @@ namespace IdentityServerApi.Host.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             var response = await userAccount.LoginAccountAsync(loginRequest);
             if (!response.Flag)

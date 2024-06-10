@@ -11,7 +11,6 @@ namespace Post.Host.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<T> _dbset;
-        private T _result;
 
         public Repository(IDbContextWrapper<ApplicationDbContext> context)
         {
@@ -38,9 +37,9 @@ namespace Post.Host.Repositories
 
             if (item != null)
             {
-                _dbContext.Entry(_result).CurrentValues.SetValues(entity);
+                _dbContext.Entry(item).CurrentValues.SetValues(entity);
                 await _dbContext.SaveChangesAsync();
-                return _result.Id;
+                return item.Id;
             }
 
             return null;
@@ -48,12 +47,12 @@ namespace Post.Host.Repositories
 
         public async Task<string?> DeleteAsync(int id)
         {
-            _result = await _dbset
+            var result = await _dbset
                 .FindAsync(id);
 
-            if (_result != null)
+            if (result != null)
             {
-                var result = _dbset.Remove(_result);
+                _dbset.Remove(result);
                 await _dbContext.SaveChangesAsync();
                 return $"Object with id: {id} was successfully removed";
             }

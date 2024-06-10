@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { PaginatedItemsResponse } from '../../../../models/reponses/PaginatedItemsResponse';
 import { PageItemRequest } from '../../../../models/requests/PageItemRequest';
 import { PostCategory } from '../../../../models/enities/PostCategory';
+import { GeneralResponse } from '../../../../models/reponses/GeneralResponse';
 
 @Component({
   selector: 'app-post-list',
@@ -16,30 +17,44 @@ import { PostCategory } from '../../../../models/enities/PostCategory';
   styleUrl: './post-list.component.scss'
 })
 export class PostListComponent implements OnInit {  
-  public categories$!: Observable<Array<PostCategory>>
-  public pageItemResponse$?: Observable<PaginatedItemsResponse<PostItem>>
+  public categories$!: Observable<GeneralResponse<Array<PostCategory>>>
+  public pageItemResponse!: GeneralResponse<PaginatedItemsResponse<PostItem>>;
 
-  private postPage!: PageItemRequest
-  constructor(private http: HttpService, 
-    private router: Router,) { }
+  private postPageRequest!: PageItemRequest
+
+  constructor(
+    private http: HttpService, 
+    private router: Router,) {
+    this.postPageRequest = {
+      PageIndex: 0,
+      PageSize: 10 
+    } 
+  }
 
   ngOnInit (): void {
-    this.categories$ = this.http.get<Array<PostCategory>>(`${postUrl}/postbff/getpostcategories`)
+    this.categories$ = this.http.get<GeneralResponse<Array<PostCategory>>>(`${postUrl}/postbff/getpostcategories`)
+
+    this.loadPosts()
   }
 
-  onPageChange (eventPaginator: PageEvent): void {
-    this.postPage.PageIndex = eventPaginator.pageIndex;
-    this.postPage.PageSize = eventPaginator.pageSize;
-
-    this.pageItemResponse$ = this.http.post<PageItemRequest, PaginatedItemsResponse<PostItem>>(`${postUrl}/postbff/getpostsbypage`, this.postPage)
+  public onPageChange (eventPaginator: PageEvent): void {
+    this.postPageRequest.PageIndex = eventPaginator.pageIndex;
+    this.postPageRequest.PageSize = eventPaginator.pageSize;
+    
+    this.loadPosts()
   }
 
-  onSelectChange(eventSelect: MatSelectChange): void {
-    this.postPage.CategoryFilter = eventSelect.value
-    this.pageItemResponse$ = this.http.post<PageItemRequest, PaginatedItemsResponse<PostItem>>(`${postUrl}/postbff/getpostsbypage`, this.postPage)
+  public onSelectChange(eventSelect: MatSelectChange): void {
+    this.postPageRequest.CategoryFilter = eventSelect.value
+    this.loadPosts()
   }
 
-  detailsPost(id: number) {
+  public detailsPost(id: number) {
     this.router.navigate([`post/${id}`], { replaceUrl: true});
+  }
+
+  private loadPosts(): void {
+    this.http.post<PageItemRequest, GeneralResponse<PaginatedItemsResponse<PostItem>>>(`${postUrl}/postbff/getpostsbypage`, this.postPageRequest)
+      .subscribe((response: GeneralResponse<PaginatedItemsResponse<PostItem>>) => this.pageItemResponse = response);
   }
 }

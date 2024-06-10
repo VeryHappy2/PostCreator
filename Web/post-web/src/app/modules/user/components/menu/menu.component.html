@@ -1,11 +1,8 @@
 <div class="menu">
+  <ul>
+    <li><a [routerLink]="['/post/post-create']" [routerLinkActive]="['active']">To create the post</a></li>
+  </ul>
     <ul>
-      <li><a href="#">To create the post</a></li>
-    </ul>
-    <ul>
-      <li><a href="#">To create the post</a></li>
-    </ul>
-    <ul>
-        <li><a href="#">Exit</a></li>
+        <li><a (click)="signOut()">Exit</a></li>
     </ul>
 </div>

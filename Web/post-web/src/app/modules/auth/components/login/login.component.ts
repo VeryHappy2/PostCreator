@@ -29,22 +29,19 @@ export class LoginComponent {
     private jwt: JwtService,
     private tokenStorage: TokenStorageService) { }
 
-  logIn(): void {
+  public logIn(): void {
     const user: UserLoginRequest = {
       password: this.userGroup.value.password!,
-      userName: this.userGroup.value.userName!
+      email: this.userGroup.value.userName!
     };
 
-    if (user.userName && user.password) {
-      console.log(user.password)
+    if (user.email && user.password) {
       this.http.post<UserLoginRequest, LogInResponse>(`${identityServerUrl}/account/login`, user)
         .subscribe((response: LogInResponse) => {
           let decodedToken: JwtClaims | null = this.jwt.decodeToken<JwtClaims>(response.token)
 
           if (decodedToken) {
-            console.log(JSON.stringify(decodedToken))
-            
-            this.tokenStorage.saveId(decodedToken.nameid);
+            this.tokenStorage.saveId(decodedToken.id);
             this.tokenStorage.saveAuthorities(decodedToken.role);
             this.tokenStorage.saveUsername(decodedToken.name);
             this.tokenStorage.saveToken(response.token)
@@ -55,8 +52,10 @@ export class LoginComponent {
             this.check = response
           }
         },
-        (error: any) => 
-          this.check == error)
+        (error: any) => {
+          console.log(JSON.stringify(error))
+          this.check == error
+        })
     } 
   }
 }

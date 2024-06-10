@@ -24,7 +24,7 @@ export class RegisterComponent {
     private router: Router,
   ) { }
 
-  signUp(): void {
+  public signUp(): void {
     const userRegister: UserRegisterRequest = {
       name: this.userGroup.value.name!,
       email: this.userGroup.value.email!,
@@ -43,6 +43,7 @@ export class RegisterComponent {
           }
         },
         (error: any) => {
+          console.log(error)
           this.check = error
         });
     }

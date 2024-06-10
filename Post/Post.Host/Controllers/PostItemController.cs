@@ -30,20 +30,36 @@ namespace Post.Host.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Add(BasePostItemRequest request)
         {
+            if (request == null)
+            {
+                _logger.LogError("Request is empty");
+                return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
+
+            string? userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("User id is empty");
+                return BadRequest(new GeneralResponse(false, "User is empty"));
+            }
+
             var response = await _postItemService.AddAsync(new PostItemEntity
             {
-                Date = DateTime.Now.Date,
+                Date = DateTime.Now.Date.ToUniversalTime(),
                 Title = request.Title,
                 Content = request.Content,
-                UserId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value,
+                UserId = userId,
                 CategoryId = request.CategoryId,
             });
 
             if (response == null)
+            {
+                _logger.LogError("Post wasn't created");
                 return BadRequest(new GeneralResponse(false, "Post wasn't created"));
+            }
 
             return Ok(new GeneralResponse<int>(true, "Post was created", response.Value!));
         }
@@ -55,7 +71,10 @@ namespace Post.Host.Controllers
         public async Task<IActionResult> Update(UpdatePostItemRequest request)
         {
             if (request == null)
+            {
+                _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
 
             var response = await _postItemService.UpdateAsync(new PostItemEntity
             {
@@ -68,7 +87,10 @@ namespace Post.Host.Controllers
             });
 
             if (response == null)
+            {
+                _logger.LogError($"Post wasn't update, not found id: {request.Id}");
                 return NotFound(new GeneralResponse(false, $"Post wasn't update, not found id: {request.Id}"));
+            }
 
             return Ok(new GeneralResponse<int>(true, "Post was updated", response.Value!));
         }
@@ -80,12 +102,18 @@ namespace Post.Host.Controllers
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
             if (request == null)
+            {
+                _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
 
             var response = await _postItemService.DeleteAsync(request.Id);
 
             if (response == null)
+            {
+                _logger.LogError($"Post wasn't update, not found id: {request.Id}");
                 return NotFound(new GeneralResponse(false, $"Post wasn't update, not found id: {request.Id}"));
+            }
 
             return Ok(new GeneralResponse(true, $"Post was deleted, {response.ToLower()}"));
         }

@@ -14,7 +14,6 @@ namespace Post.Host.Controllers
 {
     [ApiController]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize]
     [Authorize(Roles = AuthRoles.User)]
     public class PostCommentController : ControllerBase
     {
@@ -32,11 +31,13 @@ namespace Post.Host.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Add(BasePostCommentRequest request)
         {
             if (request == null)
+            {
+                _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
 
             var response = await _postCommentService.AddAsync(new PostCommentEntity
             {
@@ -45,7 +46,10 @@ namespace Post.Host.Controllers
             });
 
             if (response == null)
+            {
+                _logger.LogError("Comment wasn't created");
                 return BadRequest(new GeneralResponse(false, "Comment wasn't created"));
+            }
 
             return Ok(new GeneralResponse<int>(true, "Comment was created", response.Value!));
         }
@@ -57,7 +61,10 @@ namespace Post.Host.Controllers
         public async Task<IActionResult> Update(UpdatePostCommentRequest request)
         {
             if (request == null)
+            {
+                _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
 
             var response = await _postCommentService.UpdateAsync(new PostCommentEntity
             {
@@ -67,7 +74,10 @@ namespace Post.Host.Controllers
             });
 
             if (response == null)
+            {
+                _logger.LogError($"Comment wasn't update, not found, id of item: {request.Id}");
                 return NotFound(new GeneralResponse(false, $"Comment wasn't update, not found, id of item: {request.Id}"));
+            }
 
             return Ok(new GeneralResponse<int>(true, "Comment was updated", response.Value!));
         }
@@ -79,12 +89,18 @@ namespace Post.Host.Controllers
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
             if (request == null)
+            {
+                _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
 
             var response = await _postCommentService.DeleteAsync(request.Id);
 
             if (response == null)
-                return NotFound(new GeneralResponse(false, $"Post wasn't update, not found id: {request.Id}"));
+            {
+                _logger.LogError($"Comment wasn't update, not found, id of item: {request.Id}");
+                return NotFound(new GeneralResponse(false, $"Comment wasn't update, not found id: {request.Id}"));
+            }
 
             return Ok(new GeneralResponse(true, $"Post was deleted"));
         }

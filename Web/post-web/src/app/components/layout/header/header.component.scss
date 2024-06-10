@@ -2,34 +2,21 @@
     width: 100%;
 }
 
-@media screen and (max-width: 948px) {
+@media screen and (max-width: 974px) {
     .toolbar {
-        width: 1050px;
+        width: 974px;
     }
 }
 
-@media screen and (max-width: 764px) {
-    .toolbar {
-        width: 854px;
-    }
-    a {
-        margin-right: 8px;
-    }
-}
-
-@media screen and (max-width: 486px) {
-    .toolbar {
-        width: 654px;
-    }
-}
 a {
     margin-right: 10px;
 }
+
 .spacer {
-    flex: 1; /* Займає доступний вільний простір */
+    flex: 1; 
 }
 
 .flex {
     display: flex;
-    align-items: center; /* Вирівнює елементи вертикально */
+    align-items: center;
 }
