@@ -1,4 +1,3 @@
-using Post.Host.Data;
 using Post.Host.Data.Entities;
 
 namespace Post.Host.Data;
@@ -26,7 +25,9 @@ public static class DbInitializer
 	{
 		return new List<PostCategoryEntity>()
 		{
-			new PostCategoryEntity() { Category = "pets" },
+			new PostCategoryEntity() { Category = "Pets" },
+			new PostCategoryEntity() { Category = "Food" },
+			new PostCategoryEntity() { Category = "Cars" }
 		};
 	}
 
@@ -34,7 +35,7 @@ public static class DbInitializer
 	{
 		return new List<PostItemEntity>()
 		{
-			new PostItemEntity { Date = DateTime.Now.Date.ToUniversalTime(), CategoryId = 1, Content = "Super content", UserId = "example", Title = "Super post", Comments = new List<PostCommentEntity>() },
+			new PostItemEntity { Date = DateTime.Now.Date.ToUniversalTime(), CategoryId = 1, Content = "I like cats", UserId = "example", Title = "Cats", Comments = new List<PostCommentEntity>(), UserName = "UserName" },
 		};
 	}
 }

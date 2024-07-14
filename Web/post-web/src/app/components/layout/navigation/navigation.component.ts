@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { User } from '../../../models/User';
-import { TokenStorageService } from '../../../services/token-storage.service';
+import { IUser } from '../../../models/User';
+import { TokenStorageService } from '../../../services/auth/token-storage.service';
 
 @Component({
   selector: 'app-navigation',
@@ -8,7 +8,7 @@ import { TokenStorageService } from '../../../services/token-storage.service';
   styleUrl: './navigation.component.scss'
 })
 export class NavigationComponent {
-  public user?: User
+  public user?: IUser
 
   constructor(private token: TokenStorageService) { }
 

@@ -3,8 +3,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '../../../../services/http.service';
 import { identityServerUrl } from '../../../../urls';
 import { Router } from '@angular/router';
-import { GeneralResponse } from '../../../../models/reponses/GeneralResponse';
-import { UserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
+import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
+import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -18,14 +19,14 @@ export class RegisterComponent {
     password: new FormControl ('', [Validators.required]),
     confirmPassword: new FormControl ('', [Validators.required])
   })
-  public check?: GeneralResponse<null>
+  public check?: IGeneralResponse<null>
 
   constructor(private http: HttpService, 
     private router: Router,
   ) { }
 
   public signUp(): void {
-    const userRegister: UserRegisterRequest = {
+    const userRegister: IUserRegisterRequest = {
       name: this.userGroup.value.name!,
       email: this.userGroup.value.email!,
       password: this.userGroup.value.password!,
@@ -33,8 +34,8 @@ export class RegisterComponent {
     }
 
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
-      this.http.post<UserRegisterRequest, GeneralResponse<null>>(`${identityServerUrl}/account/register`, userRegister)
-        .subscribe((value: GeneralResponse<null>) => {
+      this.http.post<IUserRegisterRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/register`, userRegister)
+        .subscribe((value: IGeneralResponse<null>) => {
           if (value.flag) {
             this.router.navigate(['auth/login'])
           }
@@ -42,9 +43,8 @@ export class RegisterComponent {
             this.check = value
           }
         },
-        (error: any) => {
-          console.log(error)
-          this.check = error
+        (error: HttpErrorResponse) => {
+          this.check = error.error
         });
     }
   }

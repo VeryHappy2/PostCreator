@@ -1,4 +1,4 @@
-export interface UserRegisterRequest {
+export interface IUserRegisterRequest {
     name: string;
     email: string;
     password: string;

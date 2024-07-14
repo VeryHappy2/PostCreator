@@ -1,10 +1,33 @@
 @if (user) {
     <div class="container">
-        <app-menu></app-menu>
+        <app-menu/>
         <div class="content">
-            {{user.name}}
-            {{user.role}}
-            <app-posts></app-posts>
+            Name: {{user.name}}
+            Role: {{user.role}} 
+            @if (posts && user.role !== "Admin") {
+                @if (posts.flag) {
+                    @for (post of posts.data; track post.id) {
+                        <app-user-post [post]="post"/>
+                    }
+                }
+                @else {
+                    {{posts.message}}
+                }
+            }
+            @else {
+                <!-- <input type="text">
+                <mat-form-field class="selecter">
+                    <mat-label>Categories of posts</mat-label>
+                    <mat-select (selectionChange)="onSelectChange($event)">
+                      <mat-option [value]="null">None</mat-option>
+                      @for (category of categories.data; track category.id) {
+                        <mat-option [value]="category.id">{{category.category}}</mat-option>
+                      }
+                    </mat-select>
+                </mat-form-field> -->
+
+                
+            }
         </div>
     </div>
 }

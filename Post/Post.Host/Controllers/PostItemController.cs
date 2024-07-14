@@ -8,6 +8,8 @@ using Post.Host.Models.Responses;
 using Catalog.Host.Models.Requests;
 using IdentityModel;
 using System.Net;
+using System.Security.Claims;
+using Post.Host.Models.Dtos;
 
 namespace Post.Host.Controllers
 {
@@ -39,15 +41,11 @@ namespace Post.Host.Controllers
             }
 
             string? userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
-
-            if (userId == null)
-            {
-                _logger.LogError("User id is empty");
-                return BadRequest(new GeneralResponse(false, "User is empty"));
-            }
+            string? userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
             var response = await _postItemService.AddAsync(new PostItemEntity
             {
+                UserName = userName,
                 Date = DateTime.Now.Date.ToUniversalTime(),
                 Title = request.Title,
                 Content = request.Content,
@@ -76,8 +74,11 @@ namespace Post.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
             }
 
+            string? userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+
             var response = await _postItemService.UpdateAsync(new PostItemEntity
             {
+                UserName = userName,
                 Date = DateTime.Now.Date,
                 Title = request.Title,
                 Content = request.Content,

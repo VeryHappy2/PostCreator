@@ -13,7 +13,6 @@ namespace Post.Host.Services;
 public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffService
 {
     private readonly IMapper _mapper;
-    private readonly IDbContextWrapper<ApplicationDbContext> _dbContextWrapper;
     private readonly IPostBffRepository _postBffRepository;
 
     public PostBffService(
@@ -24,8 +23,20 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
         : base(dbContextWrapper, logger)
     {
         _postBffRepository = postBffRepository;
-        _dbContextWrapper = dbContextWrapper;
         _mapper = mapper;
+    }
+
+    public async Task<List<PostItemDto>?> GetPostsByUserNameAsync(string userName)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var result = await _postBffRepository.GetPostItemsByUserName(userName);
+
+            if (result == null)
+                return null;
+
+            return _mapper.Map<List<PostItemDto>>(result).ToList();
+        });
     }
 
     public async Task<List<PostItemDto>?> GetPostsByUserIdAsync(string userId)
@@ -54,7 +65,7 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
 		});
 	}
 
-    public async Task<PaginatedItemsResponse<PostItemDto>?> GetPostByPageAsync(PageItemRequest pageItemRequest)
+    public async Task<PaginatedResponse<PostItemDto>?> GetPostByPageAsync(PageItemRequest pageItemRequest)
     {
         return await ExecuteSafeAsync(async () =>
 		{
@@ -63,13 +74,14 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
             if (result == null)
                 return null;
 
-            return new PaginatedItemsResponse<PostItemDto>()
+            return new PaginatedResponse<PostItemDto>()
             {
                 Count = result.TotalCount,
                 Data = result.Data.Select(s => _mapper.Map<PostItemDto>(s)).ToList(),
-                Search = pageItemRequest.Search,
+                SearchByTitle = pageItemRequest.SearchByTitle,
                 PageIndex = pageItemRequest.PageIndex,
                 PageSize = pageItemRequest.PageSize,
+                SearchByUserName = pageItemRequest.SearchByUserName,
             };
         });
     }

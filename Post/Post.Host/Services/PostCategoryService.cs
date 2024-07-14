@@ -10,7 +10,6 @@ namespace Post.Host.Services;
 
 public class PostCategoryService : BaseDataService<ApplicationDbContext>, IService<PostCategoryEntity>
 {
-    private readonly IMapper _mapper;
     private readonly IDbContextWrapper<ApplicationDbContext> _dbContextWrapper;
     private readonly IRepository<PostCategoryEntity> _repository;
 
@@ -22,7 +21,6 @@ public class PostCategoryService : BaseDataService<ApplicationDbContext>, IServi
         : base(dbContextWrapper, logger)
     {
         _dbContextWrapper = dbContextWrapper;
-        _mapper = mapper;
         _repository = repository;
     }
 

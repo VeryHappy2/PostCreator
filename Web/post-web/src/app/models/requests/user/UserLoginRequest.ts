@@ -1,4 +1,4 @@
-export interface UserLoginRequest {
+export interface IUserLoginRequest {
     email: string;
     password: string;
 }

@@ -2,10 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '../../../../services/http.service';
 import { postUrl } from '../../../../urls';
-import { PostItemRequest } from '../../../../models/requests/PostItemRequest';
-import { GeneralResponse } from '../../../../models/reponses/GeneralResponse';
-import { PostCategory } from '../../../../models/enities/PostCategory';
+import { IPostItemRequest } from '../../../../models/requests/PostItemRequest';
+import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
+import { IPostCategory } from '../../../../models/enities/PostCategory';
 import { Router } from '@angular/router';
+import { ResponseErrorHandlerService } from '../../../../services/response-error-handler.service';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { MatSelectChange } from '@angular/material/select';
+import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 
 @Component({
   selector: 'app-post-create',
@@ -15,39 +19,45 @@ import { Router } from '@angular/router';
 export class PostCreateComponent implements OnInit {
   public postGroup: FormGroup = new FormGroup ({
     title: new FormControl("", [Validators.required, Validators.maxLength(50)]),
-    categoryId: new FormControl("", [Validators.required]),
-    content: new FormControl("", [Validators.required]),
+    content: new FormControl("", [Validators.required, Validators.maxLength(3000)]),
   })
-  public errorMessage?: string
-  public categories?: GeneralResponse<Array<PostCategory>>
+
+  public errorMessage?: IGeneralResponse<string>
+  public categories?: IGeneralResponse<Array<IPostCategory>>
+  private selectedCategory!: number | null
+
   constructor(
     private http: HttpService,
-    private router: Router) { }
+    private router: Router,
+    private tokenStorage: TokenStorageService) { }
 
   ngOnInit(): void {
-    this.http.get<GeneralResponse<Array<PostCategory>>>(`${postUrl}/postbff/getpostcategories`)
+    this.http.get<IGeneralResponse<Array<IPostCategory>>>(`${postUrl}/postbff/getpostcategories`)
       .subscribe(response => {
         this.categories = response
       },
-    (error: GeneralResponse<Array<PostCategory>>) => console.log(JSON.stringify(error)))
+    (error: IGeneralResponse<Array<IPostCategory>>) => console.log(JSON.stringify(error)))
+  }
+
+  public onSelectChange(eventSelect: MatSelectChange): void {
+    this.selectedCategory = eventSelect.value
   }
 
   public createPost() {
-    let post: PostItemRequest = {
+    let post: IPostItemRequest = {
       title: this.postGroup.value.title,
       content: this.postGroup.value.content,
-      categoryId: this.postGroup.value.categoryId,
+      categoryId: this.selectedCategory
     }
-
-    this.http.post<PostItemRequest, GeneralResponse<number>>(`${postUrl}/postitem/add`, post).subscribe(
-      (response: GeneralResponse<number>) => {
-        if (response.flag && response.data) {
-          this.router.navigateByUrl('post/post-create', {replaceUrl: true})
-        }
-      },
-      (error: GeneralResponse<number>) => {
-        this.errorMessage = error.message;    
+    
+    this.http.post<IPostItemRequest, IGeneralResponse<number>>(`${postUrl}/postitem/add`, post).subscribe(
+    (response: IGeneralResponse<number>) => {
+      if (response.flag && response.data) {
+        this.router.navigateByUrl('user/dashboard', {replaceUrl: true})
       }
-    )
+    },  
+    (error: HttpErrorResponse) => {
+      this.errorMessage = error.error;    
+    })
   }
 }

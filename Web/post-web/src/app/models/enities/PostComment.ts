@@ -1,4 +1,5 @@
-export interface PostComment {
-    id: number;
+export interface IPostComment {
+    id: number | null;
+    postId: number;
     comment: string;
 }

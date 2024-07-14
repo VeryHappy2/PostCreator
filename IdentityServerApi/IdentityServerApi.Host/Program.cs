@@ -1,15 +1,19 @@
-using IdentityServerApi.Host;
 using IdentityServerApi.Host.Configurations;
 using IdentityServerApi.Host.Data;
 using IdentityServerApi.Host.Data.Entities;
-using IdentityServerApi.Host.Models.Contracts;
+using IdentityServerApi.Host.Repositories;
 using IdentityServerApi.Host.Repositories.Interfaces;
+using IdentityServerApi.Host.Services;
+using IdentityServerApi.Host.Services.Interfaces;
 using Infrastructure.Extensions;
 using Infrastructure.Filters;
 using Infrastructure.Identity;
+using Infrastructure.Services.Interfaces;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -18,13 +22,35 @@ builder.Services.AddControllers(options =>
 {
     options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 });
-
-builder.Services.AddSwaggerGen(c =>
+//.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identityserver.API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Identity HTTP API",
+        Version = "v1",
+        Description = "The Identity Service HTTP API",
+    });
+
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter 'Bearer' followed by a space and the JWT",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+    });
+
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-builder.Services.AddTransient<IUserAccountRepository, UserAccountRepository>();
+builder.Services.AddAuthentication()
+  .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddTransient<IUserAccountService, UserAccountService>();
+builder.Services.AddTransient<IUserBffAccountService, UserBffAccountService>();
+builder.Services.AddTransient<IUserBffAccountRepository, UserBffAccountRepository>();
 builder.Services.Configure<IdentityServerApiConfig>(configuration);
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<UserApp, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -33,6 +59,7 @@ builder.Services.AddIdentity<UserApp, IdentityRole>()
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(configuration["ConnectionString"]));
+builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
 
 builder.Services.AddCors(options =>
 {
@@ -49,6 +76,7 @@ builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
 CreateDbIfNotExists(app);
+app.UseCookiePolicy();
 
 app
 .UseSwagger()
@@ -61,8 +89,8 @@ app
 app.UseRouting();
 app.UseCors("CorsPolicy");
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
@@ -71,10 +99,18 @@ app.UseEndpoints(endpoints =>
 });
 
 await AddRolesAsync(app);
-await AddAdminAsync(app);
+
+await AddDefaultAdminAsync(app);
 
 app.Use(async (context, next) =>
 {
+    // if (context.Request.Cookies.ContainsKey("jwt") &&
+    //     !context.Request.Headers.ContainsKey("Authorization"))
+    // {
+    //     var token = context.Request.Cookies["jwt"];
+    //     context.Request.Headers.Add("Authorization", $"Bearer {token}");
+    // }
+
     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
     var id = Guid.NewGuid();
     LogRequest(logger, context.Request, id);
@@ -122,7 +158,7 @@ void LogResponse(ILogger<Program> logger, HttpResponse response, Guid id)
     logger.LogInformation($"Response id: {id}, Status: {response.StatusCode}");
 }
 
-async Task AddAdminAsync(IHost host)
+async Task AddDefaultAdminAsync(IHost host)
 {
     using (var scope = host.Services.CreateScope())
     {
@@ -132,17 +168,17 @@ async Task AddAdminAsync(IHost host)
         {
             var userManager = services.GetRequiredService<UserManager<UserApp>>();
 
-            var adminUserExists = await userManager.FindByEmailAsync("admin@super.com");
+            var adminUserExists = await userManager.FindByEmailAsync("admin124qwc5@gmail.com");
 
             if (adminUserExists == null)
             {
                 var newAdmin = new UserApp()
                 {
                     UserName = "admin",
-                    Email = "admin@super1.com",
+                    Email = "admin124qwc5@gmail.com",
                 };
 
-                var result = await userManager.CreateAsync(newAdmin, "s@dE12upe");
+                var result = await userManager.CreateAsync(newAdmin, "#dc!9cjWkaqEl(&2m");
 
                 if (result.Succeeded)
                 {
@@ -170,9 +206,7 @@ async Task AddRolesAsync(IHost host)
         {
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = { AuthRoles.Admin, AuthRoles.User };
-
-            foreach (var role in roles)
+            foreach (var role in AuthRoles.AllRoles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {

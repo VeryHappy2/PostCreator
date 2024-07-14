@@ -1,0 +1,42 @@
+<h2>Change role</h2>
+<br>
+<form>
+  @if (roles$ | async; as roles) {
+    <mat-form-field>
+      <mat-label>Choose role</mat-label>
+      <mat-select (selectionChange)="onSelectChange($event)">
+        <mat-option>None</mat-option>
+        @for (item of roles.data; track item) {
+          <mat-option [value]="item">{{item}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  <mat-form-field>
+    <mat-label>Search user</mat-label>
+    <input matInput 
+          aria-label="Search user"
+          [matAutocomplete]="auto"
+          [formControl]="userCtrl">
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (user of filteredUsers | async; track user.userName) {
+        <mat-option [value]="user.userName">
+          <span>{{user.userName}}</span> |
+          <small>Role: {{user.roleName}}</small>
+        </mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <button (click)="ChangeRole()">Change</button>
+
+  @if (check) {
+    @if (check.flag) {
+      <p style="color: greenyellow;">{{check.message}}</p>
+    }
+    @else {
+      <p style="color: red;">{{check.message}}</p>
+    }
+  }
+</form>
+<br>

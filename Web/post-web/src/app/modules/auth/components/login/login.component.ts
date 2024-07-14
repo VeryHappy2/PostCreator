@@ -4,11 +4,12 @@ import { HttpService } from '../../../../services/http.service';
 import { identityServerUrl } from '../../../../urls';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JwtService } from '../../services/jwt.service';
-import { TokenStorageService } from '../../../../services/token-storage.service';
+import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 import { Observable } from 'rxjs/internal/Observable';
-import { JwtClaims } from '../../../../models/JwtClaimsResponse';
-import { LogInResponse } from '../../../../models/reponses/LogInResponse';
-import { UserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
+import { IJwtClaims } from '../../../../models/JwtClaimsResponse';
+import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
+import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ export class LoginComponent {
     userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
-  public check?: LogInResponse
+  public check?: ILogInResponse
   public hidePassword = true
   
   constructor(
@@ -30,15 +31,15 @@ export class LoginComponent {
     private tokenStorage: TokenStorageService) { }
 
   public logIn(): void {
-    const user: UserLoginRequest = {
+    const user: IUserLoginRequest = {
       password: this.userGroup.value.password!,
       email: this.userGroup.value.userName!
     };
 
     if (user.email && user.password) {
-      this.http.post<UserLoginRequest, LogInResponse>(`${identityServerUrl}/account/login`, user)
-        .subscribe((response: LogInResponse) => {
-          let decodedToken: JwtClaims | null = this.jwt.decodeToken<JwtClaims>(response.token)
+      this.http.post<IUserLoginRequest, ILogInResponse>(`${identityServerUrl}/account/login`, user)
+        .subscribe((response: ILogInResponse) => {
+          let decodedToken: IJwtClaims | null = this.jwt.decodeToken<IJwtClaims>(response.token)
 
           if (decodedToken) {
             this.tokenStorage.saveId(decodedToken.id);
@@ -46,15 +47,14 @@ export class LoginComponent {
             this.tokenStorage.saveUsername(decodedToken.name);
             this.tokenStorage.saveToken(response.token)
 
-            this.router.navigate([`user/dashboard`])
+            this.router.navigate([`${decodedToken.role.toLowerCase()}/dashboard`])
           }
           else {
             this.check = response
           }
         },
-        (error: any) => {
-          console.log(JSON.stringify(error))
-          this.check == error
+        (error: HttpErrorResponse) => {
+          this.check = error.error
         })
     } 
   }

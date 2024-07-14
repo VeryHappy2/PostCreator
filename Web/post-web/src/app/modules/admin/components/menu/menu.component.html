@@ -1,0 +1,8 @@
+<div class="menu">
+  <ul [routerLink]="['/admin/dashboard']" [routerLinkActive]="['active']">
+    <li>Dashboard</li>
+  </ul>
+  <ul (click)="signOut()">
+    <li>Exit</li>
+  </ul>
+</div>

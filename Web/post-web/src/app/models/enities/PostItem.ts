@@ -1,13 +1,14 @@
-import { PostCategory } from "./PostCategory";
-import { PostComment } from "./PostComment";
+import { IPostCategory } from "./PostCategory";
+import { IPostComment } from "./PostComment";
 
 
-export interface PostItem {
+export interface IPostItem {
     id: number;
+    userName: string;
     title: string;
     userId: string;
     content: string;
     date: string;
-    comments: Array<PostComment>;
-    category: PostCategory;
+    comments: Array<IPostComment> | null;
+    category: IPostCategory;
 }

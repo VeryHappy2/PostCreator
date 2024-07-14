@@ -1,5 +1,5 @@
 @if (user){
-    <a mat-stroked-button [routerLink]="['user/dashboard']">{{user.name}}</a>
+    <a mat-stroked-button [routerLink]="[user.role?.toLowerCase() + '/dashboard']">{{user.name}}</a>
 }
 @else {
     <div class="flex">

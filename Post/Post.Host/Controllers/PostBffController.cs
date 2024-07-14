@@ -29,6 +29,29 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<List<PostItemDto>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetPostItemsByUserName(string userName)
+        {
+            if (string.IsNullOrEmpty(userName))
+            {
+                _logger.LogError("Request is empty");
+                return BadRequest(new GeneralResponse(false, "User name is empty"));
+            }
+
+            var posts = await _postBffService.GetPostsByUserNameAsync(userName);
+
+            if (posts == null)
+            {
+                _logger.LogError($"The {userName} didn't find");
+                return NotFound(new GeneralResponse(false, $"The {userName} didn't find"));
+            }
+
+            return Ok(new GeneralResponse<List<PostItemDto>>(true, "Successfully", posts));
+        }
+
+        [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse<PostItemDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
@@ -81,7 +104,7 @@ namespace Post.Host.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(GeneralResponse<PaginatedItemsResponse<PostItemDto>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse<PaginatedResponse<PostItemDto>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetPostsByPage(PageItemRequest request)
         {
             if (request is null)
@@ -94,35 +117,11 @@ namespace Post.Host.Controllers
 
             if (result == null)
             {
-                _logger.LogError($"Not found any posts.\nPage size: {request.PageSize}.\nPage index: {request.PageIndex}\nSearch: {request.Search}\nCategory filter: {request.CategoryFilter}");
+                _logger.LogError($"Not found any posts.\nPage size: {request.PageSize}.\nPage index: {request.PageIndex}\nSearch: {request.SearchByTitle}\nCategory filter: {request.CategoryFilter}");
                 return NotFound(new GeneralResponse(false, $"Not found any posts"));
             }
 
-            return Ok(new GeneralResponse<PaginatedItemsResponse<PostItemDto>>(true, "Successfully", result));
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(GeneralResponse<List<PostItemDto>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetPostsByUserId(ByIdRequest<string> request)
-        {
-            if (request == null)
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "User id is empty"));
-            }
-
-            var result = await _postBffService.GetPostsByUserIdAsync(request.Id);
-
-            if (result == null)
-            {
-                _logger.LogError($"{request.Id} wasn't found");
-                return NotFound(new GeneralResponse(false, $"User id: {request} wasn't found any posts"));
-            }
-
-            return Ok(new GeneralResponse<List<PostItemDto>>(true, "Successfully", result));
+            return Ok(new GeneralResponse<PaginatedResponse<PostItemDto>>(true, "Successfully", result));
         }
 
         [HttpGet]

@@ -6,8 +6,19 @@
               aria-label="Select page">
 </mat-paginator>
 
+<div>
+  <input maxlength="50" placeholder="Search by the title" size="34" [formControl]="searchByTitle" (keydown.enter)="onSearchByTitle()">
+  <button (click)="onSearchByTitle()" class="search">Search</button>
+</div>
+
+<div>
+  <input maxlength="50" placeholder="Search by the user name" size="34" [formControl]="searchByUserName" (keydown.enter)="onSearchByUserName()">
+  <button (click)="onSearchByUserName()" class="search">Search</button>
+</div>
+
+
 @if (categories$ | async; as categories) {
-  <mat-form-field class="selecter">
+  <mat-form-field class="selecter" style="margin-left: 8px;">
     <mat-label>Categories of posts</mat-label>
     <mat-select (selectionChange)="onSelectChange($event)">
       <mat-option [value]="null">None</mat-option>
@@ -22,22 +33,23 @@
 }
 
 <mat-grid-list cols="4" rowHeight="3:3">
-  @if(pageItemResponse){
-    @for (item of pageItemResponse.data?.data; track item.id) {
+  @if(pageItemResponse | async; as page){
+    @for (item of page.data?.data; track item.id) {
       <mat-grid-tile [colspan]="1" [rowspan]="1">
         <div class="card">
-          <div class="card-title">
-            {{item.title}}
-            {{item.date}}
-          </div>
-          <div class="card-content">
-            {{item.category}}
-          </div>
-          <div>
-            <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
-          </div>
+            <div class="card-title">
+                Created by: {{item.userName}}
+                <p>{{item.title}}</p>
+                Created at: {{item.date}}
+            </div>
+            <div class="card-content">
+                Catagory: {{item.category.category}}
+            </div>
+            <div>
+                <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
+            </div>
         </div>
-      </mat-grid-tile> 
+    </mat-grid-tile> 
     }
   }
   @else {

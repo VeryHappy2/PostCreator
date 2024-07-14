@@ -1,36 +1,28 @@
 <app-menu/>
 
-
-
 <div [formGroup]="postGroup">
     @if (categories) {
         <p>Category</p>
-        <p>Recommened choose some category but it isn't required</p>
-        <mat-form-field formControlName="categoryId" class="selecter">
+        <mat-form-field class="selecter">
             <mat-label>Categories of posts</mat-label>
-            <mat-select>
-            <mat-option [value]="null">None</mat-option>
-            @for (category of categories.data; track category.id) {
+            <mat-select (selectionChange)="onSelectChange($event)">
+              <mat-option [value]="null">None</mat-option>
+              @for (category of categories.data; track category.id) {
                 <mat-option [value]="category.id">{{category.category}}</mat-option>
-            }
+              }
             </mat-select>
-        </mat-form-field>
+          </mat-form-field>
     }
     @else {
-        Not found any categories
+      Not found any categories
     }
     <p>Title</p>
-    <mat-form-field>
-        <mat-label>Your title</mat-label>
-        <input matInput formControlName="title" placeholder="Title" maxlength="50" > 
-    </mat-form-field>
+    <textarea class="title-area" formControlName="title" maxlength="50"></textarea>
+
     <p>Content</p>
-    <mat-form-field>
-        <mat-label>Your content</mat-label>
-        <input matInput formControlName="content" placeholder="Content" maxlength="3000" style="height: auto; width: auto;"> 
-    </mat-form-field>
+    <textarea class="content-area" formControlName="content" maxlength="3000"></textarea>
 </div>
 <button mat-button (click)="createPost()">Create post</button>
-@if (errorMessage) {
-    <p><b style="color:rgb(236, 0, 0);">{{errorMessage}}</b></p>
+@if (!errorMessage?.flag && errorMessage) {
+  <p><b style="color:rgb(236, 0, 0);">{{errorMessage.message}}</b></p>
 }

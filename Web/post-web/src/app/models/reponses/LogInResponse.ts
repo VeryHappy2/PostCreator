@@ -1,4 +1,4 @@
-export interface LogInResponse {
+export interface ILogInResponse {
     flag?: boolean
     message?: string
     token: string 

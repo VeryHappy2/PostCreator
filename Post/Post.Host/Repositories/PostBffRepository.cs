@@ -1,7 +1,6 @@
 ﻿using Catalog.Host.Models.Requests;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Post.Host.Data;
 using Post.Host.Data.Entities;
@@ -23,10 +22,21 @@ namespace Post.Host.Repositories
         }
 
         public async Task<PostItemEntity?> GetPostByIdAsync(int id)
-            => await _dbContext.PostItemEntity.FindAsync(id);
+        {
+            return await _dbContext.PostItemEntity
+                .Include(x => x.Category)
+                .Include(x => x.Comments)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<List<PostItemEntity>?> GetPostsByUserIdAsync(string userId)
-            => _dbContext.PostItemEntity.Where(x => x.UserId == userId).ToList();
+        {
+            return await _dbContext.PostItemEntity
+                .Include(x => x.Category)
+                .Include(y => y.Comments)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+        }
 
         public async Task<List<PostCategoryEntity>> GetPostCategoriesAsync()
             => await _dbContext.PostCategoryEntity.ToListAsync();
@@ -40,25 +50,38 @@ namespace Post.Host.Repositories
                 query = query.Where(w => w.CategoryId == pageItemRequest.CategoryFilter.Value);
             }
 
-            if (!string.IsNullOrEmpty(pageItemRequest.Search))
+            if (!string.IsNullOrEmpty(pageItemRequest.SearchByTitle))
             {
-                pageItemRequest.Search.ToLower();
-                query = query.Where(w => w.Title.ToLower().Contains(pageItemRequest.Search));
+                pageItemRequest.SearchByTitle.ToLower();
+                query = query.Where(w => w.Title.ToLower().Contains(pageItemRequest.SearchByTitle));
+            }
+
+            if (!string.IsNullOrEmpty(pageItemRequest.SearchByUserName))
+            {
+                pageItemRequest.SearchByUserName.ToLower();
+                query = query.Where(w => w.UserName.ToLower().Contains(pageItemRequest.SearchByUserName));
             }
 
             var totalItems = await query.LongCountAsync();
 
             var itemsOnPage = await query.OrderByDescending(c => c.Date)
-            .Include(i => i.Category)
-            .Include(i => i.Comments)
-            .Skip(pageItemRequest.PageSize * pageItemRequest.PageIndex)
-            .Take(pageItemRequest.PageSize)
-            .ToListAsync();
+                .Include(i => i.Category)
+                .Include(i => i.Comments)
+                .Skip(pageItemRequest.PageSize * pageItemRequest.PageIndex)
+                .Take(pageItemRequest.PageSize)
+                .ToListAsync();
 
             foreach (var item in itemsOnPage)
                 _logger.LogInformation($"Data of item:" + JsonConvert.SerializeObject(item));
 
             return new PaginatedItems<PostItemEntity>() { TotalCount = totalItems, Data = itemsOnPage };
+        }
+
+        public async Task<List<PostItemEntity>> GetPostItemsByUserName(string userName)
+        {
+            return await _dbContext.PostItemEntity
+                .Where(x => x.UserName == userName)
+                .ToListAsync();
         }
     }
 }

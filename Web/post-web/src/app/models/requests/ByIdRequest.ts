@@ -1,3 +1,3 @@
-export interface ByIdRequest<T> {
+export interface IByIdRequest<T> {
     id: T;
 }

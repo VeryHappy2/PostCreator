@@ -1,8 +1,11 @@
 <div class="menu">
-  <ul>
-    <li><a [routerLink]="['/post/post-create']" [routerLinkActive]="['active']">To create the post</a></li>
+  <ul [routerLink]="['/post/post-create']" [routerLinkActive]="['active']">
+    <li>Dashboard</li>
   </ul>
-    <ul>
-        <li><a (click)="signOut()">Exit</a></li>
-    </ul>
+  <ul [routerLink]="['/user/dashboard']" [routerLinkActive]="['active']">
+    <li>Dashboard</li>
+  </ul>
+  <ul (click)="signOut()">
+    <li>Exit</li>
+  </ul>
 </div>

@@ -1,4 +1,4 @@
-export interface PaginatedItemsResponse<T> {
+export interface IPaginatedItemsResponse<T> {
     pageIndex: number;
     pageSize: number;
     search: string | null;

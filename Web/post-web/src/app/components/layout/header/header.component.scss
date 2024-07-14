@@ -1,10 +1,11 @@
+@import "./../../../../styles.scss";
 .toolbar{
     width: 100%;
 }
 
-@media screen and (max-width: 974px) {
+@media screen and (max-width: $minWidth) {
     .toolbar {
-        width: 974px;
+        width: $minWidth;
     }
 }
 

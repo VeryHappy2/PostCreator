@@ -1,5 +1,5 @@
-export interface PostItemRequest {
+export interface IPostItemRequest {
     title: string;
     content: string;
-    categoryId: number;
+    categoryId: number | null;
 }

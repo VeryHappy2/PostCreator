@@ -1,0 +1,12 @@
+@if (user) {
+    <div class="container">
+        <app-menu/>
+        <div class="content">
+            Name: {{user.name}}
+            Role: {{user.role}} 
+            <app-change-role/>
+            <app-delete-user/>
+        </div>
+    </div>
+}
+

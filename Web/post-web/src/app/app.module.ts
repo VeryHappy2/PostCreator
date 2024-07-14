@@ -10,12 +10,15 @@ import { HeaderComponent } from './components/layout/header/header.component';
 import { NavigationComponent } from './components/layout/navigation/navigation.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorComponent } from './components/error/error.component';
+import { Interceptor, httpInterceptorProviders } from './services/interceptor.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     NavigationComponent,
+    ErrorComponent,
   ],
   imports: [
     HttpClientModule,
@@ -27,6 +30,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule
   ],
   providers: [
+    httpInterceptorProviders,
     provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent]

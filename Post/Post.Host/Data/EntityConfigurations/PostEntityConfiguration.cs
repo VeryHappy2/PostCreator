@@ -20,6 +20,9 @@ public class PostEntityConfiguration
         builder.Property(ci => ci.UserId)
             .IsRequired();
 
+        builder.Property(c => c.UserName)
+            .IsRequired();
+
         builder.Property(ci => ci.Date)
             .IsRequired();
 

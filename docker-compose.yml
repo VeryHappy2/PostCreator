@@ -2,18 +2,21 @@ version: '3.8'
 
 services:
   web.angular:
+    image: nginx
     container_name: lde.web.angular
     build:
       context: .
       dockerfile: Web/post-web/Dockerfile
     environment:
       - ANGULAR_ENVIRONMENT=Development
-      - ANGULAR_URLS=http://+:5102
+    volumes:
+      - ./Proxy/gateway/nginx/conf.d:/etc/nginx/conf.d
+      - ./Web/post-web/dist:/usr/share/nginx/html
     depends_on:
       - post.api
       - identityserver.api
     ports:
-      - 5102:5102
+      - 80:80
   identityserver.api:
     container_name: lde.identityserver.api
     build:
@@ -22,7 +25,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5100
-      - AngularUrl=http://www.alevelwebsite.com
       - PostApi=http://www.postcreator.com:5101
       - BasketApi=http://www.alevelwebsite.com:5003
       - OrderApi=http://www.alevelwebsite.com:5004 
@@ -70,16 +72,6 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5433:5432   
-  nginx:
-    image: nginx
-    container_name: lde.nginx
-    ports:
-      - 80:80
-    volumes:
-      - ./Web/post-web/dist:/usr/share/nginx/html 
-      - ./Proxy/gateway/nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - web.angular  
 networks:
   default:
     driver: bridge

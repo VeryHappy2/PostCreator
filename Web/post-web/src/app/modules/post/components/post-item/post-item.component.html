@@ -1,20 +1,28 @@
 @if (post$ | async; as post) {
     <button mat-flat-button (click)="back()">To back</button>
-    <h1>{{post.data?.title}}</h1>
-    <mat-divider/>
-    <h2>{{post.data?.date}}</h2>
-    <mat-divider/>
-    <h3>{{post.data?.category?.category}}</h3>
-    <mat-divider/>
-    <p>{{post.data?.content}}</p>
-    <mat-divider/>
-    @if (post.data?.comments) {
-        @for (comment of post.data?.comments; track comment.id) 
-        {
-            <mat-list-item>{{comment.comment}}</mat-list-item>
-            <mat-divider></mat-divider>
+    <div>
+        <h1>{{post.data?.userName}}</h1>
+        <hr>
+        <h2>{{post.data?.title}}</h2>
+        <hr>
+        <h3>{{post.data?.date}}</h3>
+        <hr>
+        <h4>{{post.data?.category?.category}}</h4>
+        <hr>
+        <p>{{post.data?.content}}</p>       
+        <hr>
+        <div [formGroup]="commentFormGroup">
+            <input formControlName="comment" class="input-comment">
+            <button (click)="addComment()">To add a comment</button>
+        </div>
+        @if (post.data?.comments) {
+            @for (comment of post.data?.comments; track comment.id) 
+            {
+                <mat-list-item>{{comment.comment}}</mat-list-item>
+                <hr>
+            }
         }
-    }
+    </div>
 }
 @else {
     <p>Not found</p>

@@ -1,32 +1,43 @@
-﻿using IdentityServerApi.Host.Data.Entities;
+﻿using System.Net;
+using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Requests;
 using IdentityServerApi.Host.Models.Responses;
-using IdentityServerApi.Host.Repositories.Interfaces;
+using IdentityServerApi.Host.Services.Interfaces;
 using Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Newtonsoft.Json;
 
 namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
+    [Authorize(Roles = AuthRoles.Admin)]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize]
-    public class AccountController(
-        IUserAccountRepository userAccount,
-        SignInManager<UserApp> signInManager) : ControllerBase
+    public class AccountController : ControllerBase
     {
+        private readonly IUserAccountService _userAccountRepository;
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(
+            IUserAccountService userAccountRepository,
+            ILogger<AccountController> logger)
+        {
+            _userAccountRepository = userAccountRepository;
+            _logger = logger;
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Register(UserRequest userRequest)
         {
-            var response = await userAccount.CreateUserAccountAsync(userRequest);
+            var response = await _userAccountRepository.CreateUserAccountAsync(userRequest);
             if (!response.Flag)
+            {
+                _logger.LogError(JsonConvert.SerializeObject(response.Message));
                 return BadRequest(response);
+            }
 
             return Ok(response);
         }
@@ -37,43 +48,82 @@ namespace IdentityServerApi.Host.Controllers
         [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            var response = await userAccount.LoginAccountAsync(loginRequest);
+            var response = await _userAccountRepository.LoginAccountAsync(loginRequest);
+
             if (!response.Flag)
+            {
+                _logger.LogError(JsonConvert.SerializeObject(response));
                 return BadRequest(response);
+            }
+
+            // var cookieOptions = new CookieOptions
+            // {
+            //     HttpOnly = true,
+            //     SameSite = SameSiteMode.Strict,
+            //     Expires = DateTime.UtcNow.AddMinutes(60)
+            // };
+
+            // Response.Cookies.Append("jwt", response.Token, cookieOptions);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(GeneralResponse<List<string>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetRoles()
+        {
+            var response = await _userAccountRepository.GetRoles();
+
+            if (!response.Flag)
+            {
+                _logger.LogError(JsonConvert.SerializeObject(response));
+                return BadRequest(response);
+            }
 
             return Ok(response);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> LogOut()
-        {
-            await signInManager.SignOutAsync();
-            return Ok(new GeneralResponse(true, "User signed out"));
-        }
-
-        [HttpPost]
-        [Authorize(Roles = AuthRoles.Admin)]
-        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddRoleToAccount(RoleRequest roleRequest)
+        public async Task<IActionResult> ChangeRole(RoleRequest roleRequest)
         {
-            var response = await userAccount.AddRoleAccountAsync(roleRequest);
+            if (roleRequest == null)
+            {
+                _logger.LogError("Request is empty");
+                return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
+
+            var response = await _userAccountRepository.ChangeRoleAccountAsync(roleRequest);
+
             if (!response.Flag)
+            {
+                _logger.LogError(response.Message);
                 return BadRequest(response);
+            }
 
             return Ok(response);
         }
 
         [HttpPost]
-        [Authorize(Roles = AuthRoles.Admin)]
-        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RemoveRoleFromAccount(RoleRequest roleRequest)
+        public async Task<IActionResult> Delete(string userName)
         {
-            var response = await userAccount.RemoveRoleAccountAsync(roleRequest);
+            if (string.IsNullOrEmpty(userName))
+            {
+                _logger.LogError("Request is empty");
+                return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
+
+            var response = await _userAccountRepository.DeleteUserAccountAsync(userName);
+
             if (!response.Flag)
+            {
+                _logger.LogError(response.Message);
                 return BadRequest(response);
+            }
 
             return Ok(response);
         }

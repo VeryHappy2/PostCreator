@@ -1,4 +1,4 @@
-export interface PostCategory {
+export interface IPostCategory {
     id: number;
     category: string;
 }
