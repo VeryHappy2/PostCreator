@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { HttpService } from '../http.service';
+import { identityServerUrl } from '../../urls';
+import { IUser } from '../../models/User';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
-const TOKEN_KEY = 'authtoken';
 const ID_KEY = "authid"
 const USERNAME_KEY = "authusername";
 const AUTHORITIES_KEY = "authauthorities";
@@ -10,43 +13,61 @@ const AUTHORITIES_KEY = "authauthorities";
 })
 
 export class TokenStorageService {
-  public signOut() {
-    window.sessionStorage.clear();
-  }
+  private userSub = new BehaviorSubject<IUser>({
+    id: this.getId(),
+    name: this.getUsername(),
+    role: this.getRole()
+  });
 
-  public saveToken(token: string) {
-    window.sessionStorage.removeItem(TOKEN_KEY);
-    window.sessionStorage.setItem(TOKEN_KEY, token);
+  public user$ = this.userSub.asObservable();
+  
+  constructor(private http: HttpService) { }
+
+  public signOut() {
+    this.deleteLocalStorageData()
+    this.http.post(`${identityServerUrl}/account/logout`, null).subscribe((resp) => console.log(resp));
   }
 
   public saveId(id: string) {
-    window.sessionStorage.removeItem(ID_KEY);
-    window.sessionStorage.setItem(ID_KEY, id);
+    localStorage.removeItem(ID_KEY);
+    localStorage.setItem(ID_KEY, id);
+    this.updateUser();
   }
   
   public saveUsername(username: string): void {
-    window.sessionStorage.removeItem(USERNAME_KEY);
-    window.sessionStorage.setItem(USERNAME_KEY, username);
+    localStorage.removeItem(USERNAME_KEY);
+    localStorage.setItem(USERNAME_KEY, username);
+    this.updateUser();
   }
 
-  public saveAuthorities(authorities: string) {
-    window.sessionStorage.removeItem(AUTHORITIES_KEY);
-    window.sessionStorage.setItem(AUTHORITIES_KEY, authorities);
+  public saveRole(role: string): void {
+    localStorage.removeItem(AUTHORITIES_KEY)
+    localStorage.setItem(AUTHORITIES_KEY, role)
+    this.updateUser();
+  }
+
+  public getRole() {
+    return localStorage.getItem(AUTHORITIES_KEY)
   }
 
   public getId() {
-    return window.sessionStorage.getItem(ID_KEY)
+    return localStorage.getItem(ID_KEY)
   }
   
   public getUsername(): string | null {
-    return sessionStorage.getItem(USERNAME_KEY);
+    return localStorage.getItem(USERNAME_KEY);
   }
 
-  public getToken(): string | null {
-    return window.sessionStorage.getItem(TOKEN_KEY);
+  public deleteLocalStorageData() {
+    localStorage.clear();
+    this.updateUser();
   }
 
-  public getAuthorities(): string | null {
-    return window.sessionStorage.getItem(AUTHORITIES_KEY)
+  private updateUser() {
+    this.userSub.next({
+      id: this.getId(),
+      name: this.getUsername(),
+      role: this.getRole()
+    });
   }
 }

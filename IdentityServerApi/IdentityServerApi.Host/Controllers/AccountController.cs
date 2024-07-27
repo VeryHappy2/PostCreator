@@ -1,8 +1,8 @@
 ﻿using System.Net;
-using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Requests;
 using IdentityServerApi.Host.Models.Responses;
 using IdentityServerApi.Host.Services.Interfaces;
+using IdentityServerApi.Models;
 using Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
-    [Authorize(Roles = AuthRoles.Admin)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class AccountController : ControllerBase
     {
@@ -44,10 +43,16 @@ namespace IdentityServerApi.Host.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse<UserLoginResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
+            if (Request.Cookies.ContainsKey("token"))
+            {
+                _logger.LogError("You're already logged in");
+                return BadRequest(new GeneralResponse(false, "You're already logged in"));
+            }
+
             var response = await _userAccountRepository.LoginAccountAsync(loginRequest);
 
             if (!response.Flag)
@@ -56,19 +61,36 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(response);
             }
 
-            // var cookieOptions = new CookieOptions
-            // {
-            //     HttpOnly = true,
-            //     SameSite = SameSiteMode.Strict,
-            //     Expires = DateTime.UtcNow.AddMinutes(60)
-            // };
+            var tokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddMinutes(60),
+            };
 
-            // Response.Cookies.Append("jwt", response.Token, cookieOptions);
+            Response.Cookies.Append("token", response.Token, tokenCookieOptions);
 
-            return Ok(response);
+            return Ok(new GeneralResponse<UserLoginResponse>(true, response.Message, new UserLoginResponse
+            {
+                Id = response.User.Id,
+                UserName = response.User.UserName,
+                Role = response.User.Role,
+            }));
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> LogOut()
+        {
+            Response.Cookies.Delete("token");
+
+            return Ok(new GeneralResponse(true, "Exited"));
         }
 
         [HttpGet]
+        [Authorize(Roles = AuthRoles.Admin)]
         [ProducesResponseType(typeof(GeneralResponse<List<string>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetRoles()
@@ -85,6 +107,7 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthRoles.Admin)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ChangeRole(RoleRequest roleRequest)
@@ -107,17 +130,18 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthRoles.Admin)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Delete(string userName)
+        public async Task<IActionResult> Delete(ByNameRequest<string> userName)
         {
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName.Name))
             {
                 _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
             }
 
-            var response = await _userAccountRepository.DeleteUserAccountAsync(userName);
+            var response = await _userAccountRepository.DeleteUserAccountAsync(userName.Name);
 
             if (!response.Flag)
             {

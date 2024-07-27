@@ -1,8 +1,8 @@
 <h2>Change role</h2>
-<br>
+
 <form>
   @if (roles$ | async; as roles) {
-    <mat-form-field>
+    <mat-form-field style="margin-right: 6px;">
       <mat-label>Choose role</mat-label>
       <mat-select (selectionChange)="onSelectChange($event)">
         <mat-option>None</mat-option>
@@ -12,7 +12,7 @@
       </mat-select>
     </mat-form-field>
   }
-  <mat-form-field>
+  <mat-form-field style="margin: 6px;"> 
     <mat-label>Search user</mat-label>
     <input matInput 
           aria-label="Search user"
@@ -28,15 +28,10 @@
     </mat-autocomplete>
   </mat-form-field>
 
-  <button (click)="ChangeRole()">Change</button>
-
+  <button (click)="changeRole()">Change</button>
   @if (check) {
-    @if (check.flag) {
-      <p style="color: greenyellow;">{{check.message}}</p>
-    }
-    @else {
-      <p style="color: red;">{{check.message}}</p>
-    }
+    <p [style.color]="check.flag ? 'greenyellow' : 'red'">
+      {{ check.message }}
+    </p>
   }
 </form>
-<br>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 import { IUser } from '../../../../models/User';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -6,36 +6,34 @@ import { IPostItem } from '../../../../models/enities/PostItem';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { postUrl } from '../../../../urls';
 import { HttpService } from '../../../../services/http.service';
-import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-main',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   public user?: IUser
   public posts?: IGeneralResponse<Array<IPostItem>>
+  private userSub?: Subscription
   constructor(
     private tokenStorage: TokenStorageService,
     private http: HttpService
   ) { }
 
   ngOnInit(): void {
-    this.user = {
-      name: this.tokenStorage.getUsername(),
-      role: this.tokenStorage.getAuthorities(),
-      token: null
-    }
+    this.userSub = this.tokenStorage.user$.subscribe((user) => this.user = user)
 
-    let userId: IByIdRequest<string | null> = {
-      id: this.tokenStorage.getId()
-    }
-
-    this.http.post<IByIdRequest<string | null>, IGeneralResponse<Array<IPostItem>>>(`${postUrl}/postbff/getpostsbyuserid`, userId).subscribe(
+    this.http.get<IGeneralResponse<Array<IPostItem>>>(`${postUrl}/postbff/getpostsbyownuserid`).subscribe(
       (response: IGeneralResponse<Array<IPostItem>>) => this.posts = response,
       (error: HttpErrorResponse) => this.posts = error.error)
-    console.log(JSON.stringify)
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe()
+    }
   }
 }
 

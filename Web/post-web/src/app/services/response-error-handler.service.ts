@@ -1,13 +1,16 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { TokenStorageService } from './auth/token-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResponseErrorHandlerService {
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private tokenStorage: TokenStorageService) { }
 
   public errorHandlers: { [key: number]: () => void } = {
     [HttpStatusCode.BadRequest]: () => this.Handle400(),
@@ -17,6 +20,7 @@ export class ResponseErrorHandlerService {
 
   public Handle401(message: string = "Unauthorized") {
     console.error(JSON.stringify(message))
+    this.tokenStorage.deleteLocalStorageData()
     this.router.navigate([`auth/login`])
   }
 

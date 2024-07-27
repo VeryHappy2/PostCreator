@@ -5,11 +5,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { AuthRoutingModule } from './auth-routing.module';
-import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CommonModule } from '@angular/common';
-import { JwtService } from './services/jwt.service';
 import { MatIconModule } from '@angular/material/icon';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -27,8 +26,5 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatIconModule
   ],
-  providers: [
-    JwtService
-  ]
 })
 export class AuthModule { }

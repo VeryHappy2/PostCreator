@@ -1,3 +1,3 @@
-export interface ByNameRequest<T> {
+export interface IByNameRequest<T> {
     name: T
 }

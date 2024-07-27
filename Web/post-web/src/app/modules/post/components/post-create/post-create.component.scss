@@ -26,13 +26,13 @@ div {
 }
 .title-area {
     width: 202px;
-    height: 86px;
+    min-height: 86px;
     font-size: 20px;
 }
 
 .content-area {
-    width: 324px;
-    height: 154px;
+    width: 468px;
+    min-height: 154px;
     font-size: 10;
     margin-bottom: 4px;
 }

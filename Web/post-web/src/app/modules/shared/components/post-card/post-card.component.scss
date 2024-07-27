@@ -1,0 +1,16 @@
+.card-title {
+    color: black;
+    font-size: 14px;
+    padding-bottom: 6px;
+}
+.card-content {
+    flex-grow: 1;
+    padding-bottom: 6px;
+}
+
+a {
+    cursor: pointer;
+    :hover{
+        text-decoration: underline;
+    }
+}

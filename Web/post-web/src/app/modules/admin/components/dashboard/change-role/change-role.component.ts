@@ -4,12 +4,11 @@ import { identityServerUrl } from '../../../../../urls';
 import { map, Observable } from 'rxjs';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { MatSelectChange } from '@angular/material/select';
-import { ChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
+import { IChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
-import { IUserResponse } from '../../../../../models/reponses/UserResponse';
-import { IByIdRequest } from '../../../../../models/requests/ByIdRequest';
-import { ByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
+import { ISearchAdminUserResponse } from '../../../../../models/reponses/SearchAdminUserResponse';
+import { IByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
 
 @Component({
   selector: 'app-change-role',
@@ -17,12 +16,12 @@ import { ByNameRequest } from '../../../../../models/requests/user/ByNameRequest
   styleUrl: './change-role.component.scss'
 })
 export class ChangeRoleComponent implements OnInit {
-  roles$?: Observable<IGeneralResponse<Array<string>>>
-  changeRoleRequest?: ChangeRoleRequest
-  selectedRole?: string
-  check?: IGeneralResponse<null>
-  userCtrl = new FormControl('')
-  filteredUsers?: Observable<Array<IUserResponse>>
+  public roles$?: Observable<IGeneralResponse<Array<string>>>
+  public changeRoleRequest?: IChangeRoleRequest
+  public selectedRole?: string
+  public check?: IGeneralResponse<null>
+  public userCtrl = new FormControl('')
+  public filteredUsers?: Observable<Array<ISearchAdminUserResponse>>
 
   constructor(private http: HttpService) { }
 
@@ -33,14 +32,14 @@ export class ChangeRoleComponent implements OnInit {
     });
   }
 
-  public ChangeRole() {
+  public changeRole() {
     if (this.selectedRole && this.userCtrl.value) {
-      let request: ChangeRoleRequest = {
+      let request: IChangeRoleRequest = {
         role: this.selectedRole,
         userName: this.userCtrl.value
       }
       
-      this.http.post<ChangeRoleRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/changerole`, request)
+      this.http.post<IChangeRoleRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/changerole`, request)
       .subscribe((value: IGeneralResponse<null>) => this.check = value,
       (error: HttpErrorResponse) => this.check = error.error)
     }
@@ -51,8 +50,10 @@ export class ChangeRoleComponent implements OnInit {
   }
 
   private onUserNameChange(userName: string | null) {
-    const request: ByNameRequest<string | null> = {name: userName}
-    this.filteredUsers = this.http.post<ByNameRequest<string | null>, IGeneralResponse<Array<IUserResponse>>>(`${identityServerUrl}/accountbff/searchbyname`, request).pipe(
+    const request: IByNameRequest<string | null> = {
+      name: userName
+    }
+    this.filteredUsers = this.http.post<IByNameRequest<string | null>, IGeneralResponse<Array<ISearchAdminUserResponse>>>(`${identityServerUrl}/accountbff/searchbynameadmin`, request).pipe(
       map(response => response.data || [])
     );
   }

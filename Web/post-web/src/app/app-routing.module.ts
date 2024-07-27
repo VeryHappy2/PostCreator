@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NoPageComponent } from './components/no-page/no-page.component';
 import { ErrorComponent } from './components/error/error.component';
-import { AuthUserGuardService } from './services/auth/auth-user-guard.service';
-import { AuthAdminGuardService } from './services/auth/auth-admin-guard.service';
 
 const routes: Routes = [
   {
@@ -26,12 +24,10 @@ const routes: Routes = [
   {
     path: "user",
     loadChildren: () => import("./modules/user/user.module").then((m) => m.UserModule),
-    canActivate: [AuthUserGuardService]
   },
   {
     path: "admin",
     loadChildren: () => import("./modules/admin/admin.module").then((m) => m.AdminModule),
-    canActivate: [AuthAdminGuardService]
   },
   {
     path: "error",

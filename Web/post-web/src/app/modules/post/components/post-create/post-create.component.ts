@@ -6,10 +6,10 @@ import { IPostItemRequest } from '../../../../models/requests/PostItemRequest';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IPostCategory } from '../../../../models/enities/PostCategory';
 import { Router } from '@angular/router';
-import { ResponseErrorHandlerService } from '../../../../services/response-error-handler.service';
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatSelectChange } from '@angular/material/select';
 import { TokenStorageService } from '../../../../services/auth/token-storage.service';
+import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-post-create',
@@ -33,10 +33,10 @@ export class PostCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get<IGeneralResponse<Array<IPostCategory>>>(`${postUrl}/postbff/getpostcategories`)
+      .pipe(take(1))
       .subscribe(response => {
         this.categories = response
-      },
-    (error: IGeneralResponse<Array<IPostCategory>>) => console.log(JSON.stringify(error)))
+      })
   }
 
   public onSelectChange(eventSelect: MatSelectChange): void {
@@ -53,7 +53,7 @@ export class PostCreateComponent implements OnInit {
     this.http.post<IPostItemRequest, IGeneralResponse<number>>(`${postUrl}/postitem/add`, post).subscribe(
     (response: IGeneralResponse<number>) => {
       if (response.flag && response.data) {
-        this.router.navigateByUrl('user/dashboard', {replaceUrl: true})
+        this.router.navigateByUrl('user/dashboard', { replaceUrl: true })
       }
     },  
     (error: HttpErrorResponse) => {

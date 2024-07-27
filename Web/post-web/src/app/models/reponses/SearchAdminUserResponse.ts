@@ -1,4 +1,4 @@
-export interface IUserResponse {
+export interface ISearchAdminUserResponse {
     roleName: string;
     userName: string;
 }

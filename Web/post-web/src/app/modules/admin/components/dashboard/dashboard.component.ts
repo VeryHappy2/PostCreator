@@ -1,24 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 import { IUser } from '../../../../models/User';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-main',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   public user?: IUser
-
+  private userSub?: Subscription
   constructor(
     private tokenStorage: TokenStorageService,
   ) { }
 
   ngOnInit(): void {
-    this.user = {
-      name: this.tokenStorage.getUsername(),
-      role: this.tokenStorage.getAuthorities(),
-      token: null
+    this.userSub = this.tokenStorage.user$.subscribe((user) => this.user = user)
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSub) {
+      this.userSub.unsubscribe()
     }
   }
 }

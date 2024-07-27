@@ -11,7 +11,7 @@ import { NavigationComponent } from './components/layout/navigation/navigation.c
 import { MatDividerModule } from '@angular/material/divider';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorComponent } from './components/error/error.component';
-import { Interceptor, httpInterceptorProviders } from './services/interceptor.service';
+import { httpInterceptorProviders } from './services/interceptor.service';
 
 @NgModule({
   declarations: [

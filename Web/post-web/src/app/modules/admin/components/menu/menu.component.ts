@@ -15,7 +15,7 @@ export class MenuComponent implements OnInit {
     private route: Router) { }
 
   ngOnInit(): void {
-    this.role = this.tokenStorageService.getAuthorities()
+    this.role = this.tokenStorageService.getRole()
   }  
 
   public signOut() {

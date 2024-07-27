@@ -20,13 +20,16 @@ namespace Post.Host.Controllers
     {
         private readonly ILogger<PostItemController> _logger;
         private readonly IService<PostItemEntity> _postItemService;
+        private readonly IPostBffService _postBffService;
 
         public PostItemController(
             ILogger<PostItemController> logger,
-            IService<PostItemEntity> postItemService)
+            IService<PostItemEntity> postItemService,
+            IPostBffService postBffService)
         {
             _logger = logger;
             _postItemService = postItemService;
+            _postBffService = postBffService;
         }
 
         [HttpPost]
@@ -106,6 +109,28 @@ namespace Post.Host.Controllers
             {
                 _logger.LogError("Request is empty");
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
+            }
+
+            string? userId = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Id)?.Value;
+
+            if (userId == null)
+            {
+                _logger.LogError("User id is empty");
+                return Unauthorized(new GeneralResponse(false, "You need to log in"));
+            }
+
+            var post = await _postBffService.GetPostByIdAsync(request.Id);
+
+            if (post == null)
+            {
+                _logger.LogError("Post not found");
+                return NotFound(new GeneralResponse(false, "Post not found"));
+            }
+
+            if (post.UserId != userId)
+            {
+                _logger.LogError("User isn't the owner of the post");
+                return Unauthorized(new GeneralResponse(false, "User isn't the owner of the post"));
             }
 
             var response = await _postItemService.DeleteAsync(request.Id);

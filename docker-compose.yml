@@ -6,7 +6,6 @@ services:
     container_name: lde.web.angular
     build:
       context: .
-      dockerfile: Web/post-web/Dockerfile
     environment:
       - ANGULAR_ENVIRONMENT=Development
     volumes:

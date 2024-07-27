@@ -29,29 +29,6 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse<List<PostItemDto>>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetPostItemsByUserName(string userName)
-        {
-            if (string.IsNullOrEmpty(userName))
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "User name is empty"));
-            }
-
-            var posts = await _postBffService.GetPostsByUserNameAsync(userName);
-
-            if (posts == null)
-            {
-                _logger.LogError($"The {userName} didn't find");
-                return NotFound(new GeneralResponse(false, $"The {userName} didn't find"));
-            }
-
-            return Ok(new GeneralResponse<List<PostItemDto>>(true, "Successfully", posts));
-        }
-
-        [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse<PostItemDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
@@ -90,6 +67,30 @@ namespace Post.Host.Controllers
             }
 
             var result = await _postBffService.GetPostsByUserIdAsync(userId);
+
+            if (result == null)
+            {
+                _logger.LogError($"In {userId} wasn't found");
+                return NotFound(new GeneralResponse(false, $"User id: {userId} wasn't found any posts"));
+            }
+
+            return Ok(new GeneralResponse<List<PostItemDto>>(true, "Successfully", result));
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(GeneralResponse<List<PostItemDto>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPostsByUserId(ByIdRequest<string> userId)
+        {
+            if (userId == null)
+            {
+                _logger.LogError($"User id is empty");
+                return BadRequest(new GeneralResponse(false, "User id is empty"));
+            }
+
+            var result = await _postBffService.GetPostsByUserIdAsync(userId.Id);
 
             if (result == null)
             {

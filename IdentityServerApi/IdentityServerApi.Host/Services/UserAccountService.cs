@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static IdentityServer4.Models.IdentityResources;
 
 namespace IdentityServerApi.Host.Services
 {
@@ -96,7 +97,7 @@ namespace IdentityServerApi.Host.Services
         public async Task<LoginResponse> LoginAccountAsync(LoginRequest loginRequest)
         {
             if (loginRequest == null)
-                return new LoginResponse(false, null!, "Login request is empty");
+                return new LoginResponse(false, null!, "Login request is empty", null!);
 
             GeneralResponse<UserApp> response = await CheckUser(new CheckRequest
             {
@@ -106,7 +107,7 @@ namespace IdentityServerApi.Host.Services
 
             if (!response.Flag)
             {
-                return new LoginResponse(false, null!, response.Message);
+                return new LoginResponse(false, null!, response.Message, null!);
             }
 
             var getUserRole = await userManager.GetRolesAsync(response.Data);
@@ -115,10 +116,30 @@ namespace IdentityServerApi.Host.Services
                 new UserSession(
                     response.Data.Id,
                     response.Data.UserName,
-                    response.Data.Email,
                     getUserRole.FirstOrDefault()));
 
-            return new LoginResponse(true, token!, "Login completed");
+            return new LoginResponse(true, token!, "Login completed", new UserLoginResponse
+            {
+                Id = response.Data.Id,
+                UserName = response.Data.UserName,
+                Role = getUserRole.FirstOrDefault(),
+            });
+        }
+
+        public async Task<GeneralResponse> ForgotPassword(ForgotPasswordRequest request)
+        {
+            var user = await userManager.FindByNameAsync(request.UserName);
+
+            if (user == null)
+                return new GeneralResponse(false, "Not found such name");
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await userManager.ResetPasswordAsync(user, token, request.Password);
+
+            if (!result.Succeeded)
+                return new GeneralResponse(false, "Error .. please try again");
+
+            return new GeneralResponse(true, "Password was changed");
         }
 
         public async Task<GeneralResponse<List<string>>> GetRoles()
@@ -130,7 +151,7 @@ namespace IdentityServerApi.Host.Services
                 return new GeneralResponse<List<string>>(false, "Not found any roles", null!);
             }
 
-            return new GeneralResponse<List<string>>(true, "Not found any roles", roles);
+            return new GeneralResponse<List<string>>(true, "Successfully", roles);
         }
 
         private string GenerateToken(UserSession user)
@@ -142,7 +163,6 @@ namespace IdentityServerApi.Host.Services
             {
                 new Claim(JwtClaimTypes.Id, user.Id),
                 new Claim(JwtClaimTypes.Name, user.Name),
-                new Claim(JwtClaimTypes.Email, user.Email),
                 new Claim(JwtClaimTypes.Role, user.Role)
             };
 

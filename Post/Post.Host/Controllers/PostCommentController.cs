@@ -9,6 +9,7 @@ using Catalog.Host.Models.Requests;
 using Post.Host.Models.Requests.Bases;
 using Post.Host.Models.Dtos;
 using System.Net;
+using System.Security.Claims;
 
 namespace Post.Host.Controllers
 {
@@ -43,6 +44,7 @@ namespace Post.Host.Controllers
             {
                 Content = request.Content,
                 PostId = request.PostId,
+                UserName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value
             });
 
             if (response == null)

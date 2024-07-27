@@ -11,14 +11,19 @@
         <hr>
         <p>{{post.data?.content}}</p>       
         <hr>
-        <div [formGroup]="commentFormGroup">
-            <input formControlName="comment" class="input-comment">
-            <button (click)="addComment()">To add a comment</button>
+        <div style="display: flex;">
+            <textarea appAutoResizeTextarea style="margin-right: 4px;" [formControl]="commentCtrl" placeholder="Type a comment .."></textarea>
+            <button (click)="addComment()" mat-mini-fab style="border-radius: 4px;">
+                <mat-icon>add</mat-icon>
+            </button>
         </div>
+        <hr>
         @if (post.data?.comments) {
             @for (comment of post.data?.comments; track comment.id) 
             {
-                <mat-list-item>{{comment.comment}}</mat-list-item>
+                
+                <h2>{{comment.userName}}</h2>
+                <h4>{{comment.content}}</h4>
                 <hr>
             }
         }

@@ -1,8 +1,8 @@
 ﻿namespace IdentityServerApi.Host.Models.Responses
 {
-    public class UserResponse
+    public class SearchUserResponse
     {
-        public string RoleName { get; init; }
+        public string Id { get; init; }
         public string UserName { get; init; }
     }
 }

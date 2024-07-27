@@ -2,6 +2,7 @@ using Infrastructure.Extensions;
 using Infrastructure.Filters;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -77,18 +78,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
-app.UseCookiePolicy();
-app
-.UseSwagger()
-.UseSwaggerUI(setup =>
+
+app.UseCookiePolicy(new CookiePolicyOptions
 {
-	setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
-	setup.OAuthClientId("postswaggerui");
-	setup.OAuthAppName("Post Swagger UI");
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = HttpOnlyPolicy.Always,
 });
 
 app.Use(async (context, next) =>
 {
+    if (context.Request.Cookies.ContainsKey("token") &&
+       !context.Request.Headers.ContainsKey("Authorization"))
+    {
+        var token = context.Request.Cookies["token"];
+        context.Request.Headers.Add("Authorization", $"Bearer {token}");
+    }
+
     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
     var id = Guid.NewGuid();
     LogRequest(logger, context.Request, id);
@@ -96,6 +101,15 @@ app.Use(async (context, next) =>
     await next.Invoke();
 
     LogResponse(logger, context.Response, id);
+});
+
+app
+.UseSwagger()
+.UseSwaggerUI(setup =>
+{
+	setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Post.API V1");
+	setup.OAuthClientId("postswaggerui");
+	setup.OAuthAppName("Post Swagger UI");
 });
 
 app.UseRouting();

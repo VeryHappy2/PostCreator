@@ -5,6 +5,7 @@ namespace IdentityServerApi.Host.Repositories.Interfaces
 {
     public interface IUserBffAccountRepository
     {
-        public Task<GeneralResponse<List<UserResponse>>> GetUsersByNameAsync(string userName);
+        public Task<GeneralResponse<List<SearchAdminUserResponse>>> AdminGetUsersByNameAsync(string userName);
+        public Task<GeneralResponse<List<SearchUserResponse>>> UserGetUsersByNameAsync(string userName);
     }
 }

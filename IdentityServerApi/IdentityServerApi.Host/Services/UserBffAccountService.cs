@@ -19,11 +19,19 @@ namespace IdentityServerApi.Host.Services
             _userBffAccountRepository = userBffAccountRepository;
         }
 
-        public async Task<GeneralResponse<List<UserResponse>>> GetUsersByNameAsync(string userName)
+        public async Task<GeneralResponse<List<SearchAdminUserResponse>>> AdminGetUsersByNameAsync(string userName)
         {
             return await ExecuteSafeAsync(async () =>
             {
-                return await _userBffAccountRepository.GetUsersByNameAsync(userName);
+                return await _userBffAccountRepository.AdminGetUsersByNameAsync(userName);
+            });
+        }
+
+        public async Task<GeneralResponse<List<SearchUserResponse>>> UserGetUsersByNameAsync(string userName)
+        {
+            return await ExecuteSafeAsync(async () =>
+            {
+                return await _userBffAccountRepository.UserGetUsersByNameAsync(userName);
             });
         }
     }

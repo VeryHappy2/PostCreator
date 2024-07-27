@@ -1,0 +1,10 @@
+<div class="card-title">
+    <a (click)="detailsPost(post.id)"><p>{{post.title}}</p></a>
+    <a (click)="toUserPage(post.userId)"><p>Created by: {{post.userName}}</p></a>
+    Created at: {{post.date}}
+</div>
+<div class="card-content">
+    Catagory: {{post.category.category}}
+</div>
+
+

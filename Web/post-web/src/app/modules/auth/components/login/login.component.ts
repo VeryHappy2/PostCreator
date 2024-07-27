@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '../../../../services/http.service';
 import { identityServerUrl } from '../../../../urls';
-import { ActivatedRoute, Router } from '@angular/router';
-import { JwtService } from '../../services/jwt.service';
+import { Router } from '@angular/router';
 import { TokenStorageService } from '../../../../services/auth/token-storage.service';
-import { Observable } from 'rxjs/internal/Observable';
-import { IJwtClaims } from '../../../../models/JwtClaimsResponse';
 import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
 import { HttpErrorResponse } from '@angular/common/http';
+import { take } from 'rxjs/internal/operators/take';
+
 
 @Component({
   selector: 'app-login',
@@ -27,7 +26,6 @@ export class LoginComponent {
   constructor(
     private http: HttpService,
     private router: Router,
-    private jwt: JwtService,
     private tokenStorage: TokenStorageService) { }
 
   public logIn(): void {
@@ -38,20 +36,13 @@ export class LoginComponent {
 
     if (user.email && user.password) {
       this.http.post<IUserLoginRequest, ILogInResponse>(`${identityServerUrl}/account/login`, user)
+        .pipe(take(1))
         .subscribe((response: ILogInResponse) => {
-          let decodedToken: IJwtClaims | null = this.jwt.decodeToken<IJwtClaims>(response.token)
+            this.tokenStorage.saveId(response.data?.id!);
+            this.tokenStorage.saveUsername(response.data?.userName!);
+            this.tokenStorage.saveRole(response.data?.role!)
 
-          if (decodedToken) {
-            this.tokenStorage.saveId(decodedToken.id);
-            this.tokenStorage.saveAuthorities(decodedToken.role);
-            this.tokenStorage.saveUsername(decodedToken.name);
-            this.tokenStorage.saveToken(response.token)
-
-            this.router.navigate([`${decodedToken.role.toLowerCase()}/dashboard`])
-          }
-          else {
-            this.check = response
-          }
+            this.router.navigate([`${response.data?.role.toLowerCase()}/dashboard`])
         },
         (error: HttpErrorResponse) => {
           this.check = error.error

@@ -1,5 +1,6 @@
 export interface IPostComment {
     id: number | null;
+    userName: string | null
     postId: number;
-    comment: string;
+    content: string;
 }

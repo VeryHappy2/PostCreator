@@ -1,6 +1,5 @@
 export interface IJwtClaims {
    id: string,
-   name: string,
-   emailaddress: string,
+   userName: string,
    role: string
 }

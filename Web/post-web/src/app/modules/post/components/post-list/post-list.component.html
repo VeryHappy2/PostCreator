@@ -11,10 +11,20 @@
   <button (click)="onSearchByTitle()" class="search">Search</button>
 </div>
 
-<div>
-  <input maxlength="50" placeholder="Search by the user name" size="34" [formControl]="searchByUserName" (keydown.enter)="onSearchByUserName()">
-  <button (click)="onSearchByUserName()" class="search">Search</button>
-</div>
+<mat-form-field style="margin-left: 8px;">
+  <mat-label>Search user</mat-label>
+  <input matInput 
+        aria-label="Search user"
+        [matAutocomplete]="auto"
+        [formControl]="userCtrl">
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (user of filteredUsers | async; track user.userName) {
+      <mat-option [value]="user.userName">
+        <span>{{user.userName}}</span>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>
 
 
 @if (categories$ | async; as categories) {
@@ -33,18 +43,11 @@
 }
 
 <mat-grid-list cols="4" rowHeight="3:3">
-  @if(pageItemResponse | async; as page){
+  @if(pageItemResponse$ | async; as page){
     @for (item of page.data?.data; track item.id) {
       <mat-grid-tile [colspan]="1" [rowspan]="1">
         <div class="card">
-            <div class="card-title">
-                Created by: {{item.userName}}
-                <p>{{item.title}}</p>
-                Created at: {{item.date}}
-            </div>
-            <div class="card-content">
-                Catagory: {{item.category.category}}
-            </div>
+            <app-post-card [post]="item"/>
             <div>
                 <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
             </div>

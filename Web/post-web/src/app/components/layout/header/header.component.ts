@@ -1,9 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { TokenStorageService } from '../../../services/auth/token-storage.service';
-import { HttpService } from '../../../services/http.service';
-import { Router } from '@angular/router';
-import { IUser } from '../../../models/User';
-import { AuthService } from '../../../services/auth/auth.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-header',

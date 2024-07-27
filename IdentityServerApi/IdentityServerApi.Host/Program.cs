@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using Microsoft.AspNetCore.CookiePolicy;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,6 @@ builder.Services.AddControllers(options =>
 {
     options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 });
-//.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -75,8 +75,31 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Cookies.ContainsKey("token") &&
+       !context.Request.Headers.ContainsKey("Authorization"))
+    {
+        var token = context.Request.Cookies["token"];
+        context.Request.Headers.Add("Authorization", $"Bearer {token}");
+    }
+
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    var id = Guid.NewGuid();
+    LogRequest(logger, context.Request, id);
+
+    await next.Invoke();
+
+    LogResponse(logger, context.Response, id);
+});
+
 CreateDbIfNotExists(app);
-app.UseCookiePolicy();
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = HttpOnlyPolicy.Always,
+});
 
 app
 .UseSwagger()
@@ -101,24 +124,6 @@ app.UseEndpoints(endpoints =>
 await AddRolesAsync(app);
 
 await AddDefaultAdminAsync(app);
-
-app.Use(async (context, next) =>
-{
-    // if (context.Request.Cookies.ContainsKey("jwt") &&
-    //     !context.Request.Headers.ContainsKey("Authorization"))
-    // {
-    //     var token = context.Request.Cookies["jwt"];
-    //     context.Request.Headers.Add("Authorization", $"Bearer {token}");
-    // }
-
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    var id = Guid.NewGuid();
-    LogRequest(logger, context.Request, id);
-
-    await next.Invoke();
-
-    LogResponse(logger, context.Response, id);
-});
 
 void CreateDbIfNotExists(IHost host)
 {
@@ -164,21 +169,25 @@ async Task AddDefaultAdminAsync(IHost host)
     {
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILogger<Program>>();
+
+        string emailAdmin = "admin124qwc5@gmail.com";
+        string passwordAdmin = "#dc!9cjWkaqEl(&2m";
+
         try
         {
             var userManager = services.GetRequiredService<UserManager<UserApp>>();
 
-            var adminUserExists = await userManager.FindByEmailAsync("admin124qwc5@gmail.com");
+            var adminUserExists = await userManager.FindByEmailAsync(emailAdmin);
 
             if (adminUserExists == null)
             {
                 var newAdmin = new UserApp()
                 {
                     UserName = "admin",
-                    Email = "admin124qwc5@gmail.com",
+                    Email = emailAdmin,
                 };
 
-                var result = await userManager.CreateAsync(newAdmin, "#dc!9cjWkaqEl(&2m");
+                var result = await userManager.CreateAsync(newAdmin, passwordAdmin);
 
                 if (result.Succeeded)
                 {

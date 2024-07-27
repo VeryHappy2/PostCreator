@@ -1,5 +1,7 @@
+import { IJwtClaims } from "../JwtClaimsResponse"
+
 export interface ILogInResponse {
     flag?: boolean
     message?: string
-    token: string 
+    data?: IJwtClaims
 }

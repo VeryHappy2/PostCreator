@@ -4,7 +4,7 @@
     margin-bottom: 7px;
 }
 
-mat-paginator{
+mat-paginator {
     width: 100%;
 }
 
@@ -34,6 +34,15 @@ div {
     }
 }
 
+@media (max-width: $minWidth) {
+    mat-paginator {
+        width: $minWidth; 
+    }
+    mat-grid-list {
+        width: $minWidth;
+    }
+}
+
 .card {
     width: 232px;
     height: 188px;
@@ -46,24 +55,5 @@ div {
     overflow-x: auto;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    .card-title {
-        color: black;
-        font-size: 14px;
-        padding-bottom: 6px;
-    }
-    .card-content {
-        flex-grow: 1;
-        padding-bottom: 6px;
-    }
 }
-
-@media (max-width: $minWidth) {
-    mat-paginator {
-        width: $minWidth; 
-    }
-    mat-grid-list {
-        width: $minWidth;
-    }
-}
-
 

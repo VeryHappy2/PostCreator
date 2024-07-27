@@ -1,7 +1,6 @@
 import { IPostCategory } from "./PostCategory";
 import { IPostComment } from "./PostComment";
 
-
 export interface IPostItem {
     id: number;
     userName: string;

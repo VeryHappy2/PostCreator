@@ -1,1 +1,11 @@
-<p>user-item works!</p>
+@if (posts){
+        <h1>Name: {{posts[0].userName}}</h1>
+
+        <div class="grid">
+        @for (post of posts; track post.id) {
+                <div class="card">
+                        <app-post-card [post]="post"/>
+                </div>
+        }
+        </div>
+}

@@ -20,7 +20,7 @@
     <textarea class="title-area" formControlName="title" maxlength="50"></textarea>
 
     <p>Content</p>
-    <textarea class="content-area" formControlName="content" maxlength="3000"></textarea>
+    <textarea class="content-area" formControlName="content" maxlength="3000" appAutoResizeTextarea></textarea>
 </div>
 <button mat-button (click)="createPost()">Create post</button>
 @if (!errorMessage?.flag && errorMessage) {

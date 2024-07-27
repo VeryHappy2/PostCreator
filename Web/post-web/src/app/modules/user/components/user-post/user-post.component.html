@@ -1,0 +1,11 @@
+@if (post) {
+  <div class="card">
+    <app-post-card [post]="post"/>
+    <div>
+      <button mat-mini-fab (click)="deletePost()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+}
+

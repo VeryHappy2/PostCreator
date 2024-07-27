@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
 import { HttpErrorResponse } from '@angular/common/http';
+import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-register',
@@ -35,13 +36,9 @@ export class RegisterComponent {
 
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
       this.http.post<IUserRegisterRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/register`, userRegister)
-        .subscribe((value: IGeneralResponse<null>) => {
-          if (value.flag) {
-            this.router.navigate(['auth/login'])
-          }
-          else {
-            this.check = value
-          }
+        .pipe(take(1))
+        .subscribe(() => {
+          this.router.navigate(['auth/login'])
         },
         (error: HttpErrorResponse) => {
           this.check = error.error

@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { HttpService } from '../../../../services/http.service';
 import { IPostItem } from '../../../../models/enities/PostItem';
 import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
 import { postUrl } from '../../../../urls';
 import { IGeneralResponse as IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl} from '@angular/forms';
 import { IPostCommentRequest } from '../../../../models/requests/CommentRequest';
+import { Observable } from 'rxjs/internal/Observable';
+import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-post-item',
@@ -15,9 +16,7 @@ import { IPostCommentRequest } from '../../../../models/requests/CommentRequest'
   styleUrl: './post-item.component.scss'
 })
 export class PostItemComponent implements OnInit {
-  public commentFormGroup: FormGroup = new FormGroup({
-    comment: new FormControl("")
-  })
+  public commentCtrl = new FormControl('')
   public post$?: Observable<IGeneralResponse<IPostItem>>
 
   private postId!: number
@@ -53,13 +52,13 @@ export class PostItemComponent implements OnInit {
     this.route.params.subscribe((p: Params) => {
       this.postId = +p['id']
     })
-    if (this.commentFormGroup.value.comment) {
+    if (this.commentCtrl.value) {
       let comment: IPostCommentRequest = {
         postId: this.postId,
-        content: this.commentFormGroup.value.comment
+        content: this.commentCtrl.value
       }
 
-      this.http.post<IPostCommentRequest, IGeneralResponse<number>>(`${postUrl}/postcomment/add`, comment)
+      this.http.post<IPostCommentRequest, IGeneralResponse<number>>(`${postUrl}/postcomment/add`, comment).pipe(take(1)).subscribe(resp => console.log(resp.message))
     }
   }
 
