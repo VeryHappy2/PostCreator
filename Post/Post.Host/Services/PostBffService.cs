@@ -26,19 +26,6 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
         _mapper = mapper;
     }
 
-    public async Task<List<PostItemDto>?> GetPostsByUserNameAsync(string userName)
-    {
-        return await ExecuteSafeAsync(async () =>
-        {
-            var result = await _postBffRepository.GetPostItemsByUserName(userName);
-
-            if (result == null)
-                return null;
-
-            return _mapper.Map<List<PostItemDto>>(result).ToList();
-        });
-    }
-
     public async Task<List<PostItemDto>?> GetPostsByUserIdAsync(string userId)
     {
         return await ExecuteSafeAsync(async () =>

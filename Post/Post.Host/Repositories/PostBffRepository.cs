@@ -76,12 +76,5 @@ namespace Post.Host.Repositories
 
             return new PaginatedItems<PostItemEntity>() { TotalCount = totalItems, Data = itemsOnPage };
         }
-
-        public async Task<List<PostItemEntity>> GetPostItemsByUserName(string userName)
-        {
-            return await _dbContext.PostItemEntity
-                .Where(x => x.UserName == userName)
-                .ToListAsync();
-        }
     }
 }

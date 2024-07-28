@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static IdentityServer4.Models.IdentityResources;
 
 namespace IdentityServerApi.Host.Services
 {
@@ -53,7 +52,7 @@ namespace IdentityServerApi.Host.Services
             var removeResponse = await userManager.RemoveFromRoleAsync(user, userRoles.FirstOrDefault());
 
             if (!removeResponse.Succeeded)
-                return new GeneralResponse(false, "");
+                return new GeneralResponse(false, "User hasn't any role");
 
             var result = await userManager.AddToRoleAsync(user, changeRoleRequest.Role);
 
@@ -124,22 +123,6 @@ namespace IdentityServerApi.Host.Services
                 UserName = response.Data.UserName,
                 Role = getUserRole.FirstOrDefault(),
             });
-        }
-
-        public async Task<GeneralResponse> ForgotPassword(ForgotPasswordRequest request)
-        {
-            var user = await userManager.FindByNameAsync(request.UserName);
-
-            if (user == null)
-                return new GeneralResponse(false, "Not found such name");
-
-            var token = await userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await userManager.ResetPasswordAsync(user, token, request.Password);
-
-            if (!result.Succeeded)
-                return new GeneralResponse(false, "Error .. please try again");
-
-            return new GeneralResponse(true, "Password was changed");
         }
 
         public async Task<GeneralResponse<List<string>>> GetRoles()

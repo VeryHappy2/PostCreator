@@ -38,65 +38,6 @@ namespace Post.UnitTests.Services
         }
 
         [Fact]
-        public async Task GetPostsByUserNameAsync_Success()
-        {
-            string userName = "Name";
-            List<PostItemEntity> postItems = new List<PostItemEntity>
-            {
-                new PostItemEntity
-                {
-                    Title = "Title",
-                    Id = 14,
-                    Content = "Content",
-                    Comments = null,
-                    CategoryId = 1,
-                    Category = new PostCategoryEntity(),
-                    Date = DateTime.Now,
-                    UserId = "1234",
-                    UserName = userName
-                },
-            };
-
-            List<PostItemDto> postItemsDto = new List<PostItemDto>
-            {
-                new PostItemDto
-                {
-                    Title = "Title",
-                    Id = 14,
-                    Content = "Content",
-                    Comments = null,
-                    Category = new PostCategoryDto(),
-                    Date = DateTime.Now,
-                    UserId = "1234",
-                    UserName = userName
-                },
-            };
-
-            _postBffRepository.Setup(x => x.GetPostItemsByUserName(
-                It.IsAny<string>())).ReturnsAsync(postItems);
-
-            _mapper.Setup(s => s.Map<List<PostItemDto>>(
-                It.Is<List<PostItemEntity>>(i => i.Equals(postItems)))).Returns(postItemsDto);
-
-            var result = await _service.GetPostsByUserNameAsync(userName);
-
-            result.Should().NotBeNullOrEmpty();
-        }
-
-        [Fact]
-        public async Task GetPostsByUserNameAsync_Failed()
-        {
-            string? userName = null;
-
-            _postBffRepository.Setup(x => x.GetPostItemsByUserName(
-                It.IsAny<string>())).ReturnsAsync((List<PostItemEntity>?)null);
-
-            var result = await _service.GetPostsByUserNameAsync(userName);
-
-            result.Should().BeNullOrEmpty();
-        }
-
-        [Fact]
         public async Task GetCatalogItemsAsync_Success()
         {
             // arrange
@@ -145,7 +86,6 @@ namespace Post.UnitTests.Services
                 Date = DateTime.Now,
                 UserId = "1234",
                 UserName = "name",
-
             };
 
             var postItemDtoSuccess = new PostItemDto
@@ -175,7 +115,7 @@ namespace Post.UnitTests.Services
             result?.Count.Should().Be(testTotalCount);
             result?.PageIndex.Should().Be(testPageIndex);
             result?.PageSize.Should().Be(testPageSize);
-            result.Data.Should().NotBeNull();
+            result?.Data.Should().NotBeNull();
         }
 
         [Fact]
@@ -227,7 +167,6 @@ namespace Post.UnitTests.Services
                 Date = DateTime.Now,
                 UserId = "1234",
                 UserName = "name",
-
             };
 
             var postItemDtoSuccess = new PostItemDto
@@ -251,6 +190,106 @@ namespace Post.UnitTests.Services
 
             // assert
             result.Should().Match<PaginatedResponse<PostItemDto>?>(x => x.Data.First() == null);
+        }
+
+        [Fact]
+        public async Task GetPostByIdAsync_Success()
+        {
+            int id = 1;
+            PostItemEntity postEntity = new PostItemEntity();
+            PostItemDto postDto = new PostItemDto();
+
+            _postBffRepository.Setup(x => x.GetPostByIdAsync(
+                It.IsAny<int>())).ReturnsAsync(postEntity);
+
+            _mapper.Setup(s => s.Map<PostItemDto>(
+                It.Is<PostItemEntity>(i => i.Equals(postEntity)))).Returns(postDto);
+
+            var result = _service.GetPostByIdAsync(id);
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPostByIdAsync_Failed()
+        {
+            int id = 1232131342;
+            PostItemEntity? postEntity = null;
+            PostItemDto? postDto = null;
+
+            _postBffRepository.Setup(x => x.GetPostByIdAsync(
+                It.IsAny<int>())).ReturnsAsync(postEntity);
+
+            _mapper.Setup(s => s.Map<PostItemDto>(
+                It.Is<PostItemEntity>(i => i.Equals(postEntity)))).Returns(postDto);
+
+            var result = await _service.GetPostByIdAsync(id);
+
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetPostCategoriesAsync_Success()
+        {
+            List<PostCategoryDto> postCategoryDtos = new List<PostCategoryDto>();
+            List<PostCategoryEntity> postCategories = new List<PostCategoryEntity>();
+
+            _postBffRepository.Setup(x => x.GetPostCategoriesAsync()).ReturnsAsync(postCategories);
+
+            _mapper.Setup(s => s.Map<List<PostCategoryDto>>(
+                It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories)))).Returns(postCategoryDtos);
+
+            var result = await _service.GetPostCategoriesAsync();
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPostCategoriesAsync_Failed()
+        {
+            List<PostCategoryDto>? postCategoryDtos = null;
+            List<PostCategoryEntity>? postCategories = null;
+
+            _postBffRepository.Setup(x => x.GetPostCategoriesAsync()).ReturnsAsync(postCategories);
+
+            _mapper.Setup(s => s.Map<List<PostCategoryDto>>(
+                It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories)))).Returns(postCategoryDtos);
+
+            var result = await _service.GetPostCategoriesAsync();
+
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetPostsByUserIdAsync_Success()
+        {
+            string userId = "11231269";
+            List<PostItemEntity> postEntity = new List<PostItemEntity>();
+            List<PostItemDto> postDto = new List<PostItemDto>();
+
+            _postBffRepository.Setup(x => x.GetPostsByUserIdAsync(
+                It.IsAny<string>())).ReturnsAsync(postEntity);
+
+            _mapper.Setup(s => s.Map<List<PostItemDto>>(
+                It.Is<List<PostItemEntity>>(i => i.Equals(postEntity)))).Returns(postDto);
+
+            var result = _service.GetPostsByUserIdAsync(userId);
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPostsByUserIdAsync_Failed()
+        {
+            string userId = "12312";
+            List<PostItemEntity>? postEntity = null;
+
+            _postBffRepository.Setup(x => x.GetPostsByUserIdAsync(
+                It.IsAny<string?>())).ReturnsAsync(postEntity);
+
+            var result = await _service.GetPostsByUserIdAsync(userId);
+
+            result.Should().BeNull();
         }
     }
 }

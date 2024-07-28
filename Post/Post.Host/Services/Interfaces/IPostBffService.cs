@@ -8,7 +8,6 @@ namespace Post.Host.Services.Interfaces
     {
 		Task<List<PostItemDto>?> GetPostsByUserIdAsync(string userId);
 		Task<PostItemDto?> GetPostByIdAsync(int id);
-		Task<List<PostItemDto>?> GetPostsByUserNameAsync(string userId);
 		Task<PaginatedResponse<PostItemDto>> GetPostByPageAsync(PageItemRequest pageItemRequest);
 		Task<List<PostCategoryDto>?> GetPostCategoriesAsync();
 	}
