@@ -74,15 +74,15 @@ namespace IdentityServerApi.Host.Services
                 UserName = userRequest.Name,
             };
 
-            var userName = await userManager.FindByNameAsync(userRequest.Name);
+            var userResponseFromName = await userManager.FindByNameAsync(userRequest.Name);
 
-            if (userName != null)
-                return new GeneralResponse(false, $"User: {userName} registered already");
+            if (userResponseFromName != null)
+                return new GeneralResponse(false, $"User: {userResponseFromName.UserName} registered already");
 
-            var userEmail = await userManager.FindByEmailAsync(newUser.Email);
+            var userResponseFromEmail = await userManager.FindByEmailAsync(newUser.Email);
 
-            if (userEmail != null)
-                return new GeneralResponse(false, $"Email: {userEmail} registered already");
+            if (userResponseFromEmail != null)
+                return new GeneralResponse(false, $"Email: {userResponseFromEmail.UserName} registered already");
 
             var createUser = await userManager.CreateAsync(newUser!, userRequest.Password);
 
@@ -125,7 +125,7 @@ namespace IdentityServerApi.Host.Services
             });
         }
 
-        public async Task<GeneralResponse<List<string>>> GetRoles()
+        public async Task<GeneralResponse<List<string>>> GetRolesAsync()
         {
             var roles = await roleManager.Roles.Select(x => x.Name).ToListAsync();
 

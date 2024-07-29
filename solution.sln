@@ -38,7 +38,45 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "post-web", "post-web\", "{5
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "49318"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_49318"
+		Debug.AspNetCompiler.PhysicalPath = "post-web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49318\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_49318"
+		Release.AspNetCompiler.PhysicalPath = "post-web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49318\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49318"
 		SlnRelativePath = "post-web\"
+	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "post-web(1)", "Web\post-web\", "{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_62015"
+		Debug.AspNetCompiler.PhysicalPath = "Web\post-web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62015\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_62015"
+		Release.AspNetCompiler.PhysicalPath = "Web\post-web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62015\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "62015"
 	EndProjectSection
 EndProject
 Global
@@ -71,6 +109,10 @@ Global
 		{5EDCF330-BAE0-4442-9EB4-B4B764430011}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EDCF330-BAE0-4442-9EB4-B4B764430011}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EDCF330-BAE0-4442-9EB4-B4B764430011}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

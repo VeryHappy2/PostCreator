@@ -6,7 +6,7 @@ namespace IdentityServerApi.Host.Services.Interfaces
 {
     public interface IUserAccountService
     {
-        Task<GeneralResponse<List<string>>> GetRoles();
+        Task<GeneralResponse<List<string>>> GetRolesAsync();
         Task<GeneralResponse> CreateUserAccountAsync(UserRequest userDTO);
         Task<GeneralResponse> DeleteUserAccountAsync(string userName);
         Task<LoginResponse> LoginAccountAsync(LoginRequest loginDTO);

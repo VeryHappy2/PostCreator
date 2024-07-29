@@ -95,7 +95,7 @@ namespace IdentityServerApi.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetRoles()
         {
-            var response = await _userAccountRepository.GetRoles();
+            var response = await _userAccountRepository.GetRolesAsync();
 
             if (!response.Flag)
             {
