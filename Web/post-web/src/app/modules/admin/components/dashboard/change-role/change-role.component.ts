@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../../../services/http.service';
 import { identityServerUrl } from '../../../../../urls';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { MatSelectChange } from '@angular/material/select';
 import { IChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormControl } from '@angular/forms';
-import { ISearchAdminUserResponse } from '../../../../../models/reponses/SearchAdminUserResponse';
-import { IByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
+import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
 
 @Component({
   selector: 'app-change-role',
@@ -16,27 +14,25 @@ import { IByNameRequest } from '../../../../../models/requests/user/ByNameReques
   styleUrl: './change-role.component.scss'
 })
 export class ChangeRoleComponent implements OnInit {
+  @ViewChild("search") searcherUserAdmin!: SearchUserAdminComponent
+
   public roles$?: Observable<IGeneralResponse<Array<string>>>
   public changeRoleRequest?: IChangeRoleRequest
   public selectedRole?: string
   public check?: IGeneralResponse<null>
-  public userCtrl = new FormControl('')
-  public filteredUsers?: Observable<Array<ISearchAdminUserResponse>>
 
-  constructor(private http: HttpService) { }
+  constructor(
+    private http: HttpService) { }
 
   ngOnInit(): void {
     this.roles$ = this.http.get(`${identityServerUrl}/account/getroles`)
-    this.userCtrl.valueChanges.subscribe(value => {
-      this.onUserNameChange(value);
-    });
   }
 
   public changeRole() {
-    if (this.selectedRole && this.userCtrl.value) {
+    if (this.selectedRole && this.searcherUserAdmin.fetchUserNameData()) {
       let request: IChangeRoleRequest = {
         role: this.selectedRole,
-        userName: this.userCtrl.value
+        userName: this.searcherUserAdmin.fetchUserNameData()!
       }
       
       this.http.post<IChangeRoleRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/changerole`, request)
@@ -45,16 +41,7 @@ export class ChangeRoleComponent implements OnInit {
     }
   }
 
-  public onSelectChange(event: MatSelectChange) {
+  public onSelectChange(event: MatSelectChange): void {
     this.selectedRole = event.value
-  }
-
-  private onUserNameChange(userName: string | null) {
-    const request: IByNameRequest<string | null> = {
-      name: userName
-    }
-    this.filteredUsers = this.http.post<IByNameRequest<string | null>, IGeneralResponse<Array<ISearchAdminUserResponse>>>(`${identityServerUrl}/accountbff/searchbynameadmin`, request).pipe(
-      map(response => response.data || [])
-    );
   }
 }

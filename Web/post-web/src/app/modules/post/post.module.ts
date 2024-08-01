@@ -16,13 +16,15 @@ import { AutoResizeTextareaDirective } from './directives/auto-resize-textarea.d
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedModule } from '../shared/shared.module';
+import { SearchUserComponent } from './components/search-user/search-user.component';
 
 @NgModule({
   declarations: [
+    SearchUserComponent,
     PostListComponent,
     PostItemComponent,
     AutoResizeTextareaDirective,
-    PostCreateComponent
+    PostCreateComponent,
   ],
   imports: [
     CommonModule,

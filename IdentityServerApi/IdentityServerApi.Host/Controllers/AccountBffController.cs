@@ -10,6 +10,7 @@ using System.Net;
 namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
+    [Authorize(Roles = AuthRoles.Admin)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class AccountBffController : ControllerBase
     {
@@ -20,7 +21,6 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = AuthRoles.Admin)]
         [ProducesResponseType(typeof(GeneralResponse<List<SearchAdminUserResponse>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
@@ -42,6 +42,7 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse<List<SearchUserResponse>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]

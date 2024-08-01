@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SearchUserAdminComponent } from './components/search-user-admin/search-user-admin.component';
 
 
 
@@ -18,7 +19,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MenuComponent,
     DashboardComponent,
     ChangeRoleComponent,
-    DeleteUserComponent
+    DeleteUserComponent,
+    SearchUserAdminComponent
   ],
   imports: [
     CommonModule,

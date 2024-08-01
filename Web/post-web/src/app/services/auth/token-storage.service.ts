@@ -3,6 +3,8 @@ import { HttpService } from '../http.service';
 import { identityServerUrl } from '../../urls';
 import { IUser } from '../../models/User';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { take } from 'rxjs/internal/operators/take';
 
 const ID_KEY = "authid"
 const USERNAME_KEY = "authusername";
@@ -25,7 +27,9 @@ export class TokenStorageService {
 
   public signOut() {
     this.deleteLocalStorageData()
-    this.http.post(`${identityServerUrl}/account/logout`, null).subscribe((resp) => console.log(resp));
+    this.http.post<null, IGeneralResponse<null>>(`${identityServerUrl}/account/logout`, null)
+      .pipe(take(1))
+      .subscribe((resp) => console.log(resp.message));
   }
 
   public saveId(id: string) {

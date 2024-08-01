@@ -1,9 +1,9 @@
 <mat-paginator [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]"
-              [pageIndex]="0"
-              (page)="onPageChange($event)"
-              aria-label="Select page">
+               [pageSize]="10"
+               [pageSizeOptions]="[5, 10, 25, 100]"
+               [pageIndex]="0"
+               (page)="onPageChange($event)"
+               aria-label="Select page">
 </mat-paginator>
 
 <div>
@@ -11,20 +11,7 @@
   <button (click)="onSearchByTitle()" class="search">Search</button>
 </div>
 
-<mat-form-field style="margin-left: 8px;">
-  <mat-label>Search user</mat-label>
-  <input matInput 
-        aria-label="Search user"
-        [matAutocomplete]="auto"
-        [formControl]="userCtrl">
-  <mat-autocomplete #auto="matAutocomplete">
-    @for (user of filteredUsers | async; track user.userName) {
-      <mat-option [value]="user.userName">
-        <span>{{user.userName}}</span>
-      </mat-option>
-    }
-  </mat-autocomplete>
-</mat-form-field>
+<app-search-user (userName)="onUserNameChange($event)"/>
 
 
 @if (categories$ | async; as categories) {
@@ -33,29 +20,29 @@
     <mat-select (selectionChange)="onSelectChange($event)">
       <mat-option [value]="null">None</mat-option>
       @for (category of categories.data; track category.id) {
-        <mat-option [value]="category.id">{{category.category}}</mat-option>
+      <mat-option [value]="category.id">{{category.category}}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 }
 @else {
-  <p>Not found any categories</p>
+<p>Not found any categories</p>
 }
 
 <mat-grid-list cols="4" rowHeight="3:3">
   @if(pageItemResponse$ | async; as page){
-    @for (item of page.data?.data; track item.id) {
-      <mat-grid-tile [colspan]="1" [rowspan]="1">
-        <div class="card">
-            <app-post-card [post]="item"/>
-            <div>
-                <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
-            </div>
-        </div>
-    </mat-grid-tile> 
-    }
+  @for (item of page.data?.data; track item.id) {
+  <mat-grid-tile [colspan]="1" [rowspan]="1">
+    <div class="card">
+      <app-post-card [post]="item" />
+      <div>
+        <button mat-button (click)="detailsPost(item.id)">DETAILS</button>
+      </div>
+    </div>
+  </mat-grid-tile>
+  }
   }
   @else {
-    <h2>Not found any posts</h2>
+  <h2>Not found any posts</h2>
   }
 </mat-grid-list>

@@ -1,0 +1,14 @@
+<mat-form-field style="margin-left: 8px;">
+  <mat-label>Search user</mat-label>
+  <input matInput
+         aria-label="Search user"
+         [matAutocomplete]="auto"
+         [formControl]="userCtrl">
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (user of filteredUsers | async; track user.userName) {
+      <mat-option [value]="user.userName">
+        <span>{{user.userName}}</span>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>
