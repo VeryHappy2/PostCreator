@@ -19,5 +19,5 @@ Need to path these lines
 3. To type command "npm run build"
 # Step 5 (to start docker)
 1. To open cmd
-2. Select path ./PostCreator
+2. Select path of the project "PostCreator"
 3. docker-compose up
