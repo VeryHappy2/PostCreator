@@ -16,10 +16,10 @@ import { SearchUserAdminComponent } from '../../search-user-admin/search-user-ad
 export class ChangeRoleComponent implements OnInit {
   @ViewChild("search") searcherUserAdmin!: SearchUserAdminComponent
 
-  public roles$?: Observable<IGeneralResponse<Array<string>>>
-  public changeRoleRequest?: IChangeRoleRequest
-  public selectedRole?: string
-  public check?: IGeneralResponse<null>
+  protected roles$?: Observable<IGeneralResponse<Array<string>>>
+  protected changeRoleRequest?: IChangeRoleRequest
+  protected selectedRole?: string
+  protected check?: IGeneralResponse<null>
 
   constructor(
     private http: HttpService) { }
@@ -28,7 +28,7 @@ export class ChangeRoleComponent implements OnInit {
     this.roles$ = this.http.get(`${identityServerUrl}/account/getroles`)
   }
 
-  public changeRole() {
+  protected changeRole() {
     if (this.selectedRole && this.searcherUserAdmin.fetchUserNameData()) {
       let request: IChangeRoleRequest = {
         role: this.selectedRole,
@@ -41,7 +41,7 @@ export class ChangeRoleComponent implements OnInit {
     }
   }
 
-  public onSelectChange(event: MatSelectChange): void {
+  protected onSelectChange(event: MatSelectChange): void {
     this.selectedRole = event.value
   }
 }

@@ -11,7 +11,7 @@ export class AutoResizeTextareaDirective {
     this.resize()
   }
 
-  private resize() {
+  private resize(): void {
     const textArea = this.el.nativeElement as HTMLTextAreaElement
 
     this.renderer.setStyle(textArea, 'height', 'auto')

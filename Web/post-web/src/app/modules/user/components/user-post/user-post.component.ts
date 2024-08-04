@@ -20,7 +20,7 @@ export class UserPostComponent {
     private http: HttpService,
     private router: Router) { }
 
-  public deletePost(): void {
+  protected deletePost(): void {
     let request: IByIdRequest<number> = {
       id: this.post?.id!
     }
@@ -30,7 +30,7 @@ export class UserPostComponent {
       resp => console.log(resp.message))
   }
 
-  public toPostPage(): void {
+  protected toPostPage(): void {
     this.router.navigate([`post/${this.post?.id}`], { replaceUrl: true })
   }
 }

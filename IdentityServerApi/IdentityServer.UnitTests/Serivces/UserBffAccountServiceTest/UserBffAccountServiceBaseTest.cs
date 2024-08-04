@@ -31,8 +31,7 @@ namespace IdentityServer.UnitTests.Serivces.UserBffAccountServiceTest
             _userBffAccountService = new UserBffAccountService(
                 _dbContextWrapperMock.Object,
                 _loggerMock.Object,
-                _userBffAccountRepositoryMock.Object
-            );
+                _userBffAccountRepositoryMock.Object);
         }
     }
 }

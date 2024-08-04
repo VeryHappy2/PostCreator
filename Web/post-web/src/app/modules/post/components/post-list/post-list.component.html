@@ -11,8 +11,9 @@
   <button (click)="onSearchByTitle()" class="search">Search</button>
 </div>
 
-<app-search-user (userName)="onUserNameChange($event)"/>
-
+<div>
+  <app-search-user (userName)="onUserNameChange($event)"/>
+</div>
 
 @if (categories$ | async; as categories) {
   <mat-form-field class="selecter" style="margin-left: 8px;">

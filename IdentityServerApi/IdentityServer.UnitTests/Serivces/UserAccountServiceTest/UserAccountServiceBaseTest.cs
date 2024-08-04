@@ -19,7 +19,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest
             var userStore = new Mock<IUserStore<UserApp>>();
             var roleStore = new Mock<IRoleStore<IdentityRole>>();
 
-            var inMemorySettings = new Dictionary<string, string> 
+            var inMemorySettings = new Dictionary<string, string>
             {
                 { "Jwt:Key", "YcxjOMewdFfeZFQm5iGAYxTjR23Z93rLbyZucty3" },
                 { "Jwt:Issuer", "http://www.postcreator.com:5100" },

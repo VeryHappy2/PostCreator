@@ -18,22 +18,22 @@ export class ResponseErrorHandlerService {
     [HttpStatusCode.Unauthorized]: () => this.Handle401(),
   };
 
-  public Handle401(message: string = "Unauthorized") {
+  public Handle401(message: string = "Unauthorized"): void {
     console.error(JSON.stringify(message))
     this.tokenStorage.deleteLocalStorageData()
     this.router.navigate([`auth/login`])
   }
 
-  public Handle400(message: string = "Bad request") {
+  public Handle400(message: string = "Bad request"): void {
     console.error(message)
   }
 
-  public Handle500(message: string = "Internal server error") {
+  public Handle500(message: string = "Internal server error"): void {
     console.error(JSON.stringify(message))
     this.router.navigate(['error'], { state: { error: '500' } })
   }
 
-  public HandleDefault(message: any) {
+  public HandleDefault(message: any): void {
     console.error(JSON.stringify(message));
   }
 }

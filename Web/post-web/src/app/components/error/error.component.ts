@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrl: './error.component.scss'
 })
 export class ErrorComponent implements OnInit {
-  public error: string | null = null;
+  protected error: string | null = null;
 
   constructor(private router: Router) {}
 

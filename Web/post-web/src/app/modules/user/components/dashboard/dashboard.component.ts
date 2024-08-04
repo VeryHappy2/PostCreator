@@ -14,9 +14,11 @@ import { Subscription } from 'rxjs/internal/Subscription';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  public user?: IUser
-  public posts?: IGeneralResponse<Array<IPostItem>>
+  protected user?: IUser
+  protected posts?: IGeneralResponse<Array<IPostItem>>
+
   private userSub?: Subscription
+  
   constructor(
     private tokenStorage: TokenStorageService,
     private http: HttpService

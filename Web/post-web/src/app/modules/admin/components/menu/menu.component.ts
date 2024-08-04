@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrl: './menu.component.scss'
 })
 export class MenuComponent implements OnInit {
-  public role?: string | null
+  protected role?: string | null
 
   constructor(
     private tokenStorageService: TokenStorageService,
@@ -18,7 +18,7 @@ export class MenuComponent implements OnInit {
     this.role = this.tokenStorageService.getRole()
   }  
 
-  public signOut() {
+  protected signOut() {
     this.tokenStorageService.signOut()
     this.route.navigate(['auth/login'])
   }

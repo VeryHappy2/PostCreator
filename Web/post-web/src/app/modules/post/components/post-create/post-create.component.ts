@@ -8,7 +8,6 @@ import { IPostCategory } from '../../../../models/enities/PostCategory';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSelectChange } from '@angular/material/select';
-import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
@@ -17,19 +16,19 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './post-create.component.scss'
 })
 export class PostCreateComponent implements OnInit {
-  public postGroup: FormGroup = new FormGroup ({
+  protected postGroup: FormGroup = new FormGroup ({
     title: new FormControl("", [Validators.required, Validators.maxLength(50)]),
     content: new FormControl("", [Validators.required, Validators.maxLength(3000)]),
   })
 
-  public errorMessage?: IGeneralResponse<string>
-  public categories?: IGeneralResponse<Array<IPostCategory>>
+  protected errorMessage?: IGeneralResponse<string>
+  protected categories?: IGeneralResponse<Array<IPostCategory>>
+  
   private selectedCategory!: number | null
 
   constructor(
     private http: HttpService,
-    private router: Router,
-    private tokenStorage: TokenStorageService) { }
+    private router: Router) { }
 
   ngOnInit(): void {
     this.http.get<IGeneralResponse<Array<IPostCategory>>>(`${postUrl}/postbff/getpostcategories`)
@@ -39,11 +38,11 @@ export class PostCreateComponent implements OnInit {
       })
   }
 
-  public onSelectChange(eventSelect: MatSelectChange): void {
+  protected onSelectChange(eventSelect: MatSelectChange): void {
     this.selectedCategory = eventSelect.value
   }
 
-  public createPost() {
+  protected createPost(): void {
     let post: IPostItemRequest = {
       title: this.postGroup.value.title,
       content: this.postGroup.value.content,

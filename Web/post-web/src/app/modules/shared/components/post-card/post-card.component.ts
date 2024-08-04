@@ -12,11 +12,11 @@ export class PostCardComponent {
 
   constructor(private router: Router) { }
 
-  public detailsPost(id: number) {
+  protected detailsPost(id: number): void {
     this.router.navigate([`post/${id}`], { replaceUrl: true });
   }
 
-  public toUserPage(id: string) {
+  protected toUserPage(id: string): void {
     this.router.navigate([`user/${id}`], { replaceUrl: true });
   }
 }

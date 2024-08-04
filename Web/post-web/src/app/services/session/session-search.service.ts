@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SessionService } from './session.service';
-import { ICache } from '../../models/cache';
+import { ICache } from '../../models/Сache';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class SessionSearchService implements SessionService {
     sessionStorage.clear();
   }
 
-  public saveData<TData>(key: string, data: TData) {
+  public saveData<TData>(key: string, data: TData): void {
     const cacheData: ICache<TData> = {
       timestamp: new Date().getTime(),
       data: data

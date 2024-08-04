@@ -32,7 +32,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             var identityResult = IdentityResult.Success;
 
             UserManager.Setup(x => x.FindByNameAsync(request.Name))
-            .ReturnsAsync((UserApp)null);
+                .ReturnsAsync((UserApp)null);
 
             UserManager.Setup(x => x.FindByEmailAsync(request.Email))
                 .ReturnsAsync((UserApp)null);

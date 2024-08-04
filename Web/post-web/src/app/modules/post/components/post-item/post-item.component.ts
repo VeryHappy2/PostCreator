@@ -16,8 +16,8 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './post-item.component.scss'
 })
 export class PostItemComponent implements OnInit {
-  public commentCtrl = new FormControl('')
-  public post$?: Observable<IGeneralResponse<IPostItem>>
+  protected commentCtrl = new FormControl('')
+  protected post$?: Observable<IGeneralResponse<IPostItem>>
 
   private postId!: number
   constructor(
@@ -44,11 +44,10 @@ export class PostItemComponent implements OnInit {
       else {
         this.router.navigate(['no-page'])
       }
-      
     });
   }
 
-  public addComment() {
+  protected addComment(): void {
     this.route.params.subscribe((p: Params) => {
       this.postId = +p['id']
     })
@@ -62,7 +61,7 @@ export class PostItemComponent implements OnInit {
     }
   }
 
-  public back() {
+  protected back() {
     this.router.navigate([`post/post-list`])
   }
 }

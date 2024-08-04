@@ -14,19 +14,19 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  public userGroup = new FormGroup({
+  protected userGroup = new FormGroup({
     name: new FormControl ('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl ('', [Validators.required]),
     confirmPassword: new FormControl ('', [Validators.required])
   })
-  public check?: IGeneralResponse<null>
+  protected check?: IGeneralResponse<null>
 
   constructor(private http: HttpService, 
     private router: Router,
   ) { }
 
-  public signUp(): void {
+  protected signUp(): void {
     const userRegister: IUserRegisterRequest = {
       name: this.userGroup.value.name!,
       email: this.userGroup.value.email!,

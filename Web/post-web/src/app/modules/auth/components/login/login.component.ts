@@ -16,19 +16,19 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  public userGroup = new FormGroup({
+  protected userGroup = new FormGroup({
     userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
-  public check?: ILogInResponse
-  public hidePassword = true
+  protected check?: ILogInResponse
+  protected hidePassword = true
   
   constructor(
     private http: HttpService,
     private router: Router,
     private tokenStorage: TokenStorageService) { }
 
-  public logIn(): void {
+  protected logIn(): void {
     const user: IUserLoginRequest = {
       password: this.userGroup.value.password!,
       email: this.userGroup.value.userName!

@@ -13,8 +13,9 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './user-item.component.scss'
 })
 export class UserItemComponent implements OnInit {
-  public posts?: Array<IPostItem>
-  public userName?: string
+  protected posts?: Array<IPostItem>
+  protected userName?: string
+  
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -29,11 +30,11 @@ export class UserItemComponent implements OnInit {
     })
   }
 
-  public toPostPage(id: number): void {
+  protected toPostPage(id: number): void {
     this.router.navigate([`post/${id}`], { replaceUrl: true })
   }
 
-  private loadUser(id: IByIdRequest<string>) {
+  private loadUser(id: IByIdRequest<string>): void {
     this.http
       .post<IByIdRequest<string>, IGeneralResponse<Array<IPostItem>>>(`${postUrl}/postbff/getpostsbyuserid`, id)
       .pipe(take(1))

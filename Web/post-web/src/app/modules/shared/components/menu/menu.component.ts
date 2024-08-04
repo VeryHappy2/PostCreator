@@ -12,7 +12,7 @@ export class MenuComponent {
     private tokenStorageService: TokenStorageService,
     private route: Router) { }
 
-  public signOut() {
+  protected signOut(): void {
     this.tokenStorageService.signOut()
     this.route.navigate(['auth/login'])
   }

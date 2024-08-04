@@ -17,7 +17,7 @@ export class DeleteUserComponent {
 
   constructor(private http: HttpService) { }
 
-  public delete(): void {
+  protected delete(): void {
     if (this.searcherUserAdmin.fetchUserNameData()) {
       const request: IByNameRequest<string> = {
         name: this.searcherUserAdmin.fetchUserNameData()!

@@ -9,8 +9,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  public user?: IUser
+  protected user?: IUser
+
   private userSub?: Subscription
+  
   constructor(
     private tokenStorage: TokenStorageService,
   ) { }

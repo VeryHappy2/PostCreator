@@ -7,7 +7,7 @@ export class SessionService {
 
   constructor() { }
 
-  public saveData<TData>(key: string, data: TData) {
+  public saveData<TData>(key: string, data: TData): void {
     sessionStorage.setItem(key, JSON.stringify(data))
   }
 

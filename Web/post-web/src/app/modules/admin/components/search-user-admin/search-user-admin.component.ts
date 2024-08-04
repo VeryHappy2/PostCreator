@@ -21,29 +21,27 @@ import { SessionSearchService } from '../../../../services/session/session-searc
   styleUrl: './search-user-admin.component.scss'
 })
 export class SearchUserAdminComponent implements OnInit {
-  public userCtrl = new FormControl('')
-  public filteredUsers?: Observable<Array<ISearchAdminUserResponse>>
+  protected userCtrl = new FormControl('')
+  protected filteredUsers?: Observable<Array<ISearchAdminUserResponse>>
 
   constructor(
     private http: HttpService,
     private sessionSearchService: SessionSearchService) { }
 
   ngOnInit(): void {
-  this.filteredUsers = this.userCtrl.valueChanges.pipe(
-    startWith(""),
-    debounceTime(450),
-    distinctUntilChanged(),
-    switchMap(value => {
-      console.log(JSON.stringify(value))
-      if (value === null || value.trim() === '') {
-        return EMPTY;
-      }
-      return this.onUserNameChange(value.trim());
-    }));
+    this.filteredUsers = this.userCtrl.valueChanges.pipe(
+      startWith(""),
+      debounceTime(450),
+      switchMap(value => {
+        if (value === null || value.trim() === '') {
+          return EMPTY;
+        }
+        return this.onUserNameChange(value.trim());
+      }));
   }
 
-  public fetchUserNameData(): string  | null {
-      return this.userCtrl.value
+  public fetchUserNameData(): string | null {
+    return this.userCtrl.value
   }    
 
   private onUserNameChange(userName: string): Observable<Array<ISearchAdminUserResponse>> {

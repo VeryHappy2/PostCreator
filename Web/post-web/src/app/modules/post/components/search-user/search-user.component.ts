@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { FormControl } from '@angular/forms';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 import { startWith } from 'rxjs/internal/operators/startWith';
 import { EMPTY } from 'rxjs/internal/observable/empty';
@@ -23,8 +22,8 @@ import { ISearchUserResponse } from '../../../../models/reponses/SearchUserRespo
 export class SearchUserComponent implements OnInit {
   @Output() userName: EventEmitter<string> = new EventEmitter<string>()
 
-  public userCtrl = new FormControl('')
-  public filteredUsers?: Observable<Array<ISearchUserResponse>>
+  protected userCtrl = new FormControl('')
+  protected filteredUsers?: Observable<Array<ISearchUserResponse>>
 
   constructor(
     private http: HttpService,
@@ -34,9 +33,9 @@ export class SearchUserComponent implements OnInit {
   this.filteredUsers = this.userCtrl.valueChanges.pipe(
     startWith(""),
     debounceTime(450),
-    distinctUntilChanged(),
     switchMap(value => {
-      console.log(JSON.stringify(value))
+      console.log("Search user name:" + value)
+      this.userName.emit(value!);
       if (value === null || value.trim() === '') {
         return EMPTY;
       }
@@ -50,8 +49,6 @@ export class SearchUserComponent implements OnInit {
 
   private onUserNameChange(userName: string): Observable<Array<ISearchUserResponse>> {
     const cachedUsers: Array<ISearchUserResponse> | null = this.sessionService.getData<Array<ISearchUserResponse>>(userName)
-
-    this.userName.emit(userName)
 
     if (cachedUsers) {
       return of(cachedUsers)

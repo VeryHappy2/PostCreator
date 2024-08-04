@@ -18,9 +18,9 @@ import { Observable } from 'rxjs/internal/Observable';
   styleUrl: './post-list.component.scss'
 })
 export class PostListComponent implements OnInit {
-  public searchByTitle = new FormControl('')
-  public categories$!: Observable<IGeneralResponse<Array<IPostCategory>>>
-  public pageItemResponse$!: Observable<IGeneralResponse<IPaginatedItemsResponse<IPostItem>>>;
+  protected searchByTitle = new FormControl('')
+  protected categories$!: Observable<IGeneralResponse<Array<IPostCategory>>>
+  protected pageItemResponse$!: Observable<IGeneralResponse<IPaginatedItemsResponse<IPostItem>>>;
 
   private postPageRequest!: IPageItemsRequest
 
@@ -38,36 +38,36 @@ export class PostListComponent implements OnInit {
     this.loadPosts()
   }
 
-  public onUserNameChange(event: string) {
+  protected onUserNameChange(event: string): void {
     this.postPageRequest.searchByUserName = event
 
     this.loadPosts()
   }
 
-  public onSearchByTitle() {
+  protected onSearchByTitle(): void {
     this.postPageRequest.searchByTitle = this.searchByTitle.value
 
     this.loadPosts()
   }
 
-  public onPageChange (eventPaginator: PageEvent): void {
+  protected onPageChange (eventPaginator: PageEvent): void {
     this.postPageRequest.pageIndex = eventPaginator.pageIndex;
     this.postPageRequest.pageSize = eventPaginator.pageSize;
     
     this.loadPosts()
   }
 
-  public onSelectChange(eventSelect: MatSelectChange): void {
+  protected onSelectChange(eventSelect: MatSelectChange): void {
     this.postPageRequest.categoryFilter = eventSelect.value
     
     this.loadPosts()
   }
 
-  public detailsPost(id: number) {
+  protected detailsPost(id: number): void {
     this.router.navigate([`post/${id}`], { replaceUrl: true });
   }
 
-  private loadPosts(): void {
+  protected loadPosts(): void {
     this.pageItemResponse$ = this.http.post<IPageItemsRequest, IGeneralResponse<IPaginatedItemsResponse<IPostItem>>>(`${postUrl}/postbff/getpostsbypage`, this.postPageRequest);
   }
 }

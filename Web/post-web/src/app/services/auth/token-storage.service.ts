@@ -25,14 +25,14 @@ export class TokenStorageService {
   
   constructor(private http: HttpService) { }
 
-  public signOut() {
+  public signOut(): void {
     this.deleteLocalStorageData()
     this.http.post<null, IGeneralResponse<null>>(`${identityServerUrl}/account/logout`, null)
       .pipe(take(1))
       .subscribe((resp) => console.log(resp.message));
   }
 
-  public saveId(id: string) {
+  public saveId(id: string): void {
     localStorage.removeItem(ID_KEY);
     localStorage.setItem(ID_KEY, id);
     this.updateUser();
@@ -50,7 +50,7 @@ export class TokenStorageService {
     this.updateUser();
   }
 
-  public getRole() {
+  public getRole(): string | null {
     return localStorage.getItem(AUTHORITIES_KEY)
   }
 

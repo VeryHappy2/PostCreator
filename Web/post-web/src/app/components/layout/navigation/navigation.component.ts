@@ -9,7 +9,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
   styleUrl: './navigation.component.scss'
 })
 export class NavigationComponent implements OnInit, OnDestroy {
-  public user?: IUser
+  protected user?: IUser
+
   private userSub?: Subscription;
 
   constructor(private token: TokenStorageService) { }

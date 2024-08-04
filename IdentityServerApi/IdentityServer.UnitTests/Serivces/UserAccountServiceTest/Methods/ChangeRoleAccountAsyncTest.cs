@@ -63,7 +63,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             RoleRequest request = new RoleRequest
             {
                 Role = "User",
-                UserName = null
+                UserName = null!
             };
 
             UserApp? userApp = null;
