@@ -5,9 +5,9 @@
 
  Need to path these lines
 
-127.0.0.1 www.alevelwebsite.com 
-0.0.0.0 www.alevelwebsite.com 
-192.168.0.4 www.alevelwebsite.com
+127.0.0.1 www.postcreator.com
+0.0.0.0 www.postcreator.com
+192.168.0.4 www.postcreator.com
 # Step 2 (download node.js)
 1. The download url: https://nodejs.org/en
 # Step 3 (download angular cli)
