@@ -18,13 +18,19 @@ export class DeleteUserComponent {
   constructor(private http: HttpService) { }
 
   protected delete(): void {
-    if (this.searcherUserAdmin.fetchUserNameData()) {
+    const userName = this.searcherUserAdmin.fetchUserNameData();
+    if (userName) {
       const request: IByNameRequest<string> = {
         name: this.searcherUserAdmin.fetchUserNameData()!
       }
       this.http.post<IByNameRequest<string>, IGeneralResponse<null>>(`${identityServerUrl}/account/delete`, request)
-        .pipe(take(1))
-        .subscribe((response) => console.log(response.message))
+        .subscribe({
+          next: (response) => console.log(response.message),
+          error: (err) => console.error('Error occurred:', err)
+        })
+    }
+    else {
+      console.warn("User name data is invalid");
     }
   }
 }

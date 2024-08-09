@@ -43,7 +43,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.AddToRoleAsync(It.IsAny<UserApp>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
-            var result = await UserAccountService.CreateUserAccountAsync(request);
+            var result = await UserManagmentService.CreateUserAccountAsync(request);
 
             result.Should().NotBeNull();
             result.Flag.Should().BeTrue();
@@ -55,7 +55,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
         {
             UserRequest? request = null;
 
-            var result = await UserAccountService.CreateUserAccountAsync(request);
+            var result = await UserManagmentService.CreateUserAccountAsync(request);
 
             result.Should().NotBeNull();
             result.Flag.Should().BeFalse();
@@ -82,7 +82,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.FindByNameAsync(request.Name))
                 .ReturnsAsync(userApp);
 
-            var result = await UserAccountService.CreateUserAccountAsync(request);
+            var result = await UserManagmentService.CreateUserAccountAsync(request);
 
             result.Should().NotBeNull();
             result.Flag.Should().BeFalse();
@@ -115,7 +115,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.FindByEmailAsync(request.Email))
                 .ReturnsAsync(userApp);
 
-            var result = await UserAccountService.CreateUserAccountAsync(request);
+            var result = await UserManagmentService.CreateUserAccountAsync(request);
 
             result.Should().NotBeNull();
             result.Flag.Should().BeFalse();
@@ -150,7 +150,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.CreateAsync(It.IsAny<UserApp>(), request.Password))
                 .ReturnsAsync(IdentityResult.Failed());
 
-            var result = await UserAccountService.CreateUserAccountAsync(request);
+            var result = await UserManagmentService.CreateUserAccountAsync(request);
 
             result.Should().NotBeNull();
             result.Flag.Should().BeFalse();

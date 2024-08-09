@@ -46,11 +46,13 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthentication()
   .AddBearerToken(IdentityConstants.BearerScheme);
 
-builder.Services.AddTransient<IUserAccountService, UserAccountService>();
+builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
+builder.Services.AddTransient<IUserManagmentService, UserManagmentService>();
+builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IUserBffAccountService, UserBffAccountService>();
 builder.Services.AddTransient<IUserBffAccountRepository, UserBffAccountRepository>();
+builder.Services.AddTransient<IUserAuthenticationRepository, UserAuthenticationRepository>();
 builder.Services.Configure<IdentityServerApiConfig>(configuration);
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<UserApp, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()

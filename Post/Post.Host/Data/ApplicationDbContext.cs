@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     {
         builder.ApplyConfiguration(new PostEntityConfiguration());
         builder.ApplyConfiguration(new CommentEntityConfiguration());
+        builder.ApplyConfiguration(new PostCategoryConfiguration());
         builder.UseHiLo();
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IdentityServerApi.Host.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240510210948_InitialCreate")]
+    [Migration("20240808214033_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,38 @@ namespace IdentityServerApi.Host.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("IdentityServerApi.Host.Data.Entities.UserEnity", b =>
+            modelBuilder.Entity("IdentityServerApi.Host.Data.Entities.RefreshTokenEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserPasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefreshToken")
+                        .IsUnique();
+
+                    b.ToTable("RefreshToken");
+                });
+
+            modelBuilder.Entity("IdentityServerApi.Host.Data.Entities.UserApp", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -232,7 +263,7 @@ namespace IdentityServerApi.Host.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserEnity", null)
+                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserApp", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -241,7 +272,7 @@ namespace IdentityServerApi.Host.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserEnity", null)
+                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserApp", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -256,7 +287,7 @@ namespace IdentityServerApi.Host.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserEnity", null)
+                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserApp", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -265,7 +296,7 @@ namespace IdentityServerApi.Host.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserEnity", null)
+                    b.HasOne("IdentityServerApi.Host.Data.Entities.UserApp", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

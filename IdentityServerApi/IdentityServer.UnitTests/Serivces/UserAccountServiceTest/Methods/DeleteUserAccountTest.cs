@@ -20,7 +20,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
             UserManager.Setup(x => x.DeleteAsync(It.IsAny<UserApp>())).ReturnsAsync(identityResult);
 
-            var result = await UserAccountService.DeleteUserAccountAsync("name");
+            var result = await UserManagmentService.DeleteUserAccountAsync("name");
             result.Should().NotBeNull();
         }
 
@@ -32,7 +32,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserApp? user = null;
             UserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
 
-            var result = await UserAccountService.DeleteUserAccountAsync(userName);
+            var result = await UserManagmentService.DeleteUserAccountAsync(userName);
             result.Should().Be(new GeneralResponse(false, $"The {userName} wasn't found"));
         }
     }

@@ -37,11 +37,15 @@ export class RegisterComponent {
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
       this.http.post<IUserRegisterRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/register`, userRegister)
         .pipe(take(1))
-        .subscribe(() => {
-          this.router.navigate(['auth/login'])
-        },
-        (error: HttpErrorResponse) => {
-          this.check = error.error
+        .subscribe({
+          next:  
+            () => {
+              this.router.navigate(['auth/login'])
+            },
+          error: 
+            (error: HttpErrorResponse) => {
+              this.check = error.error
+            }
         });
     }
   }

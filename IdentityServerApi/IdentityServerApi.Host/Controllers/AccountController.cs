@@ -15,23 +15,59 @@ namespace IdentityServerApi.Host.Controllers
     [Route(ComponentDefaults.DefaultRoute)]
     public class AccountController : ControllerBase
     {
-        private readonly IUserAccountService _userAccountRepository;
+        private readonly IUserManagmentService _userManagmentService;
+        private readonly IUserRoleService _userRoleService;
+        private readonly IUserAuthenticationService _userAuthenticationService;
         private readonly ILogger<AccountController> _logger;
         public AccountController(
-            IUserAccountService userAccountRepository,
-            ILogger<AccountController> logger)
+            IUserManagmentService userManagmentService,
+            ILogger<AccountController> logger,
+            IUserRoleService userRoleService,
+            IUserAuthenticationService userAuthenticationServic)
         {
-            _userAccountRepository = userAccountRepository;
+            _userManagmentService = userManagmentService;
+            _userRoleService = userRoleService;
+            _userAuthenticationService = userAuthenticationServic;
             _logger = logger;
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Refresh()
+        {
+            var refreshToken = Request.Cookies["refresh-token"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return BadRequest(new GeneralResponse(false, "Refresh token is null"));
+            }
+
+            var response = await _userAuthenticationService.RefreshToken(refreshToken);
+
+            if (response == null)
+            {
+                return BadRequest(new GeneralResponse(response.Flag, response.Message));
+            }
+
+            var tokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(10),
+            };
+
+            Response.Cookies.Append("token", response.Data, tokenCookieOptions);
+
+            return Ok(new GeneralResponse(response.Flag, response.Message));
+        }
+
         [HttpPost]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Register(UserRequest userRequest)
         {
-            var response = await _userAccountRepository.CreateUserAccountAsync(userRequest);
+            var response = await _userManagmentService.CreateUserAccountAsync(userRequest);
             if (!response.Flag)
             {
                 _logger.LogError(JsonConvert.SerializeObject(response.Message));
@@ -42,7 +78,6 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(GeneralResponse<UserLoginResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
@@ -53,7 +88,7 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "You're already logged in"));
             }
 
-            var response = await _userAccountRepository.LoginAccountAsync(loginRequest);
+            var response = await _userAuthenticationService.LoginAccountAsync(loginRequest);
 
             if (!response.Flag)
             {
@@ -64,11 +99,19 @@ namespace IdentityServerApi.Host.Controllers
             var tokenCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTime.UtcNow.AddMinutes(60),
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(10),
             };
 
-            Response.Cookies.Append("token", response.Token, tokenCookieOptions);
+            var refreshTokenCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(10),
+            };
+
+            Response.Cookies.Append("token", response.AccessToken, tokenCookieOptions);
+            Response.Cookies.Append("refresh-token", response.RefreshToken, refreshTokenCookieOptions);
 
             return Ok(new GeneralResponse<UserLoginResponse>(true, response.Message, new UserLoginResponse
             {
@@ -85,6 +128,7 @@ namespace IdentityServerApi.Host.Controllers
         public async Task<IActionResult> LogOut()
         {
             Response.Cookies.Delete("token");
+            Response.Cookies.Delete("refresh-token");
 
             return Ok(new GeneralResponse(true, "Exited"));
         }
@@ -95,7 +139,7 @@ namespace IdentityServerApi.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetRoles()
         {
-            var response = await _userAccountRepository.GetRolesAsync();
+            var response = await _userRoleService.GetRolesAsync();
 
             if (!response.Flag)
             {
@@ -118,7 +162,7 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
             }
 
-            var response = await _userAccountRepository.ChangeRoleAccountAsync(roleRequest);
+            var response = await _userRoleService.ChangeRoleAccountAsync(roleRequest);
 
             if (!response.Flag)
             {
@@ -141,7 +185,7 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
             }
 
-            var response = await _userAccountRepository.DeleteUserAccountAsync(userName.Name);
+            var response = await _userManagmentService.DeleteUserAccountAsync(userName.Name);
 
             if (!response.Flag)
             {

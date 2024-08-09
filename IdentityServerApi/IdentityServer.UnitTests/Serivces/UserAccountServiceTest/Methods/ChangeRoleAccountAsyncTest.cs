@@ -38,7 +38,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.AddToRoleAsync(userApp, request.Role))
                 .ReturnsAsync(identityResult);
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(true, $"Role was change in {request.UserName}"));
         }
@@ -52,7 +52,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
                 UserName = "Name"
             };
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(false, $"Such role: {request.Role}, doesn't exist"));
         }
@@ -72,7 +72,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
                It.IsAny<string>()))
                .ReturnsAsync(userApp);
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(false, "User not found"));
         }
@@ -95,7 +95,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.GetRolesAsync(userApp))
                 .ReturnsAsync(roles);
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(false, "User already has such a role"));
         }
@@ -122,7 +122,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.RemoveFromRoleAsync(userApp, roles.FirstOrDefault()))
                 .ReturnsAsync(identityResult);
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(false, "User hasn't any role"));
         }
@@ -154,7 +154,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(x => x.AddToRoleAsync(userApp, request.Role))
                 .ReturnsAsync(identityResultAddRole);
 
-            var result = await UserAccountService.ChangeRoleAccountAsync(request);
+            var result = await UserRoleService.ChangeRoleAccountAsync(request);
 
             result.Should().Be(new GeneralResponse(false, "Error occured.. please try again"));
         }

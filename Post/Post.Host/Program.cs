@@ -48,12 +48,12 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
 builder.Services.AddAuthentication()
   .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddControllers();
 builder.Services.Configure<PostConfig>(configuration);
-builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddTransient<IPostBffRepository,  PostBffRepository>();

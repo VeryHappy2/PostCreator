@@ -24,13 +24,13 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(um => um.GetRolesAsync(It.IsAny<UserApp>())).ReturnsAsync(roles);
 
             // Act
-            var result = await UserAccountService.LoginAccountAsync(loginRequest);
+            var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);
 
             // Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("Login completed");
             result.Flag.Should().BeTrue();
-            result.Token.Should().NotBeNullOrEmpty();
+            result.AccessToken.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
@@ -42,10 +42,10 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((UserApp)null);
 
             // Act
-            var result = await UserAccountService.LoginAccountAsync(loginRequest);
+            var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);
 
             // Assert
-            result.Token.Should().BeNull();
+            result.AccessToken.Should().BeNull();
             result.Message.Should().Be("Invalid email");
             result.Flag.Should().BeFalse();
         }
@@ -61,10 +61,10 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             UserManager.Setup(um => um.CheckPasswordAsync(It.IsAny<UserApp>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
-            var result = await UserAccountService.LoginAccountAsync(loginRequest);
+            var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);
 
             // Assert
-            result.Token.Should().BeNull();
+            result.AccessToken.Should().BeNull();
             result.Message.Should().Be("Invalid password");
             result.Flag.Should().BeFalse();
         }
@@ -76,10 +76,10 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             LoginRequest? loginRequest = null;
 
             // Act
-            var result = await UserAccountService.LoginAccountAsync(loginRequest);
+            var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);
 
             // Assert
-            result.Token.Should().BeNull();
+            result.AccessToken.Should().BeNull();
             result.Message.Should().Be("Login request is empty");
             result.Flag.Should().BeFalse();
         }

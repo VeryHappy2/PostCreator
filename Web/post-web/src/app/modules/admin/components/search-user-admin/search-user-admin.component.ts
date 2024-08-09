@@ -45,7 +45,7 @@ export class SearchUserAdminComponent implements OnInit {
   }    
 
   private onUserNameChange(userName: string): Observable<Array<ISearchAdminUserResponse>> {
-    const cachedUsers: Array<ISearchAdminUserResponse> | null = this.sessionSearchService.getData<Array<ISearchAdminUserResponse>>(userName)
+    const cachedUsers: Array<ISearchAdminUserResponse> | null = this.sessionSearchService.getData<Array<ISearchAdminUserResponse>>(`adminsearch${userName}`)
     if (cachedUsers) {
       return of(cachedUsers)
     }
@@ -56,7 +56,7 @@ export class SearchUserAdminComponent implements OnInit {
       return this.http.post<IByNameRequest<string | null>, IGeneralResponse<Array<ISearchAdminUserResponse>>>(`${identityServerUrl}/accountbff/searchbynameadmin`, request).pipe(
         map(response => {
           const users = response.data || [];
-          this.sessionSearchService.saveData<Array<ISearchAdminUserResponse>>(userName, users);
+          this.sessionSearchService.saveData<Array<ISearchAdminUserResponse>>(`adminsearch${userName}`, users);
           return users;
         }))
     }

@@ -37,15 +37,17 @@ export class LoginComponent {
     if (user.email && user.password) {
       this.http.post<IUserLoginRequest, ILogInResponse>(`${identityServerUrl}/account/login`, user)
         .pipe(take(1))
-        .subscribe((response: ILogInResponse) => {
+        .subscribe({
+          next: (response: ILogInResponse) => {
             this.tokenStorage.saveId(response.data?.id!);
             this.tokenStorage.saveUsername(response.data?.userName!);
             this.tokenStorage.saveRole(response.data?.role!)
 
             this.router.navigate([`${response.data?.role.toLowerCase()}/dashboard`])
-        },
-        (error: HttpErrorResponse) => {
-          this.check = error.error
+          },
+          error: (error: HttpErrorResponse) => {
+            this.check = error.error
+          }
         })
     } 
   }
