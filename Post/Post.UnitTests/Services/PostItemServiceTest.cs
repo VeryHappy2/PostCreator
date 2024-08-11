@@ -1,18 +1,7 @@
-﻿using AutoMapper;
-using Infrastructure.Services.Interfaces;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Post.Host.Repositories.Interfaces;
-using Post.Host.Services.Interfaces;
-using Post.Host.Services;
+﻿using Post.Host.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Post.Host.Data.Entities;
-using Post.Host.Data;
 
 namespace Post.UnitTests.Services
 {

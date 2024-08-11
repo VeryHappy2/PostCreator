@@ -82,10 +82,24 @@ namespace IdentityServerApi.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            if (Request.Cookies.ContainsKey("token"))
+            if (Request.Cookies.ContainsKey("token")
+                && Request.Cookies.ContainsKey("refresh-token"))
             {
-                _logger.LogError("You're already logged in");
+                _logger.LogError("Cookie has already token and refresh-token");
                 return BadRequest(new GeneralResponse(false, "You're already logged in"));
+            }
+
+            if (Request.Cookies.ContainsKey("refresh-token"))
+            {
+                _logger.LogError("User hasn't an access token but has refresh-token");
+                var refreshToken = Request.Cookies["refresh-token"];
+
+                var responseToken = await _userAuthenticationService.RefreshToken(refreshToken!);
+
+                if (!responseToken.Flag)
+                    return BadRequest(responseToken);
+
+                return Ok(responseToken);
             }
 
             var response = await _userAuthenticationService.LoginAccountAsync(loginRequest);

@@ -4,9 +4,9 @@ using IdentityServerApi.Host.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
+namespace IdentityServer.UnitTests.Serivces.UserManagmentServiceTest.Methods
 {
-    public class DeleteUserAccountTest : UserAccountServiceBaseTest
+    public class DeleteUserAccountTest : UserManagmentServiceBaseTest
     {
         public DeleteUserAccountTest() : base()
         {

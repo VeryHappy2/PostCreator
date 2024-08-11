@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using IdentityServerApi.Host.Data;
+﻿using IdentityServerApi.Host.Data;
 using IdentityServerApi.Host.Repositories.Interfaces;
 using IdentityServerApi.Host.Services;
 using Infrastructure.Services;

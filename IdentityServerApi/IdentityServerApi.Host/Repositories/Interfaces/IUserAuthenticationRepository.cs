@@ -4,6 +4,6 @@ namespace IdentityServerApi.Host.Repositories.Interfaces
 {
     public interface IUserAuthenticationRepository
     {
-        public Task<RefreshTokenEntity> GetByIdRefreshToken(string token);
+        public Task<RefreshTokenEntity> GetByRefreshToken(string token);
     }
 }

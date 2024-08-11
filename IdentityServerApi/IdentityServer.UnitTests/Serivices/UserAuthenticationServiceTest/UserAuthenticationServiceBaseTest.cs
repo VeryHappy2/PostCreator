@@ -3,28 +3,37 @@ using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Repositories.Interfaces;
 using IdentityServerApi.Host.Services;
 using IdentityServerApi.Host.Services.Interfaces;
+using Infrastructure.Services;
+using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest
+namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest
 {
-    public class UserAccountServiceBaseTest
+    public class UserAuthenticationServiceBaseTest
     {
         protected readonly IUserAuthenticationService UserAuthenticationService;
-        protected readonly IUserRoleService UserRoleService;
-        protected readonly IUserManagmentService UserManagmentService;
 
         protected readonly Mock<UserManager<UserApp>> UserManager;
-        protected readonly Mock<RoleManager<IdentityRole>> RoleManager;
         protected readonly IConfiguration Config;
         protected readonly ApplicationDbContext Context;
         protected readonly Mock<IUserAuthenticationRepository> UserAuthenticationRepository;
-        public UserAccountServiceBaseTest()
+
+        private readonly Mock<ILogger<BaseDataService<ApplicationDbContext>>> _logger;
+        private readonly Mock<IDbContextWrapper<ApplicationDbContext>> _dbContextWrapper;
+        public UserAuthenticationServiceBaseTest()
         {
+            _logger = new Mock<ILogger<BaseDataService<ApplicationDbContext>>>();
+            _dbContextWrapper = new Mock<IDbContextWrapper<ApplicationDbContext>>();
+            var dbContextTransaction = new Mock<IDbContextTransaction>();
+
+            _dbContextWrapper.Setup(s => s.BeginTransactionAsync(CancellationToken.None)).ReturnsAsync(dbContextTransaction.Object);
+
             var userStore = new Mock<IUserStore<UserApp>>();
-            var roleStore = new Mock<IRoleStore<IdentityRole>>();
 
             var inMemorySettings = new Dictionary<string, string>
             {
@@ -57,25 +66,13 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest
                 null!,
                 null!);
 
-            RoleManager = new Mock<RoleManager<IdentityRole>>(
-                roleStore.Object,
-                null!,
-                null!,
-                null!,
-                null!);
-
             UserAuthenticationService = new UserAuthenticationService(
+                _dbContextWrapper.Object,
+                _logger.Object,
                 UserManager.Object,
                 Config,
                 Context,
                 UserAuthenticationRepository.Object);
-
-            UserRoleService = new UserRoleService(
-                UserManager.Object,
-                RoleManager.Object);
-
-            UserManagmentService = new UserManagmentService(
-                UserManager.Object);
         }
     }
 }

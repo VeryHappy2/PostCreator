@@ -14,7 +14,7 @@ namespace IdentityServerApi.Host.Repositories
             _context = context;
         }
 
-        public async Task<RefreshTokenEntity> GetByIdRefreshToken(string refreshToken)
+        public async Task<RefreshTokenEntity> GetByRefreshToken(string refreshToken)
         {
             if (string.IsNullOrEmpty(refreshToken))
             {

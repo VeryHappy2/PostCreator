@@ -3,9 +3,9 @@ using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Requests;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
+namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest.Methods
 {
-    public class LoginAccountAsyncTest : UserAccountServiceBaseTest
+    public class LoginAccountAsyncTest : UserAuthenticationServiceBaseTest
     {
         public LoginAccountAsyncTest() : base()
         {
@@ -19,9 +19,15 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             var user = new UserApp { Id = "1", UserName = "testuser", Email = "test12312@example.com", PasswordHash = "User@123" };
             var roles = new List<string> { "User" };
 
-            UserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
-            UserManager.Setup(um => um.CheckPasswordAsync(It.IsAny<UserApp>(), It.IsAny<string>())).ReturnsAsync(true);
-            UserManager.Setup(um => um.GetRolesAsync(It.IsAny<UserApp>())).ReturnsAsync(roles);
+            UserManager
+                .Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            UserManager
+                .Setup(um => um.CheckPasswordAsync(It.IsAny<UserApp>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            UserManager
+                .Setup(um => um.GetRolesAsync(It.IsAny<UserApp>()))
+                .ReturnsAsync(roles);
 
             // Act
             var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);
@@ -57,8 +63,12 @@ namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
             var loginRequest = new LoginRequest { Email = "test@example.com", Password = "wrongpassword" };
             var user = new UserApp { Id = "1", UserName = "testuser", Email = "test@example.com" };
 
-            UserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
-            UserManager.Setup(um => um.CheckPasswordAsync(It.IsAny<UserApp>(), It.IsAny<string>())).ReturnsAsync(false);
+            UserManager
+                .Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            UserManager
+                .Setup(um => um.CheckPasswordAsync(It.IsAny<UserApp>(), It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);

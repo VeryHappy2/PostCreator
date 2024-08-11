@@ -4,9 +4,9 @@ using IdentityServerApi.Host.Models.Requests;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAccountServiceTest.Methods
+namespace IdentityServer.UnitTests.Serivces.UserManagmentServiceTest.Methods
 {
-    public class CreateUserAccountAsyncTest : UserAccountServiceBaseTest
+    public class CreateUserAccountAsyncTest : UserManagmentServiceBaseTest
     {
         public CreateUserAccountAsyncTest() : base()
         {

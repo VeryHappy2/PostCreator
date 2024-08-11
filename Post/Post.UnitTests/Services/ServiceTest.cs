@@ -33,7 +33,9 @@ namespace Post.UnitTests.Services
 
             var dbContextTransaction = new Mock<IDbContextTransaction>();
 
-            _dbContextWrapper.Setup(s => s.BeginTransactionAsync(CancellationToken.None)).ReturnsAsync(dbContextTransaction.Object);
+            _dbContextWrapper
+                .Setup(s => s.BeginTransactionAsync(CancellationToken.None))
+                .ReturnsAsync(dbContextTransaction.Object);
             _service = new ServiceObject<TEntity, TService>(_dbContextWrapper.Object, _logger.Object, _mapper.Object, _repository.Object);
         }
 
@@ -55,7 +57,9 @@ namespace Post.UnitTests.Services
             TEntity? entity = null;
             int? id = null;
 
-            _repository.Setup(x => x.AddAsync(It.IsAny<TEntity>())).ReturnsAsync(id);
+            _repository
+                .Setup(x => x.AddAsync(It.IsAny<TEntity>()))
+                .ReturnsAsync(id);
 
             var result = await _service.Service.AddAsync(entity);
 
@@ -67,7 +71,9 @@ namespace Post.UnitTests.Services
             var entity = new TEntity();
             int id = 123;
 
-            _repository.Setup(x => x.UpdateAsync(It.IsAny<TEntity>())).ReturnsAsync(id);
+            _repository
+                .Setup(x => x.UpdateAsync(It.IsAny<TEntity>()))
+                .ReturnsAsync(id);
 
             var result = await _service.Service.UpdateAsync(entity);
 
@@ -80,7 +86,9 @@ namespace Post.UnitTests.Services
             TEntity? entity = null;
             int? id = null;
 
-            _repository.Setup(x => x.UpdateAsync(It.IsAny<TEntity>())).ReturnsAsync(id);
+            _repository
+                .Setup(x => x.UpdateAsync(It.IsAny<TEntity>()))
+                .ReturnsAsync(id);
 
             var result = await _service.Service.UpdateAsync(entity);
 
@@ -93,7 +101,9 @@ namespace Post.UnitTests.Services
             int id = 123;
             string response = $"Object with id: {id} was successfully removed";
 
-            _repository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(response);
+            _repository
+                .Setup(x => x.DeleteAsync(It.IsAny<int>()))
+                .ReturnsAsync(response);
 
             string result = await _service.Service.DeleteAsync(id);
 
@@ -107,7 +117,9 @@ namespace Post.UnitTests.Services
             int id = 123;
             string? response = null;
 
-            _repository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(response);
+            _repository
+                .Setup(x => x.DeleteAsync(It.IsAny<int>()))
+                .ReturnsAsync(response);
 
             string result = await _service.Service.DeleteAsync(id);
 

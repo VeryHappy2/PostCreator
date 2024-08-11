@@ -100,12 +100,13 @@ namespace Post.UnitTests.Services
                 UserName = "name"
             };
 
-            _postBffRepository.Setup(s => s.GetByPageAsync(
-                It.Is<PageItemRequest>(i => i == request)))
+            _postBffRepository
+                .Setup(s => s.GetByPageAsync(It.Is<PageItemRequest>(i => i == request)))
                 .ReturnsAsync(pagingPaginatedItemsSuccess);
 
-            _mapper.Setup(s => s.Map<PostItemDto>(
-                It.Is<PostItemEntity>(i => i.Equals(postItemSuccess)))).Returns(postItemDtoSuccess);
+            _mapper
+                .Setup(s => s.Map<PostItemDto>(It.Is<PostItemEntity>(i => i.Equals(postItemSuccess))))
+                .Returns(postItemDtoSuccess);
 
             // act
             var result = await _service.GetPostByPageAsync(request);
@@ -181,8 +182,8 @@ namespace Post.UnitTests.Services
                 UserName = "name"
             };
 
-            _postBffRepository.Setup(s => s.GetByPageAsync(
-                It.Is<PageItemRequest>(i => i == request)))
+            _postBffRepository
+                .Setup(s => s.GetByPageAsync(It.Is<PageItemRequest>(i => i == request)))
                 .ReturnsAsync(pagingPaginatedItemsSuccess);
 
             // act
@@ -199,11 +200,13 @@ namespace Post.UnitTests.Services
             PostItemEntity postEntity = new PostItemEntity();
             PostItemDto postDto = new PostItemDto();
 
-            _postBffRepository.Setup(x => x.GetPostByIdAsync(
-                It.IsAny<int>())).ReturnsAsync(postEntity);
+            _postBffRepository
+                .Setup(x => x.GetPostByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(postEntity);
 
-            _mapper.Setup(s => s.Map<PostItemDto>(
-                It.Is<PostItemEntity>(i => i.Equals(postEntity)))).Returns(postDto);
+            _mapper
+                .Setup(s => s.Map<PostItemDto>(It.Is<PostItemEntity>(i => i.Equals(postEntity))))
+                .Returns(postDto);
 
             var result = _service.GetPostByIdAsync(id);
 
@@ -217,11 +220,13 @@ namespace Post.UnitTests.Services
             PostItemEntity? postEntity = null;
             PostItemDto? postDto = null;
 
-            _postBffRepository.Setup(x => x.GetPostByIdAsync(
-                It.IsAny<int>())).ReturnsAsync(postEntity);
+            _postBffRepository
+                .Setup(x => x.GetPostByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(postEntity);
 
-            _mapper.Setup(s => s.Map<PostItemDto>(
-                It.Is<PostItemEntity>(i => i.Equals(postEntity)))).Returns(postDto);
+            _mapper
+                .Setup(s => s.Map<PostItemDto>(It.Is<PostItemEntity>(i => i.Equals(postEntity))))
+                .Returns(postDto);
 
             var result = await _service.GetPostByIdAsync(id);
 
@@ -234,10 +239,13 @@ namespace Post.UnitTests.Services
             List<PostCategoryDto> postCategoryDtos = new List<PostCategoryDto>();
             List<PostCategoryEntity> postCategories = new List<PostCategoryEntity>();
 
-            _postBffRepository.Setup(x => x.GetPostCategoriesAsync()).ReturnsAsync(postCategories);
+            _postBffRepository
+                .Setup(x => x.GetPostCategoriesAsync())
+                .ReturnsAsync(postCategories);
 
-            _mapper.Setup(s => s.Map<List<PostCategoryDto>>(
-                It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories)))).Returns(postCategoryDtos);
+            _mapper
+                .Setup(s => s.Map<List<PostCategoryDto>>(It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories))))
+                .Returns(postCategoryDtos);
 
             var result = await _service.GetPostCategoriesAsync();
 
@@ -250,10 +258,13 @@ namespace Post.UnitTests.Services
             List<PostCategoryDto>? postCategoryDtos = null;
             List<PostCategoryEntity>? postCategories = null;
 
-            _postBffRepository.Setup(x => x.GetPostCategoriesAsync()).ReturnsAsync(postCategories);
+            _postBffRepository
+                .Setup(x => x.GetPostCategoriesAsync())
+                .ReturnsAsync(postCategories);
 
-            _mapper.Setup(s => s.Map<List<PostCategoryDto>>(
-                It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories)))).Returns(postCategoryDtos);
+            _mapper
+                .Setup(s => s.Map<List<PostCategoryDto>>(It.Is<List<PostCategoryEntity>>(i => i.Equals(postCategories))))
+                .Returns(postCategoryDtos);
 
             var result = await _service.GetPostCategoriesAsync();
 
@@ -267,11 +278,13 @@ namespace Post.UnitTests.Services
             List<PostItemEntity> postEntity = new List<PostItemEntity>();
             List<PostItemDto> postDto = new List<PostItemDto>();
 
-            _postBffRepository.Setup(x => x.GetPostsByUserIdAsync(
-                It.IsAny<string>())).ReturnsAsync(postEntity);
+            _postBffRepository
+                .Setup(x => x.GetPostsByUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(postEntity);
 
-            _mapper.Setup(s => s.Map<List<PostItemDto>>(
-                It.Is<List<PostItemEntity>>(i => i.Equals(postEntity)))).Returns(postDto);
+            _mapper
+                .Setup(s => s.Map<List<PostItemDto>>(It.Is<List<PostItemEntity>>(i => i.Equals(postEntity))))
+                .Returns(postDto);
 
             var result = _service.GetPostsByUserIdAsync(userId);
 
@@ -284,8 +297,9 @@ namespace Post.UnitTests.Services
             string userId = "12312";
             List<PostItemEntity>? postEntity = null;
 
-            _postBffRepository.Setup(x => x.GetPostsByUserIdAsync(
-                It.IsAny<string?>())).ReturnsAsync(postEntity);
+            _postBffRepository
+                .Setup(x => x.GetPostsByUserIdAsync(It.IsAny<string?>()))
+                .ReturnsAsync(postEntity);
 
             var result = await _service.GetPostsByUserIdAsync(userId);
 

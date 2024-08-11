@@ -42,7 +42,7 @@ namespace IdentityServerApi.Host.Services
 
         public async Task<GeneralResponse<string>> RefreshToken(string refreshToken)
         {
-            RefreshTokenEntity responseRefreshToken = await _userAuthenticationRepository.GetByIdRefreshToken(refreshToken);
+            RefreshTokenEntity responseRefreshToken = await _userAuthenticationRepository.GetByRefreshToken(refreshToken);
 
             if (responseRefreshToken == null)
             {
