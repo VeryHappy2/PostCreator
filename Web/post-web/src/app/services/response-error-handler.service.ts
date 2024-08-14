@@ -5,6 +5,7 @@ import { TokenStorageService } from './auth/token-storage.service';
 import { identityServerUrl } from '../urls';
 import { IGeneralResponse } from '../models/reponses/GeneralResponse';
 import { take } from 'rxjs';
+import { ErrorService } from './error/error.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class ResponseErrorHandlerService {
   constructor(
     private router: Router,
     private tokenStorage: TokenStorageService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private errorService: ErrorService) { }
 
   public errorHandlers: { [key: number]: () => void } = {
     [HttpStatusCode.BadRequest]: () => this.Handle400(),
@@ -44,7 +46,8 @@ export class ResponseErrorHandlerService {
 
   public Handle500(message: string = "Internal server error"): void {
     console.error(JSON.stringify(message))
-    this.router.navigate(['error'], { state: { error: '500' } })
+    this.errorService.saveError("500")
+    this.router.navigate(['error'])
   }
 
   public HandleDefault(message: any): void {

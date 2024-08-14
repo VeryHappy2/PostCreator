@@ -33,21 +33,15 @@ export class TokenStorageService {
   }
 
   public saveId(id: string): void {
-    localStorage.removeItem(ID_KEY);
-    localStorage.setItem(ID_KEY, id);
-    this.updateUser();
+    this.saveData(ID_KEY, id);
   }
   
   public saveUsername(username: string): void {
-    localStorage.removeItem(USERNAME_KEY);
-    localStorage.setItem(USERNAME_KEY, username);
-    this.updateUser();
+    this.saveData(USERNAME_KEY, username);
   }
 
   public saveRole(role: string): void {
-    localStorage.removeItem(AUTHORITIES_KEY)
-    localStorage.setItem(AUTHORITIES_KEY, role)
-    this.updateUser();
+    this.saveData(AUTHORITIES_KEY, role);
   }
 
   public getRole(): string | null {
@@ -65,6 +59,12 @@ export class TokenStorageService {
   public deleteLocalStorageData() {
     localStorage.clear();
     this.updateUser();
+  }
+
+  private saveData(key: string, data: string) {
+    localStorage.removeItem(key)
+    localStorage.setItem(key, data)
+    this.updateUser()
   }
 
   private updateUser() {

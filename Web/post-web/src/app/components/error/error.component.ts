@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ErrorService } from '../../services/error/error.service';
 
 @Component({
   selector: 'app-error',
@@ -7,14 +8,13 @@ import { Router } from '@angular/router';
   styleUrl: './error.component.scss'
 })
 export class ErrorComponent implements OnInit {
-  protected error: string | null = null;
+  protected error?: string;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private errorService: ErrorService) {}
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras?.state) {
-      this.error = navigation.extras.state['error'];
-    }
+    this.error = this.errorService.error
   }
 }

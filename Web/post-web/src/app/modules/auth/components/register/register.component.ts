@@ -1,11 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { HttpService } from '../../../../services/http.service';
-import { identityServerUrl } from '../../../../urls';
-import { Router } from '@angular/router';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
-import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
@@ -20,11 +17,10 @@ export class RegisterComponent {
     password: new FormControl ('', [Validators.required]),
     confirmPassword: new FormControl ('', [Validators.required])
   })
-  protected check?: IGeneralResponse<null>
+  protected check?: IGeneralResponse<null> | void
 
-  constructor(private http: HttpService, 
-    private router: Router,
-  ) { }
+  constructor(
+    private authService: AuthService) { }
 
   protected signUp(): void {
     const userRegister: IUserRegisterRequest = {
@@ -32,20 +28,13 @@ export class RegisterComponent {
       email: this.userGroup.value.email!,
       password: this.userGroup.value.password!,
       confirmPassword: this.userGroup.value.confirmPassword!
-    }
+    };
 
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
-      this.http.post<IUserRegisterRequest, IGeneralResponse<null>>(`${identityServerUrl}/account/register`, userRegister)
+      this.authService.register(userRegister)
         .pipe(take(1))
-        .subscribe({
-          next:  
-            () => {
-              this.router.navigate(['auth/login'])
-            },
-          error: 
-            (error: HttpErrorResponse) => {
-              this.check = error.error
-            }
+        .subscribe(result => {
+          this.check = result
         });
     }
   }

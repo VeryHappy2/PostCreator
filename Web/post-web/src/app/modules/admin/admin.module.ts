@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SearchUserAdminComponent } from './components/search-user-admin/search-user-admin.component';
+import { ModificationUserService } from './services/modification-user.service';
 
 
 
@@ -30,6 +31,9 @@ import { SearchUserAdminComponent } from './components/search-user-admin/search-
     MatInputModule,
     MatAutocompleteModule,
     ReactiveFormsModule,
+  ],
+  providers: [
+    ModificationUserService
   ]
 })
 export class AdminModule { }

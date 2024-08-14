@@ -14,6 +14,7 @@ import { map } from 'rxjs/internal/operators/map';
 import { HttpService } from '../../../../services/http.service';
 import { of } from 'rxjs/internal/observable/of';
 import { SessionSearchService } from '../../../../services/session/session-search.service';
+import { SearchService as SearchAdminService } from '../../services/search-admin.service';
 
 @Component({
   selector: 'app-search-user-admin',
@@ -25,7 +26,7 @@ export class SearchUserAdminComponent implements OnInit {
   protected filteredUsers?: Observable<Array<ISearchAdminUserResponse>>
 
   constructor(
-    private http: HttpService,
+    private http: SearchAdminService,
     private sessionSearchService: SessionSearchService) { }
 
   ngOnInit(): void {
@@ -53,12 +54,7 @@ export class SearchUserAdminComponent implements OnInit {
       const request: IByNameRequest<string | null> = {
         name: userName
       }
-      return this.http.post<IByNameRequest<string | null>, IGeneralResponse<Array<ISearchAdminUserResponse>>>(`${identityServerUrl}/accountbff/searchbynameadmin`, request).pipe(
-        map(response => {
-          const users = response.data || [];
-          this.sessionSearchService.saveData<Array<ISearchAdminUserResponse>>(`adminsearch${userName}`, users);
-          return users;
-        }))
+      return this.http.searchByNameAdmin(request);
     }
   }
 }

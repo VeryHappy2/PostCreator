@@ -30,17 +30,17 @@ export class SearchUserComponent implements OnInit {
     private sessionService: SessionSearchService) { }
 
   ngOnInit(): void {
-  this.filteredUsers = this.userCtrl.valueChanges.pipe(
-    startWith(""),
-    debounceTime(450),
-    switchMap(value => {
-      console.log("Search user name:" + value)
-      this.userName.emit(value!);
-      if (value === null || value.trim() === '') {
-        return EMPTY;
-      }
-      return this.onUserNameChange(value.trim());
-    }));
+    this.filteredUsers = this.userCtrl.valueChanges.pipe(
+      startWith(""),
+      debounceTime(450),
+      switchMap(value => {
+        console.log("Search user name:" + value)
+        this.userName.emit(value!);
+        if (value === null || value.trim() === '') {
+          return EMPTY;
+        }
+        return this.onUserNameChange(value.trim());
+      }));
   }
 
   public fetchUserNameData(): string  | null {

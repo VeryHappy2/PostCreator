@@ -26,7 +26,7 @@ export class UserItemComponent implements OnInit {
       let userId: IByIdRequest<string> = {
         id: value['id']
       }
-      this.loadUser(userId)
+      this.loadUser(userId);
     })
   }
 

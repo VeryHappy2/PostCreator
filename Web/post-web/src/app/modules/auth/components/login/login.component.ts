@@ -1,13 +1,9 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { HttpService } from '../../../../services/http.service';
-import { identityServerUrl } from '../../../../urls';
-import { Router } from '@angular/router';
-import { TokenStorageService } from '../../../../services/auth/token-storage.service';
 import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
-import { HttpErrorResponse } from '@angular/common/http';
-import { take } from 'rxjs/internal/operators/take';
+import { AuthService } from '../../services/auth.service';
+import { take } from 'rxjs';
 
 
 @Component({
@@ -20,13 +16,11 @@ export class LoginComponent {
     userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
-  protected check?: ILogInResponse
+  protected check?: ILogInResponse | void
   protected hidePassword = true
   
   constructor(
-    private http: HttpService,
-    private router: Router,
-    private tokenStorage: TokenStorageService) { }
+    private authService: AuthService) { }
 
   protected logIn(): void {
     const user: IUserLoginRequest = {
@@ -35,20 +29,12 @@ export class LoginComponent {
     };
 
     if (user.email && user.password) {
-      this.http.post<IUserLoginRequest, ILogInResponse>(`${identityServerUrl}/account/login`, user)
+      this.authService
+        .login(user)
         .pipe(take(1))
-        .subscribe({
-          next: (response: ILogInResponse) => {
-            this.tokenStorage.saveId(response.data?.id!);
-            this.tokenStorage.saveUsername(response.data?.userName!);
-            this.tokenStorage.saveRole(response.data?.role!)
-
-            this.router.navigate([`${response.data?.role.toLowerCase()}/dashboard`])
-          },
-          error: (error: HttpErrorResponse) => {
-            this.check = error.error
-          }
-        })
+        .subscribe(result => {
+          this.check = result
+        });
     } 
   }
 }

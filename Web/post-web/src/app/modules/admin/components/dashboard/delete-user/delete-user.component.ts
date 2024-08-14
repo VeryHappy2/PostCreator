@@ -3,8 +3,9 @@ import { HttpService } from '../../../../../services/http.service';
 import { identityServerUrl, postUrl } from '../../../../../urls';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { IByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
-import { take } from 'rxjs/internal/operators/take';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
+import { take } from 'rxjs';
+import { ModificationUserService } from '../../../services/modification-user.service';
 
 
 @Component({
@@ -14,20 +15,18 @@ import { SearchUserAdminComponent } from '../../search-user-admin/search-user-ad
 })
 export class DeleteUserComponent {
   @ViewChild("search") searcherUserAdmin!: SearchUserAdminComponent
+  protected check?: IGeneralResponse<null>
 
-  constructor(private http: HttpService) { }
+  constructor(private modificationSerivice: ModificationUserService) { }
 
-  protected delete(): void {
+  protected async delete() {
     const userName = this.searcherUserAdmin.fetchUserNameData();
     if (userName) {
       const request: IByNameRequest<string> = {
         name: this.searcherUserAdmin.fetchUserNameData()!
-      }
-      this.http.post<IByNameRequest<string>, IGeneralResponse<null>>(`${identityServerUrl}/account/delete`, request)
-        .subscribe({
-          next: (response) => console.log(response.message),
-          error: (err) => console.error('Error occurred:', err)
-        })
+      };
+
+      this.check = await this.modificationSerivice.deleteUserAsync(request);
     }
     else {
       console.warn("User name data is invalid");

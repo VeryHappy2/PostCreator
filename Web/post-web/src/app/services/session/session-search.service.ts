@@ -7,7 +7,7 @@ import { ICache } from '../../models/Сache';
 })
 export class SessionSearchService implements SessionService {
 
-  constructor(private sessionsService: SessionService) { }
+  constructor(private sessionService: SessionService) { }
 
   public removeData(key: string): void {
     sessionStorage.removeItem(key);
@@ -26,7 +26,7 @@ export class SessionSearchService implements SessionService {
   }
 
   public getData<TData>(key: string): TData | null {
-    const cached = this.sessionsService.getData<ICache<TData>>(key);
+    const cached = this.sessionService.getData<ICache<TData>>(key);
     if (!cached) {
       return null;
     }

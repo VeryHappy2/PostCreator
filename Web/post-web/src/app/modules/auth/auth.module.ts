@@ -9,6 +9,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { LoginComponent } from './components/login/login.component';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -26,5 +27,8 @@ import { LoginComponent } from './components/login/login.component';
     MatButtonModule,
     MatIconModule
   ],
+  providers: [
+    AuthService
+  ]
 })
 export class AuthModule { }
