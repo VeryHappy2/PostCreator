@@ -6,13 +6,11 @@ import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 import { startWith } from 'rxjs/internal/operators/startWith';
 import { EMPTY } from 'rxjs/internal/observable/empty';
 import { IByNameRequest } from '../../../../models/requests/user/ByNameRequest';
-import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
-import { identityServerUrl } from '../../../../urls';
-import { map } from 'rxjs/internal/operators/map';
 import { HttpService } from '../../../../services/http.service';
 import { of } from 'rxjs/internal/observable/of';
 import { SessionSearchService } from '../../../../services/session/session-search.service';
 import { ISearchUserResponse } from '../../../../models/reponses/SearchUserResponse';
+import { SearchService } from '../../services/search.service';
 
 @Component({
   selector: 'app-search-user',
@@ -27,7 +25,8 @@ export class SearchUserComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private sessionService: SessionSearchService) { }
+    private sessionService: SessionSearchService,
+    private searchUser: SearchService) { }
 
   ngOnInit(): void {
     this.filteredUsers = this.userCtrl.valueChanges.pipe(
@@ -57,13 +56,8 @@ export class SearchUserComponent implements OnInit {
       const request: IByNameRequest<string | null> = {
         name: userName
       }
-      console.log(JSON.stringify(request))
-      return this.http.post<IByNameRequest<string | null>, IGeneralResponse<Array<ISearchUserResponse>>>(`${identityServerUrl}/accountbff/searchbynameuser`, request).pipe(
-        map(response => {
-          const users = response.data || [];
-          this.sessionService.saveData(userName, users);
-          return users;
-        }))
+      
+      return this.searchUser.searchUsersByName(request)
     }
   }
 }

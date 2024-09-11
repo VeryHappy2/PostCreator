@@ -30,7 +30,7 @@ namespace IdentityServerApi.Host.Services
             var userResponseFromEmail = await userManager.FindByEmailAsync(newUser.Email);
 
             if (userResponseFromEmail != null)
-                return new GeneralResponse(false, $"Email: {userResponseFromEmail.UserName} registered already");
+                return new GeneralResponse(false, $"Email: {userResponseFromEmail.Email} registered already");
 
             var createUser = await userManager.CreateAsync(newUser!, userRequest.Password);
 
@@ -41,19 +41,19 @@ namespace IdentityServerApi.Host.Services
             return new GeneralResponse(true, "Account Created");
         }
 
-        public async Task<GeneralResponse> DeleteUserAccountAsync(string userName)
+        public async Task<GeneralResponse<string>> DeleteUserAccountAsync(string userName)
         {
             var user = await userManager.FindByNameAsync(userName);
 
             if (user == null)
-                return new GeneralResponse(false, $"The {userName} wasn't found");
+                return new GeneralResponse<string>(false, $"The {userName} wasn't found", null);
 
             var result = await userManager.DeleteAsync(user);
 
-            if (result.Succeeded)
-                return new GeneralResponse(false, "Error occured.. please try again");
+            if (!result.Succeeded)
+                return new GeneralResponse<string>(false, "Error occured.. please try again", null);
 
-            return new GeneralResponse(true, $"The {user.UserName} was deleted");
+            return new GeneralResponse<string>(true, $"The {user.UserName} was deleted", user.Id);
         }
     }
 }

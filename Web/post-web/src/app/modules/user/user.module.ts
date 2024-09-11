@@ -8,8 +8,8 @@ import { UserPostComponent } from './components/user-post/user-post.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedModule } from '../shared/shared.module';
-
-
+import { UserService } from './services/user.service';
+import { PostManagmentService } from './services/post-managment.service';
 
 @NgModule({
   declarations: [
@@ -24,6 +24,10 @@ import { SharedModule } from '../shared/shared.module';
     MatIconModule,
     MatButtonModule,
     SharedModule
+  ],
+  providers: [
+    UserService,
+    PostManagmentService
   ]
 })
 export class UserModule { }

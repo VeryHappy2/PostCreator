@@ -24,10 +24,15 @@ export class AuthService {
       .pipe(
         take(1),
         tap((response: ILogInResponse) => {
-          this.tokenStorage.saveId(response.data?.id!);
-          this.tokenStorage.saveUsername(response.data?.userName!);
-          this.tokenStorage.saveRole(response.data?.role!);
-          this.router.navigate([`${response.data?.role.toLowerCase()}/dashboard`]);
+          const data = response.data
+          if (data?.id && 
+            data.role && 
+            data.userName) {
+            this.tokenStorage.saveId(data.id);
+            this.tokenStorage.saveUsername(data.userName);
+            this.tokenStorage.saveRole(data.role);
+            this.router.navigate([`${data.role.toLowerCase()}/dashboard`]);
+          }
         })
       );
   }

@@ -17,12 +17,13 @@
       Not found any categories
     }
     <p>Title</p>
-    <textarea class="title-area" formControlName="title" maxlength="50"></textarea>
+    <textarea class="title-area" formControlName="title" maxlength="150"></textarea>
 
     <p>Content</p>
     <textarea class="content-area" formControlName="content" maxlength="3000" appAutoResizeTextarea></textarea>
 </div>
 <button mat-button (click)="createPost()">Create post</button>
-@if (!errorMessage?.flag && errorMessage) {
-  <p><b style="color:rgb(236, 0, 0);">{{errorMessage.message}}</b></p>
+
+@if (!check?.flag) {
+  <p style="color: red;">{{check?.message}}</p>
 }

@@ -41,6 +41,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "post-web(1)", "Web\post-web
 		SlnRelativePath = "Web\post-web\"
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.UnitTests", "Infrastructure\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{093B9E07-2B17-42A1-9E08-4B60B90BBA77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{815C3FA0-A76E-40AF-9965-066AE3E2F2C3}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{093B9E07-2B17-42A1-9E08-4B60B90BBA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093B9E07-2B17-42A1-9E08-4B60B90BBA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093B9E07-2B17-42A1-9E08-4B60B90BBA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093B9E07-2B17-42A1-9E08-4B60B90BBA77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

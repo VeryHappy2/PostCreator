@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { HttpService } from '../../../../services/http.service';
 import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
-import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IPostItem } from '../../../../models/enities/PostItem';
-import { postUrl } from '../../../../urls';
 import { take } from 'rxjs/internal/operators/take';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-user-item',
@@ -19,7 +17,7 @@ export class UserItemComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpService) { }
+    private user: UserService) { }
 
   ngOnInit(): void {
     this.route.params.pipe(take(1)).subscribe((value: Params) => {
@@ -35,10 +33,8 @@ export class UserItemComponent implements OnInit {
   }
 
   private loadUser(id: IByIdRequest<string>): void {
-    this.http
-      .post<IByIdRequest<string>, IGeneralResponse<Array<IPostItem>>>(`${postUrl}/postbff/getpostsbyuserid`, id)
+    this.user.getPostsByUserId(id)
       .pipe(take(1))
-      .subscribe(resp => 
-        this.posts = resp.data)
+      .subscribe(resp => this.posts = resp.data)
   }
 }

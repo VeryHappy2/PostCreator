@@ -4,6 +4,7 @@ import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { take } from 'rxjs';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  protected userGroup = new FormGroup({
+  public userGroup = new FormGroup({
     userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
@@ -32,8 +33,10 @@ export class LoginComponent {
       this.authService
         .login(user)
         .pipe(take(1))
-        .subscribe(result => {
-          this.check = result
+        .subscribe({ 
+          error: (err: HttpErrorResponse) => {
+            this.check = err.error
+          }
         });
     } 
   }

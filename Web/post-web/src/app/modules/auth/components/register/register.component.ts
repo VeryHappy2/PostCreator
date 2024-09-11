@@ -4,6 +4,7 @@ import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/internal/operators/take';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -11,18 +12,18 @@ import { take } from 'rxjs/internal/operators/take';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  protected userGroup = new FormGroup({
+  public userGroup = new FormGroup({
     name: new FormControl ('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl ('', [Validators.required]),
     confirmPassword: new FormControl ('', [Validators.required])
   })
-  protected check?: IGeneralResponse<null> | void
+  public check?: IGeneralResponse<null> | void
 
   constructor(
     private authService: AuthService) { }
 
-  protected signUp(): void {
+  public signUp(): void {
     const userRegister: IUserRegisterRequest = {
       name: this.userGroup.value.name!,
       email: this.userGroup.value.email!,
@@ -33,8 +34,10 @@ export class RegisterComponent {
     if (userRegister.name && userRegister.email && userRegister.password && userRegister.confirmPassword) {
       this.authService.register(userRegister)
         .pipe(take(1))
-        .subscribe(result => {
-          this.check = result
+        .subscribe({
+          error: (err: HttpErrorResponse) => {
+            this.check = err.error
+          }
         });
     }
   }

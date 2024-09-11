@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { ErrorService } from '../../services/error/error.service';
 
 @Component({
@@ -11,7 +10,6 @@ export class ErrorComponent implements OnInit {
   protected error?: string;
 
   constructor(
-    private router: Router,
     private errorService: ErrorService) {}
 
   ngOnInit(): void {

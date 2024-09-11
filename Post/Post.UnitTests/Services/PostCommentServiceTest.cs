@@ -1,12 +1,36 @@
 ﻿using Post.Host.Services;
 using Post.Host.Data.Entities;
+using Moq;
+using Post.Host.Repositories.Interfaces;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using Infrastructure.Services;
+using Post.Host.Data;
+using Infrastructure.Services.Interfaces;
 
 namespace Post.UnitTests.Services
 {
     public class PostCommentServiceTest : ServiceTest<PostCommentEntity, PostCommentService>
     {
-        public PostCommentServiceTest() : base()
+        public PostCommentServiceTest() : base((dbContextWrapper, logger, mapper, baseRepository) =>
+            new PostCommentService(
+                dbContextWrapper,
+                logger,
+                mapper,
+                baseRepository))
         {
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_Failed()
+        {
+            await GetByIdAsync_Failed_Test();
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_Success()
+        {
+            await GetByIdAsync_Success_Test();
         }
 
         [Fact]

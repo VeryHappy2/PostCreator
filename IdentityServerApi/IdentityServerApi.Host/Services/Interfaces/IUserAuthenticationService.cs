@@ -6,6 +6,6 @@ namespace IdentityServerApi.Host.Services.Interfaces
     public interface IUserAuthenticationService
     {
         Task<LoginResponse> LoginAccountAsync(LoginRequest loginRequest);
-        Task<GeneralResponse<string>> RefreshToken(string refreshToken);
+        Task<GeneralResponse<string>> RefreshToken(string refreshToken, HttpContext context);
     }
 }

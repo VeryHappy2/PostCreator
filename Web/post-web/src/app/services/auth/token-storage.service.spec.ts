@@ -3,6 +3,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TokenStorageService } from './token-storage.service';
 import { HttpService } from '../http.service';
 import { identityServerUrl } from '../../urls';
+import { of } from 'rxjs/internal/observable/of';
+import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { throwError } from 'rxjs';
 
 const ID_KEY = "authid"
 const USERNAME_KEY = "authusername";
@@ -10,7 +13,7 @@ const AUTHORITIES_KEY = "authauthorities";
 
 describe('TokenStorageService', () => {
   let service: TokenStorageService;
-  let httpTestingController: HttpTestingController;
+  let http: HttpService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -23,16 +26,12 @@ describe('TokenStorageService', () => {
       ]
     });
 
+    http = TestBed.inject(HttpService)
     service = TestBed.inject(TokenStorageService);
-    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  afterEach(() => {
-    httpTestingController.verify();
   });
 
   it("should clear localstorage and update the user", () => {
@@ -48,14 +47,13 @@ describe('TokenStorageService', () => {
   it("should to sign out the user from the system", () => {
     spyOn(service, "deleteLocalStorageData").and.callThrough();
     spyOn(console, "log");
+    spyOn(http, "post").and.returnValue(of({ message: "Exited" }));
 
     service.signOut();
 
-    const req = httpTestingController.expectOne(`${identityServerUrl}/account/logout`);
-
-    expect(req.request.method).toBe("POST")
-    req.flush({ flag: true, message: "Exited" })
+    expect(http.post).toHaveBeenCalledOnceWith(`${identityServerUrl}/account/logout`, null)
     expect(console.log).toHaveBeenCalledWith("Exited")
+    expect(service.deleteLocalStorageData).toHaveBeenCalled()
   })
 
   describe("To save an user", () => {
@@ -85,6 +83,41 @@ describe('TokenStorageService', () => {
       expect(service['saveData']).toHaveBeenCalledWith(AUTHORITIES_KEY, "role")
       expect(service['saveData']).toHaveBeenCalled()
     })
+
+    
   })
   
+  describe("refreshAccessToken", () => {
+    it("should to create a request to refresh a token (success)", () => {
+      const resp: IGeneralResponse<null> = {
+        flag: true,
+        data: null,
+        message: "success"
+      }
+
+      spyOn(http, "get").and.returnValue(of(resp))
+      spyOn(console, "log").and.callThrough()
+
+      service.refreshAccessToken()
+      
+      expect(http.get).toHaveBeenCalledOnceWith(`${identityServerUrl}/account/refresh`)
+      expect(console.log).toHaveBeenCalledOnceWith(resp.message)
+    })
+
+    it("should to create a request to refresh a token (error)", () => {
+      const resp: IGeneralResponse<null> = {
+        flag: true,
+        data: null,
+        message: "failed"
+      }
+
+      spyOn(http, "get").and.returnValue(throwError(() => new Error("Error")))
+      spyOn(service, "deleteLocalStorageData").and.callThrough()
+
+      service.refreshAccessToken()
+      
+      expect(http.get).toHaveBeenCalledWith(`${identityServerUrl}/account/refresh`)
+      expect(service.deleteLocalStorageData).toHaveBeenCalled()
+    })
+  })
 });

@@ -4,8 +4,6 @@ services:
   web.angular:
     image: nginx
     container_name: lde.web.angular
-    build:
-      context: .
     environment:
       - ANGULAR_ENVIRONMENT=Development
     volumes:

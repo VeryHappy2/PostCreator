@@ -1,41 +1,34 @@
 using System.Text;
 using IdentityModel.Client;
-using Infrastructure.Configuration;
-using Infrastructure.Identity;
 using Infrastructure.Services.Interfaces;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Infrastructure.Services;
 
-public class InternalHttpClientService : IInternalHttpClientService
+public class HttpClientService : IHttpClientService
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly AuthorizationConfig _authConfig;
-    private readonly ClientConfig _clientConfig;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public InternalHttpClientService(
+    public HttpClientService(
         IHttpClientFactory clientFactory,
-        IOptions<ClientConfig> clientConfig,
-        IOptions<AuthorizationConfig> authConfig)
+        IHttpContextAccessor httpContextAccessor)
     {
         _clientFactory = clientFactory;
-        _authConfig = authConfig.Value;
-        _clientConfig = clientConfig.Value;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<TResponse> SendAsync<TResponse, TRequest>(string url, HttpMethod method, TRequest? content)
     {
         var client = _clientFactory.CreateClient();
-        var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = $"{_authConfig.Authority}/connect/token",
 
-                ClientId = _clientConfig.Id,
-                ClientSecret = _clientConfig.Secret
-            });
+        var token = _httpContextAccessor.HttpContext.Request.Cookies["token"];
 
-        client.SetBearerToken(tokenResponse.AccessToken);
+        if (!string.IsNullOrEmpty(token))
+        {
+            client.SetBearerToken(token);
+        }
 
         var httpMessage = new HttpRequestMessage();
         httpMessage.RequestUri = new Uri(url);
@@ -53,9 +46,9 @@ public class InternalHttpClientService : IInternalHttpClientService
         {
             var resultContent = await result.Content.ReadAsStringAsync();
             var response = JsonConvert.DeserializeObject<TResponse>(resultContent);
-            return response!;
+            return response;
         }
 
-        return default(TResponse) !;
+        return default(TResponse)!;
     }
 }

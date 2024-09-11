@@ -47,4 +47,12 @@ public class PostCommentService : BaseDataService<ApplicationDbContext>, IServic
             return await _repository.UpdateAsync(entity);
         });
     }
+
+    public async Task<PostCommentEntity> GetByIdAsync(int id)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            return await _repository.GetByIdAsync(id);
+        });
+    }
 }

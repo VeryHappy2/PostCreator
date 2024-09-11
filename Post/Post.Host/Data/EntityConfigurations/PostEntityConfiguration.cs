@@ -12,26 +12,33 @@ public class PostEntityConfiguration
         builder.ToTable("PostItem");
 
         builder
-            .HasKey(ci => ci.Id);
+            .HasKey(x => x.Id);
 
-        builder.Property(ci => ci.Id)
+        builder.Property(x => x.Id)
             .IsRequired();
 
-        builder.Property(ci => ci.UserId)
+        builder.Property(x => x.UserId)
             .IsRequired();
 
-        builder.Property(c => c.UserName)
+        builder.Property(x => x.Likes)
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.UserName)
             .IsRequired();
 
-        builder.Property(ci => ci.Date)
+        builder.Property(x => x.Date)
             .IsRequired();
 
-        builder.Property(cb => cb.Title)
-            .HasMaxLength(120)
+        builder.Property(x => x.Title)
+            .HasMaxLength(150)
             .IsRequired();
 
         builder.Property(x => x.Content)
             .HasMaxLength(3000)
+            .IsRequired();
+
+        builder.Property(x => x.Views)
+            .HasDefaultValue(0)
             .IsRequired();
 
         builder.HasOne<PostCategoryEntity>(x => x.Category)

@@ -10,4 +10,6 @@ export interface IPostItem {
     date: string;
     comments: Array<IPostComment> | null;
     category: IPostCategory;
+    views: number
+    likes: number
 }

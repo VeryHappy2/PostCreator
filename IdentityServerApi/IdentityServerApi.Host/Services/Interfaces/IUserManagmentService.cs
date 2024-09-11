@@ -6,6 +6,6 @@ namespace IdentityServerApi.Host.Services.Interfaces
     public interface IUserManagmentService
     {
         Task<GeneralResponse> CreateUserAccountAsync(UserRequest userRequest);
-        Task<GeneralResponse> DeleteUserAccountAsync(string userName);
+        Task<GeneralResponse<string>> DeleteUserAccountAsync(string userName);
     }
 }

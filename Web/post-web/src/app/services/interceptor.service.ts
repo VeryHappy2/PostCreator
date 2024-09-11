@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpErrorResponse, HttpHandler, HttpRequest } from '@angular/common/http';
-import { ResponseErrorHandlerService } from './response-error-handler.service';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { throwError } from 'rxjs/internal/observable/throwError';
-
-const TOKEN_HEADER_KEY = 'Authorization';
+import { ResponseErrorHandlerService } from './error/response-error-handler.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +17,9 @@ export class Interceptor {
     let authReq = req;
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        const handler = this.errorResponse.errorHandlers[error.status] 
-          || (() => this.errorResponse.HandleDefault(error)); 
+        const handler = this.errorResponse.errorHandlers[error.status]
+          || (() => this.errorResponse.HandleDefault(error));
+
         handler();
         return throwError(error);
       })

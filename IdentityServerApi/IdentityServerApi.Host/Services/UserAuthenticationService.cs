@@ -9,7 +9,6 @@ using IdentityServerApi.Host.Services.Interfaces;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -40,12 +39,13 @@ namespace IdentityServerApi.Host.Services
             _userAuthenticationRepository = userAuthenticationRepository;
         }
 
-        public async Task<GeneralResponse<string>> RefreshToken(string refreshToken)
+        public async Task<GeneralResponse<string>> RefreshToken(string refreshToken, HttpContext context)
         {
             RefreshTokenEntity responseRefreshToken = await _userAuthenticationRepository.GetByRefreshToken(refreshToken);
 
             if (responseRefreshToken == null)
             {
+                context.Response.Cookies.Delete("refresh-token");
                 return new GeneralResponse<string>(false, "Not found any refresh token", null!);
             }
 
@@ -68,7 +68,7 @@ namespace IdentityServerApi.Host.Services
 
             var userRole = await _userManager.GetRolesAsync(user);
 
-            string accessToken = GenerateToken(new UserSession(responseRefreshToken.UserId, user.Id, userRole.First()));
+            string accessToken = GenerateToken(new UserSession(responseRefreshToken.UserId, user.UserName, userRole.First()));
 
             return new GeneralResponse<string>(true, "The new access token was created", accessToken);
         }
@@ -140,7 +140,7 @@ namespace IdentityServerApi.Host.Services
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(10),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

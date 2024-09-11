@@ -69,5 +69,6 @@ export class PostListComponent implements OnInit {
 
   protected loadPosts(): void {
     this.pageItemResponse$ = this.http.post<IPageItemsRequest, IGeneralResponse<IPaginatedItemsResponse<IPostItem>>>(`${postUrl}/postbff/getpostsbypage`, this.postPageRequest);
+    this.pageItemResponse$.subscribe(resp => console.log(JSON.stringify(resp)))
   }
 }

@@ -12,10 +12,16 @@
         <p>{{post.data?.content}}</p>       
         <hr>
         <div style="display: flex;">
-            <textarea appAutoResizeTextarea style="margin-right: 4px;" [formControl]="commentCtrl" placeholder="Type a comment .."></textarea>
-            <button (click)="addComment()" mat-mini-fab style="border-radius: 4px;">
-                <mat-icon>add</mat-icon>
-            </button>
+          <textarea appAutoResizeTextarea [formControl]="commentCtrl" placeholder="Type a comment .."></textarea>
+          <button (click)="addComment()" mat-mini-fab style="border-radius: 4px;">
+            <mat-icon>add</mat-icon>
+          </button>
+          @if (successMessage) {
+            <p style="color: greenyellow;">Comment was created</p>
+          }
+          @else if (successMessage === false) {
+            <p style="color: red;">Comment wasn't created</p>
+          }
         </div>
         <hr>
         @if (post.data?.comments) {

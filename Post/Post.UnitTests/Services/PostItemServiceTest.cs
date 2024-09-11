@@ -1,20 +1,47 @@
 ﻿using Post.Host.Services;
-using System;
-using System.Threading.Tasks;
 using Post.Host.Data.Entities;
+using Moq;
+using Post.Host.Repositories.Interfaces;
+using Infrastructure.Services.Interfaces;
+using Microsoft.Extensions.Logging;
+using Post.Host.Data;
+using AutoMapper;
+using Infrastructure.Services;
+using FluentAssertions;
 
 namespace Post.UnitTests.Services
 {
-    public class PostCategoryServiceTest : ServiceTest<PostCategoryEntity, PostCategoryService>
+    public class PostItemServiceTest : ServiceTest<PostItemEntity, PostItemService>
     {
-        public PostCategoryServiceTest() : base()
+        private readonly Mock<IPostItemRepository> _postItemRepository;
+        public PostItemServiceTest()
+             : base((dbContextWrapper, logger, mapper, baseRepository) =>
+            new PostItemService(
+                dbContextWrapper,
+                logger,
+                mapper,
+                baseRepository,
+                new Mock<IPostItemRepository>().Object))
         {
+            _postItemRepository = new Mock<IPostItemRepository>();
         }
 
         [Fact]
-        public async Task AddAsync_Success()
+        public async Task AddAsync_Successs()
         {
             await AddAsync_Success_Test();
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_Failed()
+        {
+            await GetByIdAsync_Failed_Test();
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_Success()
+        {
+            await GetByIdAsync_Success_Test();
         }
 
         [Fact]
@@ -45,6 +72,23 @@ namespace Post.UnitTests.Services
         public async Task DeleteAsync_Failed()
         {
             await DeleteAsync_Failed_Test();
+        }
+
+        [Fact]
+        public async Task AddLikeAsync_Success()
+        {
+            PostItemEntity entity = new PostItemEntity();
+            int id = 1;
+
+            BaseRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(entity);
+
+            BaseRepository.Setup(x => x.UpdateAsync(It.IsAny<PostItemEntity>())).ReturnsAsync(id);
+
+            var result = await Service.AddLikeAsync(id);
+
+            result.Should().NotBeNull();
+            result.Message.Should().Be("Added the like");
+            result.Flag.Should().BeTrue();
         }
     }
 }

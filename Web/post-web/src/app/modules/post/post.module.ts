@@ -9,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { PostRoutingModule } from './post-routing.module';
 import { PostCreateComponent } from './components/post-create/post-create.component';
-import { UserModule } from '../user/user.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AutoResizeTextareaDirective } from './directives/auto-resize-textarea.directive';
@@ -17,6 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SharedModule } from '../shared/shared.module';
 import { SearchUserComponent } from './components/search-user/search-user.component';
+import { SearchService } from './services/search.service';
+import { ManagementService } from './services/management.service';
 
 @NgModule({
   declarations: [
@@ -34,12 +35,15 @@ import { SearchUserComponent } from './components/search-user/search-user.compon
     MatSelectModule,
     MatInputModule,
     PostRoutingModule,
-    UserModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatIconModule,
     MatButtonModule,
     SharedModule
+  ],
+  providers: [
+    SearchService,
+    ManagementService
   ],
   exports: [
     SharedModule

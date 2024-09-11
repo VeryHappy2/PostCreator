@@ -1,6 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { HttpService } from '../../../../../services/http.service';
-import { identityServerUrl, postUrl } from '../../../../../urls';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { IByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
@@ -26,10 +24,20 @@ export class DeleteUserComponent {
         name: this.searcherUserAdmin.fetchUserNameData()!
       };
 
-      this.check = await this.modificationSerivice.deleteUserAsync(request);
+      this.modificationSerivice.deleteUser(request)
+        .pipe(take(1))
+        .subscribe({
+          error: (response) => {
+            this.check = response
+          }
+        });
     }
     else {
       console.warn("User name data is invalid");
+      this.check = {
+        flag: false,
+        message: "User name data is emtpy",
+      }
     }
   }
 }

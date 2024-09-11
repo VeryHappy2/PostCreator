@@ -9,7 +9,6 @@ using Catalog.Host.Models.Requests;
 using IdentityModel;
 using System.Net;
 using System.Security.Claims;
-using Post.Host.Models.Dtos;
 
 namespace Post.Host.Controllers
 {
@@ -19,17 +18,17 @@ namespace Post.Host.Controllers
     public class PostItemController : ControllerBase
     {
         private readonly ILogger<PostItemController> _logger;
-        private readonly IService<PostItemEntity> _postItemService;
-        private readonly IPostBffService _postBffService;
+        private readonly IService<PostItemEntity> _baseService;
+        private readonly IPostItemService _postItemService;
 
         public PostItemController(
             ILogger<PostItemController> logger,
-            IService<PostItemEntity> postItemService,
-            IPostBffService postBffService)
+            IService<PostItemEntity> baseService,
+            IPostItemService postItemService)
         {
-            _logger = logger;
             _postItemService = postItemService;
-            _postBffService = postBffService;
+            _logger = logger;
+            _baseService = baseService;
         }
 
         [HttpPost]
@@ -46,13 +45,13 @@ namespace Post.Host.Controllers
             string? userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             string? userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
-            var response = await _postItemService.AddAsync(new PostItemEntity
+            var response = await _baseService.AddAsync(new PostItemEntity
             {
-                UserName = userName,
+                UserName = userName!,
                 Date = DateTime.Now.Date.ToUniversalTime(),
                 Title = request.Title,
                 Content = request.Content,
-                UserId = userId,
+                UserId = userId!,
                 CategoryId = request.CategoryId,
             });
 
@@ -79,7 +78,7 @@ namespace Post.Host.Controllers
 
             string? userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
-            var response = await _postItemService.UpdateAsync(new PostItemEntity
+            var response = await _baseService.UpdateAsync(new PostItemEntity
             {
                 UserName = userName,
                 Date = DateTime.Now.Date,
@@ -119,7 +118,7 @@ namespace Post.Host.Controllers
                 return Unauthorized(new GeneralResponse(false, "You need to log in"));
             }
 
-            var post = await _postBffService.GetPostByIdAsync(request.Id);
+            var post = await _baseService.GetByIdAsync(request.Id);
 
             if (post == null)
             {
@@ -133,7 +132,7 @@ namespace Post.Host.Controllers
                 return Unauthorized(new GeneralResponse(false, "User isn't the owner of the post"));
             }
 
-            var response = await _postItemService.DeleteAsync(request.Id);
+            var response = await _baseService.DeleteAsync(request.Id);
 
             if (response == null)
             {
@@ -142,6 +141,90 @@ namespace Post.Host.Controllers
             }
 
             return Ok(new GeneralResponse(true, $"Post was deleted, {response.ToLower()}"));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = AuthRoles.Admin)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeleteByUserId(ByIdRequest<string> id)
+        {
+            if (string.IsNullOrEmpty(id.Id))
+            {
+                _logger.LogError("Request is empty");
+                return BadRequest(new GeneralResponse(false, "User id is empty"));
+            }
+
+            var result = await _postItemService.DeleteByUserIdAsync(id.Id);
+
+            if (!result.Flag)
+            {
+                _logger.LogError($"Not found any posts by id: {id.Id}");
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddView(ByIdRequest<int> request)
+        {
+            if (request.Id != 1)
+            {
+                return BadRequest(new GeneralResponse(false, "Request can contain only one view"));
+            }
+
+            var result = await _postItemService.AddViewAsync(request.Id);
+
+            if (result == null)
+            {
+                return BadRequest(new GeneralResponse(false, "Not found a post"));
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetById(ByIdRequest<int> request)
+        {
+            if (request.Id == null)
+            {
+                return BadRequest(new GeneralResponse(false, "Id is null"));
+            }
+
+            var result = await _baseService.GetByIdAsync(request.Id);
+
+            if (result == null)
+            {
+                return NotFound(new GeneralResponse(false, "Not found a post"));
+            }
+
+            return Ok(new GeneralResponse<PostItemEntity>(true, "Success", result));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddLike(ByIdRequest<int> request)
+        {
+            if (request.Id != 1)
+            {
+                return BadRequest(new GeneralResponse(false, "Request can contain only one view"));
+            }
+
+            var result = await _postItemService.AddLikeAsync(request.Id);
+
+            if (result == null)
+            {
+                return BadRequest(new GeneralResponse(false, "Not found a post"));
+            }
+
+            return Ok(result);
         }
     }
 }

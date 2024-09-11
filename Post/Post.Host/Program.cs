@@ -57,6 +57,8 @@ builder.Services.Configure<PostConfig>(configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddTransient<IPostBffRepository,  PostBffRepository>();
+builder.Services.AddTransient<IPostItemService, PostItemService>();
+builder.Services.AddTransient<IPostItemRepository, PostItemRepository>();
 builder.Services.AddTransient<IPostBffService, PostBffService>();
 builder.Services.AddTransient<IService<PostItemEntity>, PostItemService>();
 builder.Services.AddTransient<IService<PostCommentEntity>, PostCommentService>();
@@ -70,11 +72,12 @@ builder.Services.AddCors(options =>
 	options.AddPolicy(
 		"CorsPolicy",
 		builder => builder
-            .SetIsOriginAllowed((host) => true)
+            .WithOrigins("http://www.postcreator.com", "http://localhost:4200") // http://localhost:4200 - for testing front-end
             .AllowAnyMethod()
 			.AllowAnyHeader()
 			.AllowCredentials());
 });
+
 builder.Services.AddAuthorization(configuration);
 
 var app = builder.Build();

@@ -33,13 +33,13 @@ namespace Post.Host.Repositories
 
         public async Task<int?> UpdateAsync(T entity)
         {
-			var item = await _dbset.FindAsync(entity.Id);
+			var result = await GetByIdAsync(entity.Id);
 
-            if (item != null)
+            if (result != null)
             {
-                _dbContext.Entry(item).CurrentValues.SetValues(entity);
+                _dbContext.Entry(result).CurrentValues.SetValues(entity);
                 await _dbContext.SaveChangesAsync();
-                return item.Id;
+                return result.Id;
             }
 
             return null;
@@ -47,8 +47,7 @@ namespace Post.Host.Repositories
 
         public async Task<string?> DeleteAsync(int id)
         {
-            var result = await _dbset
-                .FindAsync(id);
+            var result = await GetByIdAsync(id);
 
             if (result != null)
             {
@@ -59,5 +58,7 @@ namespace Post.Host.Repositories
 
             return null;
         }
+
+        public async Task<T> GetByIdAsync(int id) => await _dbset.FindAsync(id);
     }
 }

@@ -46,12 +46,14 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthentication()
   .AddBearerToken(IdentityConstants.BearerScheme);
 
+builder.Services.AddHttpClient();
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
 builder.Services.AddTransient<IUserManagmentService, UserManagmentService>();
 builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IUserBffAccountService, UserBffAccountService>();
 builder.Services.AddTransient<IUserBffAccountRepository, UserBffAccountRepository>();
 builder.Services.AddTransient<IUserAuthenticationRepository, UserAuthenticationRepository>();
+builder.Services.AddTransient<IHttpClientService, HttpClientService>();
 builder.Services.Configure<IdentityServerApiConfig>(configuration);
 
 builder.Services.AddIdentity<UserApp, IdentityRole>()
@@ -65,13 +67,13 @@ builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWra
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(
-        "CorsPolicy",
-        builder => builder
-            .SetIsOriginAllowed((host) => true)
+	options.AddPolicy(
+		"CorsPolicy",
+		builder => builder
+            .WithOrigins("http://www.postcreator.com", "http://localhost:4200") // http://localhost:4200 - for testing front-end
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
+			.AllowAnyHeader()
+			.AllowCredentials());
 });
 
 builder.Services.AddAuthorization(configuration);

@@ -10,7 +10,6 @@ namespace Post.Host.Services;
 
 public class PostCategoryService : BaseDataService<ApplicationDbContext>, IService<PostCategoryEntity>
 {
-    private readonly IDbContextWrapper<ApplicationDbContext> _dbContextWrapper;
     private readonly IRepository<PostCategoryEntity> _repository;
 
     public PostCategoryService(
@@ -20,8 +19,15 @@ public class PostCategoryService : BaseDataService<ApplicationDbContext>, IServi
 		IRepository<PostCategoryEntity> repository)
         : base(dbContextWrapper, logger)
     {
-        _dbContextWrapper = dbContextWrapper;
         _repository = repository;
+    }
+
+    public async Task<PostCategoryEntity> GetByIdAsync(int id)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            return await _repository.GetByIdAsync(id);
+        });
     }
 
     public async Task<int?> AddAsync(PostCategoryEntity entity)

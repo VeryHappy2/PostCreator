@@ -1,10 +1,12 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using IdentityServerApi.Host.Models.Requests;
 using IdentityServerApi.Host.Models.Responses;
 using IdentityServerApi.Host.Services.Interfaces;
 using IdentityServerApi.Models;
 using Infrastructure;
 using Infrastructure.Identity;
+using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -19,15 +21,18 @@ namespace IdentityServerApi.Host.Controllers
         private readonly IUserRoleService _userRoleService;
         private readonly IUserAuthenticationService _userAuthenticationService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IHttpClientService _httpClientService;
         public AccountController(
             IUserManagmentService userManagmentService,
             ILogger<AccountController> logger,
             IUserRoleService userRoleService,
-            IUserAuthenticationService userAuthenticationServic)
+            IUserAuthenticationService userAuthenticationService,
+            IHttpClientService httpClientService)
         {
+            _httpClientService = httpClientService;
             _userManagmentService = userManagmentService;
             _userRoleService = userRoleService;
-            _userAuthenticationService = userAuthenticationServic;
+            _userAuthenticationService = userAuthenticationService;
             _logger = logger;
         }
 
@@ -43,9 +48,23 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "Refresh token is null"));
             }
 
-            var response = await _userAuthenticationService.RefreshToken(refreshToken);
+            if (Request.Cookies.ContainsKey("token"))
+            {
+                var time = User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp)?.Value;
 
-            if (response == null)
+                if (time == null || DateTimeOffset.FromUnixTimeSeconds(long.Parse(time)).UtcDateTime >= DateTime.UtcNow)
+                {
+                    return Ok(new GeneralResponse(
+                        false,
+                        "Token is still valid or token doesn't the expiration time"));
+                }
+
+                Response.Cookies.Delete("token");
+            }
+
+            var response = await _userAuthenticationService.RefreshToken(refreshToken, HttpContext);
+
+            if (!response.Flag)
             {
                 return BadRequest(new GeneralResponse(response.Flag, response.Message));
             }
@@ -80,6 +99,7 @@ namespace IdentityServerApi.Host.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(GeneralResponse<UserLoginResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             if (Request.Cookies.ContainsKey("token")
@@ -91,15 +111,14 @@ namespace IdentityServerApi.Host.Controllers
 
             if (Request.Cookies.ContainsKey("refresh-token"))
             {
-                _logger.LogError("User hasn't an access token but has refresh-token");
                 var refreshToken = Request.Cookies["refresh-token"];
 
-                var responseToken = await _userAuthenticationService.RefreshToken(refreshToken!);
+                var responseToken = await _userAuthenticationService.RefreshToken(refreshToken!, HttpContext);
 
-                if (!responseToken.Flag)
+                if (responseToken.Flag)
                     return BadRequest(responseToken);
 
-                return Ok(responseToken);
+                Response.Cookies.Delete("refresh-token");
             }
 
             var response = await _userAuthenticationService.LoginAccountAsync(loginRequest);
@@ -138,8 +157,7 @@ namespace IdentityServerApi.Host.Controllers
         [HttpPost]
         [Authorize]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LogOut()
+        public IActionResult LogOut()
         {
             Response.Cookies.Delete("token");
             Response.Cookies.Delete("refresh-token");
@@ -191,6 +209,7 @@ namespace IdentityServerApi.Host.Controllers
         [Authorize(Roles = AuthRoles.Admin)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(GeneralResponse<string>), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Delete(ByNameRequest<string> userName)
         {
             if (string.IsNullOrEmpty(userName.Name))
@@ -199,7 +218,15 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(new GeneralResponse(false, "Request is empty"));
             }
 
-            var response = await _userManagmentService.DeleteUserAccountAsync(userName.Name);
+            var resultDelete = await _userManagmentService.DeleteUserAccountAsync(userName.Name);
+
+            if (!resultDelete.Flag)
+            {
+                _logger.LogError(resultDelete.Message);
+                return BadRequest(resultDelete);
+            }
+
+            var response = await _httpClientService.SendAsync<GeneralResponse, object>("http://www.postcreator.com:5101/api/v1/postitem/deletebyuserid", HttpMethod.Post, resultDelete.Data);
 
             if (!response.Flag)
             {
@@ -207,7 +234,7 @@ namespace IdentityServerApi.Host.Controllers
                 return BadRequest(response);
             }
 
-            return Ok(response);
+            return Ok(resultDelete);
         }
     }
 }

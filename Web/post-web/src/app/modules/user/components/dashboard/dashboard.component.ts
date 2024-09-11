@@ -7,6 +7,7 @@ import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { postUrl } from '../../../../urls';
 import { HttpService } from '../../../../services/http.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-main',
@@ -21,15 +22,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   constructor(
     private tokenStorage: TokenStorageService,
-    private http: HttpService
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
     this.userSub = this.tokenStorage.user$.subscribe((user) => this.user = user)
 
-    this.http.get<IGeneralResponse<Array<IPostItem>>>(`${postUrl}/postbff/getpostsbyownuserid`).subscribe(
-      (response: IGeneralResponse<Array<IPostItem>>) => this.posts = response,
-      (error: HttpErrorResponse) => this.posts = error.error)
+    this.userService.getPostsByOwnUserId().subscribe({
+      next: (response: IGeneralResponse<Array<IPostItem>>) => this.posts = response,
+      error: (error: HttpErrorResponse) => this.posts = error.error
+    })
   }
 
   ngOnDestroy(): void {

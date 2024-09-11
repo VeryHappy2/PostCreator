@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using IdentityServerApi.Host.Data.Entities;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using static IdentityServer4.Models.IdentityResources;
 

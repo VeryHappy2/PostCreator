@@ -1,19 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { Router } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideRouter, Router } from '@angular/router';
 import { HttpService } from '../../../services/http.service';
 import { TokenStorageService } from '../../../services/auth/token-storage.service';
 import { IUserLoginRequest } from '../../../models/requests/user/UserLoginRequest';
 import { ILogInResponse } from '../../../models/reponses/LogInResponse';
 import { identityServerUrl } from '../../../urls';
+import { of } from 'rxjs/internal/observable/of';
+import { Component } from '@angular/core';
 
 describe('AuthService', () => {
   let service: AuthService;
   let tokenStorage: TokenStorageService;
-  let httpTestingController: HttpTestingController;
-  let router: Router
+  let router: Router;
+  let http: HttpService;
+
+  @Component({
+    selector: "dashboard",
+    template: ""
+  })
+  class FakeDashboard { }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,14 +32,17 @@ describe('AuthService', () => {
         Router,
         AuthService,
         HttpService,
-        TokenStorageService
+        TokenStorageService,
+        provideRouter([
+          { path: "user/dashboard", component: FakeDashboard}
+        ])
       ]
     });
 
-    router = TestBed.inject(Router)
-    httpTestingController = TestBed.inject(HttpTestingController)
+    http = TestBed.inject(HttpService)
+    router = TestBed.inject(Router);
     service = TestBed.inject(AuthService);
-    tokenStorage = TestBed.inject(TokenStorageService)
+    tokenStorage = TestBed.inject(TokenStorageService);
   });
 
   it('should be created', () => {
@@ -53,25 +64,22 @@ describe('AuthService', () => {
       }
     } 
 
-    spyOn(tokenStorage, "saveId");
-    spyOn(tokenStorage, "saveRole");
-    spyOn(tokenStorage, "saveUsername");
-    spyOn(router, "navigate")
+    spyOn(tokenStorage, "saveId").and.callThrough();
+    spyOn(tokenStorage, "saveRole").and.callThrough();
+    spyOn(tokenStorage, "saveUsername").and.callThrough();
+    spyOn(router, "navigate").and.callThrough()
+    const spyHttp = spyOn(http, "post").and.returnValue(of(response))
 
     service.login(request).subscribe({
       next: (result) => {
         expect(result).toEqual(response);
-        expect(tokenStorage.saveId).toHaveBeenCalledWith(response.data?.id!);
-        expect(tokenStorage.saveRole).toHaveBeenCalledWith(response.data?.role!);
-        expect(tokenStorage.saveUsername).toHaveBeenCalledWith(response.data?.userName!);
-        expect(router.navigate).toHaveBeenCalledWith([`${response.data?.role.toLowerCase()}/dashboard`]);
+        expect(tokenStorage.saveId).toHaveBeenCalledOnceWith(response.data?.id!);
+        expect(tokenStorage.saveRole).toHaveBeenCalledOnceWith(response.data?.role!);
+        expect(tokenStorage.saveUsername).toHaveBeenCalledOnceWith(response.data?.userName!);
+        expect(router.navigate).toHaveBeenCalledOnceWith([`${response.data?.role.toLowerCase()}/dashboard`]);
       }
     })
-
-    const req = httpTestingController.expectOne(`${identityServerUrl}/account/login`)
-
-    expect(req.request.method).toBe("POST")
-    req.flush(response)
-    expect(req.request.url).toBe(`${identityServerUrl}/account/login`);
+    
+    expect(spyHttp).toHaveBeenCalledOnceWith(`${identityServerUrl}/account/login`, request)
   })
 });

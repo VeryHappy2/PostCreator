@@ -45,7 +45,7 @@ namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest.Method
             // Arrange
             var loginRequest = new LoginRequest { Email = "invalid@example.com", Password = "password" };
 
-            UserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((UserApp)null);
+            UserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((UserApp)null!);
 
             // Act
             var result = await UserAuthenticationService.LoginAccountAsync(loginRequest);

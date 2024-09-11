@@ -6,9 +6,10 @@ import { IPostItemRequest } from '../../../../models/requests/PostItemRequest';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IPostCategory } from '../../../../models/enities/PostCategory';
 import { Router } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import { MatSelectChange } from '@angular/material/select';
 import { take } from 'rxjs/internal/operators/take';
+import { ManagementService } from '../../services/management.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-post-create',
@@ -21,13 +22,14 @@ export class PostCreateComponent implements OnInit {
     content: new FormControl("", [Validators.required, Validators.maxLength(3000)]),
   })
 
-  protected errorMessage?: IGeneralResponse<string>
+  public check?: IGeneralResponse<null>
   protected categories?: IGeneralResponse<Array<IPostCategory>>
   
   private selectedCategory!: number | null
 
   constructor(
     private http: HttpService,
+    private managementService: ManagementService,
     private router: Router) { }
 
   ngOnInit(): void {
@@ -43,20 +45,25 @@ export class PostCreateComponent implements OnInit {
   }
 
   protected createPost(): void {
-    let post: IPostItemRequest = {
+    const post: IPostItemRequest = {
       title: this.postGroup.value.title,
       content: this.postGroup.value.content,
       categoryId: this.selectedCategory
     }
     
-    this.http.post<IPostItemRequest, IGeneralResponse<number>>(`${postUrl}/postitem/add`, post).subscribe(
-    (response: IGeneralResponse<number>) => {
-      if (response.flag && response.data) {
-        this.router.navigateByUrl('user/dashboard', { replaceUrl: true })
-      }
-    },  
-    (error: HttpErrorResponse) => {
-      this.errorMessage = error.error;    
-    })
+    this.managementService.addPost(post)
+      .pipe(
+        take(1),
+      )
+      .subscribe({
+        next: (response: IGeneralResponse<number>) => {
+          if (response.data) {
+            this.router.navigateByUrl('user/dashboard', { replaceUrl: true });
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          this.check = err.error
+        }
+      });
   }
 }

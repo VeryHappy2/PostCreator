@@ -23,7 +23,8 @@ export class TokenStorageService {
 
   public user$ = this.userSub.asObservable();
   
-  constructor(private http: HttpService) { }
+  constructor(
+    private http: HttpService) { }
 
   public signOut(): void {
     this.deleteLocalStorageData()
@@ -68,10 +69,41 @@ export class TokenStorageService {
   }
 
   private updateUser() {
-    this.userSub.next({
+    const newUser = {
       id: this.getId(),
       name: this.getUsername(),
       role: this.getRole()
-    });
+    };
+
+    const currentUser = this.userSub.getValue()
+
+    const hasChanged = currentUser.id !== newUser.id ||
+                      currentUser.name !== newUser.name ||
+                      currentUser.role !== newUser.role;
+
+    if (hasChanged) {
+      this.userSub.next({
+        id: this.getId(),
+        name: this.getUsername(),
+        role: this.getRole()
+      });
+
+      if (!newUser.id && !newUser.name && !newUser.role) {
+        this.refreshAccessToken();
+      }
+    }
+  }
+
+  public refreshAccessToken() {
+    this.http.get<IGeneralResponse<null>>(`${identityServerUrl}/account/refresh`)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          console.log(response.message);
+        },
+        error: () => {
+          this.deleteLocalStorageData();
+        }
+      });
   }
 }

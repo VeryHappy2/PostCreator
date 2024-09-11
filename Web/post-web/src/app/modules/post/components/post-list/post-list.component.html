@@ -7,7 +7,7 @@
 </mat-paginator>
 
 <div>
-  <input maxlength="50" placeholder="Search by the title" size="34" [formControl]="searchByTitle" (keydown.enter)="onSearchByTitle()">
+  <input maxlength="150" placeholder="Search by the title" size="34" [formControl]="searchByTitle" (keydown.enter)="onSearchByTitle()">
   <button (click)="onSearchByTitle()" class="search">Search</button>
 </div>
 

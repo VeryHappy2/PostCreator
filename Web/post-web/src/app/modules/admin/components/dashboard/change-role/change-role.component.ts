@@ -5,7 +5,6 @@ import { Observable, take } from 'rxjs';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { MatSelectChange } from '@angular/material/select';
 import { IChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
-import { HttpErrorResponse } from '@angular/common/http';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
 import { ModificationUserService } from '../../../services/modification-user.service';
 
@@ -17,7 +16,7 @@ import { ModificationUserService } from '../../../services/modification-user.ser
 export class ChangeRoleComponent implements OnInit {
   @ViewChild("search") searcherUserAdmin!: SearchUserAdminComponent
 
-  protected roles$?: Observable<IGeneralResponse<Array<string>>>
+  public roles$?: Observable<IGeneralResponse<Array<string>>>
   protected changeRoleRequest?: IChangeRoleRequest
   protected selectedRole?: string
   protected check?: IGeneralResponse<null>
@@ -30,18 +29,32 @@ export class ChangeRoleComponent implements OnInit {
     this.roles$ = this.http.get(`${identityServerUrl}/account/getroles`)
   }
 
-  protected async changeRole() {
-    if (this.selectedRole && this.searcherUserAdmin.fetchUserNameData()) {
+  public changeRole(): void {
+    const userName = this.searcherUserAdmin.fetchUserNameData()
+    if (this.selectedRole && userName) {
       let request: IChangeRoleRequest = {
         role: this.selectedRole,
-        userName: this.searcherUserAdmin.fetchUserNameData()!
+        userName: userName!
       };
       
-      this.check = await this.modificationService.changeRoleAsync(request);
+      this.modificationService.changeRole(request)
+        .pipe(take(1))
+        .subscribe({
+          error: (response) => {
+            this.check = response
+          }
+        });
+    }
+    else {
+      this.check = {
+        flag: false,
+        data: null,
+        message: "You should to select a role or an user name"
+      }
     }
   }
 
-  protected onSelectChange(event: MatSelectChange): void {
+  public onSelectChange(event: MatSelectChange): void {
     this.selectedRole = event.value
   }
 }
