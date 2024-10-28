@@ -73,22 +73,5 @@ namespace Post.UnitTests.Services
         {
             await DeleteAsync_Failed_Test();
         }
-
-        [Fact]
-        public async Task AddLikeAsync_Success()
-        {
-            PostItemEntity entity = new PostItemEntity();
-            int id = 1;
-
-            BaseRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(entity);
-
-            BaseRepository.Setup(x => x.UpdateAsync(It.IsAny<PostItemEntity>())).ReturnsAsync(id);
-
-            var result = await Service.AddLikeAsync(id);
-
-            result.Should().NotBeNull();
-            result.Message.Should().Be("Added the like");
-            result.Flag.Should().BeTrue();
-        }
     }
 }

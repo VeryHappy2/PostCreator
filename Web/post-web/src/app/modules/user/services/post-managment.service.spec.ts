@@ -6,7 +6,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { of } from 'rxjs/internal/observable/of';
-import { postUrl } from '../../../urls';
+import { postUrl } from '../../../../env/urls';
 
 describe('PostManagmentService', () => {
   let service: PostManagmentService;

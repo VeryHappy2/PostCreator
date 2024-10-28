@@ -59,6 +59,6 @@ namespace Post.Host.Repositories
             return null;
         }
 
-        public async Task<T> GetByIdAsync(int id) => await _dbset.FindAsync(id);
+        public virtual async Task<T?> GetByIdAsync(int id) => await _dbset.FindAsync(id);
     }
 }

@@ -4,6 +4,7 @@ import { IByNameRequest } from '../../../../../models/requests/user/ByNameReques
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
 import { take } from 'rxjs';
 import { ModificationUserService } from '../../../services/modification-user.service';
+import { ResponseErrorHandlerService } from '../../../../../services/error/response-error-handler.service';
 
 
 @Component({
@@ -15,7 +16,9 @@ export class DeleteUserComponent {
   @ViewChild("search") searcherUserAdmin!: SearchUserAdminComponent
   protected check?: IGeneralResponse<null>
 
-  constructor(private modificationSerivice: ModificationUserService) { }
+  constructor(
+    private modificationSerivice: ModificationUserService,
+    private errorHandler: ResponseErrorHandlerService) { }
 
   protected async delete() {
     const userName = this.searcherUserAdmin.fetchUserNameData();
@@ -27,8 +30,12 @@ export class DeleteUserComponent {
       this.modificationSerivice.deleteUser(request)
         .pipe(take(1))
         .subscribe({
-          error: (response) => {
-            this.check = response
+          error: (err) => {
+            this.check = {
+              flag: false,
+              message: this.errorHandler.GetMessageError(err.error),
+              data: null
+            }
           }
         });
     }

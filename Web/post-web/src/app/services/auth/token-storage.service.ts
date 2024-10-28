@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../http.service';
-import { identityServerUrl } from '../../urls';
+import { identityServerUrl } from '../../../env/urls';
 import { IUser } from '../../models/User';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { IGeneralResponse } from '../../models/reponses/GeneralResponse';

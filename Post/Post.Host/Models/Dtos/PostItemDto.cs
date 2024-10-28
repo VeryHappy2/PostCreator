@@ -7,6 +7,8 @@
         public string UserId { get; set; }
         public DateTime Date { get; set; }
         public string Content { get; set; }
+        public int Likes { get; set; }
+        public int Views { get; set; }
         public PostCategoryDto Category { get; set; }
         public List<PostCommentDto> Comments { get; set; }
     }

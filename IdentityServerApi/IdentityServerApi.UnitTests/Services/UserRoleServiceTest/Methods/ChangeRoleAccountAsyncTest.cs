@@ -5,7 +5,7 @@ using IdentityServerApi.Host.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserRoleServiceTest.Methods
+namespace IdentityServerApi.UnitTests.Serivces.UserRoleServiceTest.Methods
 {
     public class ChangeRoleAccountAsyncTest : UserRoleServiceBaseTest
     {

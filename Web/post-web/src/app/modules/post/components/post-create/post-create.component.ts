@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '../../../../services/http.service';
-import { postUrl } from '../../../../urls';
+import { postUrl } from '../../../../../env/urls';
 import { IPostItemRequest } from '../../../../models/requests/PostItemRequest';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 import { IPostCategory } from '../../../../models/enities/PostCategory';
@@ -10,6 +10,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { take } from 'rxjs/internal/operators/take';
 import { ManagementService } from '../../services/management.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
 
 @Component({
   selector: 'app-post-create',
@@ -30,7 +31,8 @@ export class PostCreateComponent implements OnInit {
   constructor(
     private http: HttpService,
     private managementService: ManagementService,
-    private router: Router) { }
+    private router: Router,
+    private errorHandler: ResponseErrorHandlerService) { }
 
   ngOnInit(): void {
     this.http.get<IGeneralResponse<Array<IPostCategory>>>(`${postUrl}/postbff/getpostcategories`)
@@ -62,7 +64,11 @@ export class PostCreateComponent implements OnInit {
           }
         },
         error: (err: HttpErrorResponse) => {
-          this.check = err.error
+          this.check = {
+            flag: false,
+            message: this.errorHandler.GetMessageError(err.error),
+            data: null
+          }
         }
       });
   }

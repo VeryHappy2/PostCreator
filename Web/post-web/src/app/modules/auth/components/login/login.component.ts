@@ -5,6 +5,7 @@ import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginReq
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
 
 
 @Component({
@@ -17,11 +18,12 @@ export class LoginComponent {
     userName: new FormControl('', [Validators.required]),
     password: new FormControl ('', [Validators.required]),
   })
-  protected check?: ILogInResponse | void
+  protected check?: ILogInResponse
   protected hidePassword = true
   
   constructor(
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private errorHandler: ResponseErrorHandlerService) { }
 
   protected logIn(): void {
     const user: IUserLoginRequest = {
@@ -35,7 +37,10 @@ export class LoginComponent {
         .pipe(take(1))
         .subscribe({ 
           error: (err: HttpErrorResponse) => {
-            this.check = err.error
+            this.check = {
+              flag: false,
+              message: this.errorHandler.GetMessageError(err.error),
+            }
           }
         });
     } 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
 import { ISearchAdminUserResponse } from '../../../models/reponses/SearchAdminUserResponse';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
-import { identityServerUrl } from '../../../urls';
+import { identityServerUrl } from '../../../../env/urls';
 import { HttpService } from '../../../services/http.service';
 import { map, Observable, of } from 'rxjs';
 import { SessionSearchService } from '../../../services/session/session-search.service';

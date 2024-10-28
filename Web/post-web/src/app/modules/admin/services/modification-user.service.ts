@@ -4,7 +4,7 @@ import { IChangeRoleRequest } from '../../../models/requests/user/ChangeRoleRequ
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { take } from 'rxjs/internal/operators/take';
 import { lastValueFrom, Observable } from 'rxjs';
-import { identityServerUrl } from '../../../urls';
+import { identityServerUrl } from '../../../../env/urls';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
 
 @Injectable()

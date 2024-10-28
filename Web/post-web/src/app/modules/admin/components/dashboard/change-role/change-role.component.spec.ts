@@ -7,10 +7,11 @@ import { ModificationUserService } from "../../../services/modification-user.ser
 import { IGeneralResponse } from "../../../../../models/reponses/GeneralResponse";
 import { of } from "rxjs";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { identityServerUrl } from "../../../../../urls";
+import { identityServerUrl } from "../../../../../../env/urls";
 import { By } from "@angular/platform-browser";
 import { MatSelectModule } from "@angular/material/select";
 import { IChangeRoleRequest } from "../../../../../models/requests/user/ChangeRoleRequest";
+import { ResponseErrorHandlerService } from "../../../../../services/error/response-error-handler.service";
 
 describe('ChangeRoleComponent', () => {
   let component: ChangeRoleComponent;
@@ -30,6 +31,7 @@ describe('ChangeRoleComponent', () => {
       ],
       declarations: [
         ChangeRoleComponent,
+        ResponseErrorHandlerService
       ],
       providers: [
         HttpService,
@@ -50,7 +52,7 @@ describe('ChangeRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it("should have to change the role", async () => {
+  it("should have to change the role", () => {
     const response: IGeneralResponse<null>  = {
       flag: true, 
       message: "message",
@@ -60,23 +62,22 @@ describe('ChangeRoleComponent', () => {
     component["selectedRole"] = "user";
   
     const mockUserName = "data";
-const expectedRequest: IChangeRoleRequest = {
+    const expectedRequest: IChangeRoleRequest = {
       role: component['selectedRole'],
       userName: mockUserName
     };
     component.searcherUserAdmin = childComponent
 
     
-    spyOn(modificationService, "changeRoleAsync").and.returnValue(Promise.resolve(response));
+    spyOn(modificationService, "changeRole").and.returnValue(of(response));
     fixture.detectChanges();
-    await component.changeRole();
+
+    component.changeRole();
 
     expect(component.searcherUserAdmin.fetchUserNameData).toHaveBeenCalled()
     expect(component["selectedRole"]).toEqual("user");    
   
-    
-
-    expect(modificationService.changeRoleAsync).toHaveBeenCalledWith(expectedRequest);
+    expect(modificationService.changeRole).toHaveBeenCalledWith(expectedRequest);
     expect(component["check"]).toEqual(response)
   });
   

@@ -64,9 +64,12 @@ namespace Post.Host.Repositories
 
             var totalItems = await query.LongCountAsync();
 
-            var itemsOnPage = await query.OrderByDescending(c => c.Date)
+            var itemsOnPage = await query
+                .OrderByDescending(p => p.Views > 0 ? (p.Comments.Count + p.Likes.Count) / p.Views : 0)
+                .ThenByDescending(p => p.Date)
                 .Include(i => i.Category)
                 .Include(i => i.Comments)
+                .Include(i => i.Likes)
                 .Skip(pageItemRequest.PageSize * pageItemRequest.PageIndex)
                 .Take(pageItemRequest.PageSize)
                 .ToListAsync();

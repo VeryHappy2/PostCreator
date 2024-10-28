@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<PostItemEntity> PostItemEntity { get; set; }
     public DbSet<PostCommentEntity> PostCommentEntity { get; set; }
     public DbSet<PostCategoryEntity> PostCategoryEntity { get; set; }
+    public DbSet<PostLikeEntity> PostLikeEntity { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

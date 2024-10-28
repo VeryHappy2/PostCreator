@@ -9,25 +9,31 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
 
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let auth: AuthService
+  let errorHandler: ResponseErrorHandlerService
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, ReactiveFormsModule],
       declarations: [RegisterComponent],
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        ResponseErrorHandlerService
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
     
     auth = TestBed.inject(AuthService);
+    errorHandler = TestBed.inject(ResponseErrorHandlerService)
+
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

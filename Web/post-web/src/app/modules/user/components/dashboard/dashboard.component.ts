@@ -4,7 +4,7 @@ import { IUser } from '../../../../models/User';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IPostItem } from '../../../../models/enities/PostItem';
 import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
-import { postUrl } from '../../../../urls';
+import { postUrl } from '../../../../../env/urls';
 import { HttpService } from '../../../../services/http.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { UserService } from '../../services/user.service';

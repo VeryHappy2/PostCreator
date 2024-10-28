@@ -9,20 +9,22 @@ using Catalog.Host.Models.Requests;
 using Post.Host.Models.Dtos;
 using Post.Host.Models.Requests.Bases;
 using System.Net;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Roles = AuthRoles.Admin)]
     public class PostCategoryController : ControllerBase
     {
         private readonly ILogger<PostCategoryController> _logger;
-        private readonly IService<PostCategoryEntity> _postCategoryService;
+        private readonly IService<PostCategoryEntity, PostCategoryDto> _postCategoryService;
 
         public PostCategoryController(
             ILogger<PostCategoryController> logger,
-            IService<PostCategoryEntity> postItemService)
+            IService<PostCategoryEntity, PostCategoryDto> postItemService)
         {
             _logger = logger;
             _postCategoryService = postItemService;
@@ -101,6 +103,26 @@ namespace Post.Host.Controllers
             }
 
             return Ok(new GeneralResponse(true, $"Category was deleted, {response.ToLower()}"));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<PostCategoryEntity>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetById(ByIdRequest<int> request)
+        {
+            if (request.Id == null)
+            {
+                return BadRequest(new GeneralResponse(false, "Id is null"));
+            }
+
+            var result = await _postCategoryService.GetByIdAsync(request.Id);
+
+            if (result == null)
+            {
+                return NotFound(new GeneralResponse(false, "Not found a post"));
+            }
+
+            return Ok(new GeneralResponse<PostCategoryDto>(true, "Success", result));
         }
     }
 }

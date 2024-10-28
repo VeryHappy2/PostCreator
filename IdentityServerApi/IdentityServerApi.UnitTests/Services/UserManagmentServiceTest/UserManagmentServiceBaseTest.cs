@@ -4,7 +4,7 @@ using IdentityServerApi.Host.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserManagmentServiceTest;
+namespace IdentityServerApi.UnitTests.Serivces.UserManagmentServiceTest;
 
 public class UserManagmentServiceBaseTest
 {

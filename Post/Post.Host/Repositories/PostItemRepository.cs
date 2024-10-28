@@ -38,5 +38,8 @@ namespace Post.Host.Repositories
 
             return new GeneralResponse(false, "Post items weren't deleted");
         }
+
+        public async Task<PostItemEntity> GetByIdAsync(int id)
+            => await _dbSet.Include(x => x.Likes).FirstOrDefaultAsync(x => x.Id == id);
     }
 }

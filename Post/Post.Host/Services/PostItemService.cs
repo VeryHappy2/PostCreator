@@ -3,6 +3,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Post.Host.Data;
 using Post.Host.Data.Entities;
+using Post.Host.Models.Dtos;
 using Post.Host.Models.Responses;
 using Post.Host.Repositories;
 using Post.Host.Repositories.Interfaces;
@@ -10,10 +11,11 @@ using Post.Host.Services.Interfaces;
 
 namespace Post.Host.Services;
 
-public class PostItemService : BaseDataService<ApplicationDbContext>, IService<PostItemEntity>, IPostItemService
+public class PostItemService : BaseDataService<ApplicationDbContext>, IService<PostItemEntity, PostItemDto>, IPostItemService
 {
     private readonly IRepository<PostItemEntity> _baseRepository;
     private readonly IPostItemRepository _postItemRepository;
+    private readonly IMapper _mapper;
 
     public PostItemService(
         IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
@@ -23,6 +25,7 @@ public class PostItemService : BaseDataService<ApplicationDbContext>, IService<P
         IPostItemRepository postItemRepository)
         : base(dbContextWrapper, logger)
     {
+        _mapper = mapper;
         _postItemRepository = postItemRepository;
         _baseRepository = baseRepository;
     }
@@ -59,11 +62,11 @@ public class PostItemService : BaseDataService<ApplicationDbContext>, IService<P
         });
     }
 
-    public async Task<PostItemEntity?> GetByIdAsync(int id)
+    public async Task<PostItemDto?> GetByIdAsync(int id)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            return await _baseRepository.GetByIdAsync(id);
+            return _mapper.Map<PostItemDto>(await _postItemRepository.GetByIdAsync(id));
         });
     }
 
@@ -76,7 +79,7 @@ public class PostItemService : BaseDataService<ApplicationDbContext>, IService<P
             if (postItem == null)
                 return new GeneralResponse(false, "Not found such post");
 
-            postItem.Views = postItem.Views;
+            postItem.Views += 1;
 
             var result = await _baseRepository.UpdateAsync(postItem);
 
@@ -86,30 +89,6 @@ public class PostItemService : BaseDataService<ApplicationDbContext>, IService<P
             }
 
             return new GeneralResponse(true, "View added");
-        });
-    }
-
-    public async Task<GeneralResponse> AddLikeAsync(int id)
-    {
-        return await ExecuteSafeAsync(async () =>
-        {
-            var post = await _baseRepository.GetByIdAsync(id);
-
-            if (post == null)
-            {
-                return new GeneralResponse(false, "Not found a post");
-            }
-
-            post = post.Likes + 1;
-
-            var result = await _baseRepository.UpdateAsync(post);
-
-            if (result == null)
-            {
-                return new GeneralResponse(false, "Like wasn't updated");
-            }
-
-            return new GeneralResponse(true, "Added the like");
         });
     }
 }

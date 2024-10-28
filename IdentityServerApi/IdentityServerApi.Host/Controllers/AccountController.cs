@@ -9,11 +9,13 @@ using Infrastructure.Identity;
 using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Newtonsoft.Json;
 
 namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Route(ComponentDefaults.DefaultRoute)]
     public class AccountController : ControllerBase
     {
@@ -97,6 +99,7 @@ namespace IdentityServerApi.Host.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("Login")]
         [ProducesResponseType(typeof(GeneralResponse<UserLoginResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]

@@ -8,7 +8,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<PostItemEntity, PostItemDto>();
+        CreateMap<PostItemEntity, PostItemDto>()
+            .ForMember(x => x.Likes, opt => opt.MapFrom(src => src.Likes.Count));
         CreateMap<PostCategoryEntity, PostCategoryDto>();
         CreateMap<PostCommentEntity, PostCommentDto>();
     }

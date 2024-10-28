@@ -3,7 +3,7 @@ import { HttpService } from '../../../services/http.service';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { IPaginatedItemsResponse } from '../../../models/reponses/PaginatedItemsResponse';
 import { IPostItem } from '../../../models/enities/PostItem';
-import { identityServerUrl, postUrl } from '../../../urls';
+import { identityServerUrl, postUrl } from '../../../../env/urls';
 import { IPageItemsRequest } from '../../../models/requests/PageItemRequest';
 import { map, Observable } from 'rxjs';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
@@ -32,6 +32,6 @@ export class SearchService {
   }
 
   public searchPostById(request: IByIdRequest<number>) {
-    return this.http.post<IByIdRequest<number>, IGeneralResponse<IPostItem>>(`${postUrl}/postbff/getpostbyId`, request)
+    return this.http.post<IByIdRequest<number>, IGeneralResponse<IPostItem>>(`${postUrl}/postItem/getbyId`, request)
   }
 }

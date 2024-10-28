@@ -6,7 +6,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { IPostItem } from '../../../models/enities/PostItem';
 import { of } from 'rxjs';
-import { postUrl } from '../../../urls';
+import { postUrl } from '../../../../env/urls';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 
 describe('UserService', () => {
@@ -48,7 +48,9 @@ describe('UserService', () => {
           comments: [],
           content: "content",
           date: "date",
-          userId: "userid"
+          userId: "userid",
+          views: 2,
+          likes: 1
         },
       ]
     }
@@ -78,7 +80,9 @@ describe('UserService', () => {
           comments: [],
           content: "content",
           date: "date",
-          userId: "userid"
+          userId: "userid",
+          views: 2,
+          likes: 1
         },
       ]
     }

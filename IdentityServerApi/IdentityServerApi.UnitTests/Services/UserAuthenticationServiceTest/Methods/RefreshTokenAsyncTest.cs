@@ -3,9 +3,8 @@ using IdentityServerApi.Host.Data.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using static IdentityServer4.Models.IdentityResources;
 
-namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest.Methods;
+namespace IdentityServerApi.UnitTests.Serivces.UserAuthenticationServiceTest.Methods;
 
 public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
 {
@@ -16,6 +15,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
     [Fact]
     public async Task RefreshTokenAsync_Success()
     {
+        var context = new DefaultHttpContext();
         UserAuthenticationRepository
             .Setup(x => x.GetByRefreshToken(It.IsAny<string>()))
             .ReturnsAsync(new RefreshTokenEntity
@@ -44,7 +44,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
                 AuthRoles.User
             });
 
-        var result = await UserAuthenticationService.RefreshToken("refreshtokentest");
+        var result = await UserAuthenticationService.RefreshToken("refreshtokentest", context);
 
         result.Should().NotBeNull();
         result.Message.Should().Be("The new access token was created");
@@ -55,14 +55,15 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
     [Fact]
     public async Task RefreshTokenAsync_NotFoundRefreshToken_Failed()
     {
+        var context = new DefaultHttpContext();
         UserAuthenticationRepository
             .Setup(x => x.GetByRefreshToken(It.IsAny<string>()))
             .ReturnsAsync((RefreshTokenEntity)null!);
 
-        var result = await UserAuthenticationService.RefreshToken("refreshtokentest");
+        var result = await UserAuthenticationService.RefreshToken("refreshtokentest", context);
 
         result.Should().NotBeNull();
-        result.Message.Should().Be("Not found any refresh token");
+        result.Message.Should().Be("You need to log in again");
         result.Flag.Should().BeFalse();
         result.Data.Should().BeNull();
     }
@@ -70,6 +71,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
     [Fact]
     public async Task RefreshTokenAsync_PasswordHashIsInvalid_Failed()
     {
+        var context = new DefaultHttpContext();
         UserAuthenticationRepository
             .Setup(x => x.GetByRefreshToken(It.IsAny<string>()))
             .ReturnsAsync(new RefreshTokenEntity
@@ -91,7 +93,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
                 UserName = "name"
             });
 
-        var result = await UserAuthenticationService.RefreshToken("refreshtokentest");
+        var result = await UserAuthenticationService.RefreshToken("refreshtokentest", context);
 
         result.Should().NotBeNull();
         result.Message.Should().Be("Password in refresh token is invalid");
@@ -102,6 +104,8 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
     [Fact]
     public async Task RefreshTokenAsync_UserIdIsInvalid_Failed()
     {
+        var context = new DefaultHttpContext();
+
         UserAuthenticationRepository
             .Setup(x => x.GetByRefreshToken(It.IsAny<string>()))
             .ReturnsAsync(new RefreshTokenEntity
@@ -117,7 +121,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
             .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((UserApp)null!);
 
-        var result = await UserAuthenticationService.RefreshToken("refreshtokentest");
+        var result = await UserAuthenticationService.RefreshToken("refreshtokentest", context);
 
         result.Should().NotBeNull();
         result.Message.Should().Be("Refresh token is invalid");
@@ -128,6 +132,8 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
     [Fact]
     public async Task RefreshTokenAsync_RefreshTokenExpired_Failed()
     {
+        var context = new DefaultHttpContext();
+
         UserAuthenticationRepository
             .Setup(x => x.GetByRefreshToken(It.IsAny<string>()))
             .ReturnsAsync(new RefreshTokenEntity
@@ -149,7 +155,7 @@ public class RefreshTokenAsync : UserAuthenticationServiceBaseTest
                 UserName = "name"
             });
 
-        var result = await UserAuthenticationService.RefreshToken("refreshtokentest");
+        var result = await UserAuthenticationService.RefreshToken("refreshtokentest", context);
 
         result.Should().NotBeNull();
         result.Message.Should().Be("You need to log in");

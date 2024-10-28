@@ -5,6 +5,7 @@ using Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Post.Host.Models.Dtos;
 using Post.Host.Models.Response;
 using Post.Host.Models.Responses;
@@ -13,6 +14,7 @@ using Post.Host.Services.Interfaces;
 namespace Post.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Roles = AuthRoles.User)]
     public class PostBffController : ControllerBase
@@ -26,30 +28,6 @@ namespace Post.Host.Controllers
         {
             _logger = logger;
             _postBffService = postBffService;
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(GeneralResponse<PostItemDto>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPostById(ByIdRequest<int> request)
-        {
-            if (request == null)
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "Request is empty"));
-            }
-
-            var result = await _postBffService.GetPostByIdAsync(request.Id);
-
-            if (result == null)
-            {
-                _logger.LogError($"Id: {request.Id} wasn't found any post");
-                return NotFound(new GeneralResponse(false, $"Id: {request.Id} wasn't found any post"));
-            }
-
-            return Ok(new GeneralResponse<PostItemDto>(true, "Successfully", result));
         }
 
         [HttpGet]

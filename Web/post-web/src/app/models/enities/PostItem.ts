@@ -1,5 +1,6 @@
 import { IPostCategory } from "./PostCategory";
 import { IPostComment } from "./PostComment";
+import { IPostLike } from "./PostLike";
 
 export interface IPostItem {
     id: number;

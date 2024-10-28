@@ -46,7 +46,7 @@ namespace IdentityServerApi.Host.Services
             if (responseRefreshToken == null)
             {
                 context.Response.Cookies.Delete("refresh-token");
-                return new GeneralResponse<string>(false, "Not found any refresh token", null!);
+                return new GeneralResponse<string>(false, "You need to log in again", null!);
             }
 
             UserApp user = await _userManager.FindByIdAsync(responseRefreshToken.UserId);

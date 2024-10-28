@@ -3,7 +3,7 @@ using IdentityServerApi.Host.Data.Entities;
 using IdentityServerApi.Host.Models.Requests;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest.Methods
+namespace IdentityServerApi.UnitTests.Serivces.UserAuthenticationServiceTest.Methods
 {
     public class LoginAccountAsyncTest : UserAuthenticationServiceBaseTest
     {

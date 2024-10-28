@@ -4,7 +4,7 @@ using IdentityServerApi.Host.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserManagmentServiceTest.Methods
+namespace IdentityServerApi.UnitTests.Serivces.UserManagmentServiceTest.Methods
 {
     public class DeleteUserAccountTest : UserManagmentServiceBaseTest
     {
@@ -33,7 +33,7 @@ namespace IdentityServer.UnitTests.Serivces.UserManagmentServiceTest.Methods
             UserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
 
             var result = await UserManagmentService.DeleteUserAccountAsync(userName);
-            result.Should().Be(new GeneralResponse(false, $"The {userName} wasn't found"));
+            result.Should().Be(new GeneralResponse<string>(false, $"The {userName} wasn't found", null!));
         }
     }
 }

@@ -6,6 +6,5 @@ namespace Post.Host.Services.Interfaces
     {
         public Task<GeneralResponse> DeleteByUserIdAsync(string userId);
         public Task<GeneralResponse> AddViewAsync(int id);
-        public Task<GeneralResponse> AddLikeAsync(int id);
     }
 }

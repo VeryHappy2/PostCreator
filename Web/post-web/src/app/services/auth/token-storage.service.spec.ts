@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TokenStorageService } from './token-storage.service';
 import { HttpService } from '../http.service';
-import { identityServerUrl } from '../../urls';
+import { identityServerUrl } from '../../../env/urls';
 import { of } from 'rxjs/internal/observable/of';
 import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
 import { throwError } from 'rxjs';

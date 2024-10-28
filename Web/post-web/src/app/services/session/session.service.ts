@@ -13,7 +13,7 @@ export class SessionService {
 
   public getData<TData>(key: string): TData | null {
     const data = sessionStorage.getItem(key)
-    return data ? JSON.stringify(data) as TData : null
+    return data ? JSON.parse(data) : null
   }
 
   public removeData(key: string): void {

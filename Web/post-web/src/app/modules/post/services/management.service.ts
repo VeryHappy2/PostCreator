@@ -3,7 +3,7 @@ import { HttpService } from '../../../services/http.service';
 import { IPostCommentRequest } from '../../../models/requests/CommentRequest';
 import { Observable } from 'rxjs';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
-import { postUrl } from '../../../urls';
+import { postUrl } from '../../../../env/urls';
 import { IPostItemRequest } from '../../../models/requests/PostItemRequest';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 
@@ -21,10 +21,10 @@ export class ManagementService {
   }
 
   public addView(request: IByIdRequest<number>): Observable<IGeneralResponse<null>> {
-    return this.http.post(`${postUrl}/postitem/addview`, request.id)
+    return this.http.post(`${postUrl}/postitem/addview`, request)
   }
 
   public addLike(request: IByIdRequest<number>): Observable<IGeneralResponse<null>> {
-    return this.http.post(`${postUrl}/postitem/addlike`, request.id);
+    return this.http.post(`${postUrl}/postlike/add`, request);
   }
 }

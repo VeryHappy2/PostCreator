@@ -5,7 +5,7 @@ import { take } from 'rxjs';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { ErrorService } from './error.service';
 import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
-import { identityServerUrl } from '../../urls';
+import { identityServerUrl } from '../../../env/urls';
 import { HttpService } from '../http.service';
 
 
@@ -55,4 +55,13 @@ export class ResponseErrorHandlerService {
   public HandleDefault(message: any): void {
     console.error(JSON.stringify(message));
   }
+
+  public GetMessageError(response: any): string | undefined {
+    if (response.errors) {
+      const message = Object.values(response.errors).flat()
+      return message.join(',');
+    }
+    
+    return response.message
+  } 
 }

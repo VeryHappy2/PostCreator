@@ -20,9 +20,6 @@ public class PostEntityConfiguration
         builder.Property(x => x.UserId)
             .IsRequired();
 
-        builder.Property(x => x.Likes)
-            .HasDefaultValue(0);
-
         builder.Property(x => x.UserName)
             .IsRequired();
 
@@ -44,5 +41,9 @@ public class PostEntityConfiguration
         builder.HasOne<PostCategoryEntity>(x => x.Category)
             .WithMany()
             .HasForeignKey(x => x.CategoryId);
+
+        builder.HasMany<PostLikeEntity>(x => x.Likes)
+            .WithOne()
+            .HasForeignKey(x => x.PostId);
     }
 }

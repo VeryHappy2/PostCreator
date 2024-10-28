@@ -10,12 +10,15 @@ import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
+import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
+import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
 
 
 describe('LoginComponent', () => {
   let component: any;
   let fixture: ComponentFixture<LoginComponent>;
   let auth: AuthService
+  let errorHandler: ResponseErrorHandlerService
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -25,15 +28,17 @@ describe('LoginComponent', () => {
       ],
       providers: [
         AuthService,
+        ResponseErrorHandlerService
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
     
+    errorHandler = TestBed.inject(ResponseErrorHandlerService)
     auth = TestBed.inject(AuthService);
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance as any;
-
+    
     fixture.detectChanges();
   });
 
@@ -75,21 +80,22 @@ describe('LoginComponent', () => {
   });
 
   it('should set `check` to error response on login failure', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { message: 'Invalid credentials' },
-      status: 401
-    });
+    const resp: ILogInResponse = {
+      flag: false,
+      message: "message"
+    }
     component.userGroup.setValue({ userName: 'test@example.com', password: 'password123' });
     const request: IUserLoginRequest = {
       email: "test@example.com",
       password: "password123"
     }
 
-    spyOn(auth, "login").and.returnValue(throwError(() => errorResponse));
-
+    spyOn(errorHandler, "GetMessageError").and.returnValue(resp.message)
+    spyOn(auth, "login").and.returnValue(throwError(() => resp));
+    
     component["logIn"]();
 
     expect(auth.login).toHaveBeenCalledOnceWith(request)
-    expect(component.check).toEqual(errorResponse.error);
+    expect(component["check"]).toEqual(resp);
   });
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
-import { postUrl } from '../../../urls';
+import { postUrl } from '../../../../env/urls';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 import { Observable } from 'rxjs';

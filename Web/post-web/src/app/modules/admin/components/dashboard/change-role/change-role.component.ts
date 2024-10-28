@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../../../services/http.service';
-import { identityServerUrl } from '../../../../../urls';
+import { identityServerUrl } from '../../../../../../env/urls';
 import { Observable, take } from 'rxjs';
 import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
 import { MatSelectChange } from '@angular/material/select';
 import { IChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
 import { ModificationUserService } from '../../../services/modification-user.service';
+import { ResponseErrorHandlerService } from '../../../../../services/error/response-error-handler.service';
 
 @Component({
   selector: 'app-change-role',
@@ -23,7 +24,8 @@ export class ChangeRoleComponent implements OnInit {
 
   constructor(
     private http: HttpService,
-    private modificationService: ModificationUserService) { }
+    private modificationService: ModificationUserService,
+    private errorHandler: ResponseErrorHandlerService) { }
 
   ngOnInit(): void {
     this.roles$ = this.http.get(`${identityServerUrl}/account/getroles`)
@@ -40,8 +42,12 @@ export class ChangeRoleComponent implements OnInit {
       this.modificationService.changeRole(request)
         .pipe(take(1))
         .subscribe({
-          error: (response) => {
-            this.check = response
+          error: (err) => {
+            this.check = {
+              flag: false,
+              message: this.errorHandler.GetMessageError(err.error),
+              data: null
+            }
           }
         });
     }

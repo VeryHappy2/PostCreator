@@ -2,7 +2,7 @@
 using IdentityServerApi.Host.Models.Responses;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserBffAccountServiceTest.Methods
+namespace IdentityServerApi.UnitTests.Serivces.UserBffAccountServiceTest.Methods
 {
     public class AdminGetUsersByNameAsync : UserBffAccountServiceBaseTest
     {

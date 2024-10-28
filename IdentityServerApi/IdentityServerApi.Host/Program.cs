@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.RateLimiting;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -43,8 +44,24 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+
 builder.Services.AddAuthentication()
   .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(configuration["RateLimiter:Policies:0:Name"], options =>
+    {
+        options.PermitLimit = int.Parse(configuration["RateLimiter:Policies:0:PermitLimit"]);
+        options.Window = TimeSpan.FromSeconds(10);
+    });
+
+    options.AddFixedWindowLimiter(configuration["RateLimiter:Policies:1:Name"], options =>
+    {
+        options.PermitLimit = int.Parse(configuration["RateLimiter:Policies:1:PermitLimit"]);
+        options.Window = TimeSpan.FromSeconds(300);
+    });
+});
 
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
@@ -113,8 +130,10 @@ app
     setup.OAuthAppName("Identityserver Swagger UI");
 });
 
+app.UseRateLimiter();
 app.UseRouting();
 app.UseCors("CorsPolicy");
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

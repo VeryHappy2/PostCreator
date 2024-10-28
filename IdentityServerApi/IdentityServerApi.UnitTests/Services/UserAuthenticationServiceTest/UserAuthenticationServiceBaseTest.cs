@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserAuthenticationServiceTest
+namespace IdentityServerApi.UnitTests.Serivces.UserAuthenticationServiceTest
 {
     public class UserAuthenticationServiceBaseTest
     {

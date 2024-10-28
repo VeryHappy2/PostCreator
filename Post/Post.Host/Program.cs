@@ -4,11 +4,13 @@ using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Post.Host.Configurations;
 using Post.Host.Data;
 using Post.Host.Data.Entities;
+using Post.Host.Models.Dtos;
 using Post.Host.Repositories;
 using Post.Host.Repositories.Interfaces;
 using Post.Host.Services;
@@ -52,6 +54,23 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthentication()
   .AddBearerToken(IdentityConstants.BearerScheme);
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter(configuration["RateLimiter:Policies:0:Name"], o =>
+    {
+        o.PermitLimit = int.Parse(configuration["RateLimiter:Policies:0:PermitLimit"]);
+        o.Window = TimeSpan.FromSeconds(10);
+    });
+
+    options.AddFixedWindowLimiter(configuration["RateLimiter:Policies:1:Name"], o =>
+    {
+        o.PermitLimit = int.Parse(configuration["RateLimiter:Policies:1:PermitLimit"]);
+        o.Window = TimeSpan.FromSeconds(20);
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.Configure<PostConfig>(configuration);
 builder.Services.AddAutoMapper(typeof(Program));
@@ -60,9 +79,10 @@ builder.Services.AddTransient<IPostBffRepository,  PostBffRepository>();
 builder.Services.AddTransient<IPostItemService, PostItemService>();
 builder.Services.AddTransient<IPostItemRepository, PostItemRepository>();
 builder.Services.AddTransient<IPostBffService, PostBffService>();
-builder.Services.AddTransient<IService<PostItemEntity>, PostItemService>();
-builder.Services.AddTransient<IService<PostCommentEntity>, PostCommentService>();
-builder.Services.AddTransient<IService<PostCategoryEntity>, PostCategoryService>();
+builder.Services.AddTransient<IService<PostItemEntity, PostItemDto>, PostItemService>();
+builder.Services.AddTransient<IService<PostCommentEntity, PostCommentDto>, PostCommentService>();
+builder.Services.AddTransient<IService<PostCategoryEntity, PostCategoryDto>, PostCategoryService>();
+builder.Services.AddTransient<IService<PostLikeEntity, PostLikeDto>, PostLikeService>();
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseNpgsql(configuration["ConnectionString"]));
 builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
@@ -116,6 +136,7 @@ app
 });
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();

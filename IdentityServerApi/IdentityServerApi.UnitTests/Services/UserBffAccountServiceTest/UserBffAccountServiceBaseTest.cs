@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace IdentityServer.UnitTests.Serivces.UserBffAccountServiceTest
+namespace IdentityServerApi.UnitTests.Serivces.UserBffAccountServiceTest
 {
     public class UserBffAccountServiceBaseTest
     {

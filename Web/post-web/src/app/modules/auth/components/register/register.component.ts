@@ -5,6 +5,7 @@ import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegis
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/internal/operators/take';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
 
 @Component({
   selector: 'app-register',
@@ -18,10 +19,11 @@ export class RegisterComponent {
     password: new FormControl ('', [Validators.required]),
     confirmPassword: new FormControl ('', [Validators.required])
   })
-  public check?: IGeneralResponse<null> | void
+  public check?: IGeneralResponse<null>
 
   constructor(
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private errorHandler: ResponseErrorHandlerService) { }
 
   public signUp(): void {
     const userRegister: IUserRegisterRequest = {
@@ -36,7 +38,11 @@ export class RegisterComponent {
         .pipe(take(1))
         .subscribe({
           error: (err: HttpErrorResponse) => {
-            this.check = err.error
+            this.check = {
+              flag: false,
+              message: this.errorHandler.GetMessageError(err.error),
+              data: null
+            }
           }
         });
     }

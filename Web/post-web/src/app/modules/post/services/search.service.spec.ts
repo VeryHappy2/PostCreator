@@ -9,7 +9,7 @@ import { IPostItem } from '../../../models/enities/PostItem';
 import { IPaginatedItemsResponse } from '../../../models/reponses/PaginatedItemsResponse';
 import { of } from 'rxjs/internal/observable/of';
 import { IPageItemsRequest } from '../../../models/requests/PageItemRequest';
-import { postUrl } from '../../../urls';
+import { postUrl } from '../../../../env/urls';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 
 describe('SearchService', () => {
@@ -55,7 +55,9 @@ describe('SearchService', () => {
             comments: [],
             content: "content",
             date: "date",
-            userId: "userid"
+            userId: "userid",
+            views: 2,
+            likes: 1
           },
         ],
         count: 1,
@@ -100,7 +102,9 @@ describe('SearchService', () => {
         comments: [],
         content: "content",
         date: "date",
-        userId: "userid"
+        userId: "userid",
+        views: 2,
+        likes: 2
       },
     } 
     spyOn(http, "post").and.returnValue(of(response));

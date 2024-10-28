@@ -10,20 +10,22 @@ using Post.Host.Models.Requests.Bases;
 using Post.Host.Models.Dtos;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Route(ComponentDefaults.DefaultRoute)]
     [Authorize(Roles = AuthRoles.User)]
     public class PostCommentController : ControllerBase
     {
         private readonly ILogger<PostCommentController> _logger;
-        private readonly IService<PostCommentEntity> _postCommentService;
+        private readonly IService<PostCommentEntity, PostCommentDto> _postCommentService;
 
         public PostCommentController(
             ILogger<PostCommentController> logger,
-            IService<PostCommentEntity> postItemService)
+            IService<PostCommentEntity, PostCommentDto> postItemService)
         {
             _logger = logger;
             _postCommentService = postItemService;
@@ -105,6 +107,26 @@ namespace Post.Host.Controllers
             }
 
             return Ok(new GeneralResponse(true, $"Post was deleted"));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(GeneralResponse<PostCommentEntity>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetById(ByIdRequest<int> request)
+        {
+            if (request.Id == null)
+            {
+                return BadRequest(new GeneralResponse(false, "Id is null"));
+            }
+
+            var result = await _postCommentService.GetByIdAsync(request.Id);
+
+            if (result == null)
+            {
+                return NotFound(new GeneralResponse(false, "Not found a post"));
+            }
+
+            return Ok(new GeneralResponse<PostCommentDto>(true, "Success", result));
         }
     }
 }

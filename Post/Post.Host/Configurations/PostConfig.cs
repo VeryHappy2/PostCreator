@@ -1,8 +1,11 @@
+using Infrastructure.Configuration;
+
 namespace Post.Host.Configurations;
 
-public class PostConfig
+internal class PostConfig
 {
-    public string PathBase { get; set; }
-    public string CdnHost { get; set; }
-    public string ConnectionString { get; set; }
+    public RateLimiter RateLimiter { get; set; }
+    internal string PathBase { get; set; }
+    internal string CdnHost { get; set; }
+    internal string ConnectionString { get; set; }
 }

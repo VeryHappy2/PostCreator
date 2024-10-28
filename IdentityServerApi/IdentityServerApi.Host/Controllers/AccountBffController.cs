@@ -5,11 +5,13 @@ using Infrastructure;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Net;
 
 namespace IdentityServerApi.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Authorize(Roles = AuthRoles.Admin)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class AccountBffController : ControllerBase

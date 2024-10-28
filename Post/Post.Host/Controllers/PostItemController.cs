@@ -9,21 +9,23 @@ using Catalog.Host.Models.Requests;
 using IdentityModel;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.AspNetCore.RateLimiting;
+using Post.Host.Models.Dtos;
 
 namespace Post.Host.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("Fixed")]
     [Route(ComponentDefaults.DefaultRoute)]
-    [Authorize(Roles = AuthRoles.User)]
     public class PostItemController : ControllerBase
     {
         private readonly ILogger<PostItemController> _logger;
-        private readonly IService<PostItemEntity> _baseService;
+        private readonly IService<PostItemEntity, PostItemDto> _baseService;
         private readonly IPostItemService _postItemService;
 
         public PostItemController(
             ILogger<PostItemController> logger,
-            IService<PostItemEntity> baseService,
+            IService<PostItemEntity, PostItemDto> baseService,
             IPostItemService postItemService)
         {
             _postItemService = postItemService;
@@ -32,6 +34,7 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthRoles.User)]
         [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Add(BasePostItemRequest request)
@@ -65,6 +68,7 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthRoles.User)]
         [ProducesResponseType(typeof(GeneralResponse<int>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
@@ -99,6 +103,7 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AuthRoles.User)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
@@ -168,27 +173,23 @@ namespace Post.Host.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("AddView")]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddView(ByIdRequest<int> request)
         {
-            if (request.Id != 1)
-            {
-                return BadRequest(new GeneralResponse(false, "Request can contain only one view"));
-            }
-
             var result = await _postItemService.AddViewAsync(request.Id);
 
-            if (result == null)
+            if (!result.Flag)
             {
-                return BadRequest(new GeneralResponse(false, "Not found a post"));
+                return NotFound(result);
             }
 
             return Ok(result);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(GeneralResponse<PostItemEntity>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetById(ByIdRequest<int> request)
         {
@@ -204,27 +205,7 @@ namespace Post.Host.Controllers
                 return NotFound(new GeneralResponse(false, "Not found a post"));
             }
 
-            return Ok(new GeneralResponse<PostItemEntity>(true, "Success", result));
-        }
-
-        [HttpPost]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AddLike(ByIdRequest<int> request)
-        {
-            if (request.Id != 1)
-            {
-                return BadRequest(new GeneralResponse(false, "Request can contain only one view"));
-            }
-
-            var result = await _postItemService.AddLikeAsync(request.Id);
-
-            if (result == null)
-            {
-                return BadRequest(new GeneralResponse(false, "Not found a post"));
-            }
-
-            return Ok(result);
+            return Ok(new GeneralResponse<PostItemDto>(true, "Success", result));
         }
     }
 }

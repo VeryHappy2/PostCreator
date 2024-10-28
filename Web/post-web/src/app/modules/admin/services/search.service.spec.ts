@@ -5,7 +5,7 @@ import { SessionSearchService } from '../../../services/session/session-search.s
 import { HttpService } from '../../../services/http.service';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
 import { ISearchAdminUserResponse } from '../../../models/reponses/SearchAdminUserResponse';
-import { identityServerUrl } from '../../../urls';
+import { identityServerUrl } from '../../../../env/urls';
 import { of } from 'rxjs/internal/observable/of';
 import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
 import { HttpClientTestingModule } from '@angular/common/http/testing';

@@ -9,17 +9,20 @@
         <hr>
         <h4>{{post.data?.category?.category}}</h4>
         <hr>
-        <p>{{post.data?.content}}</p>       
+        <p #content>{{post.data?.content}}</p>       
         <hr>
+        <p>{{post.data?.likes}}</p>
+        <button (click)="addLike()">Like</button>
+        <p>{{nonSuccessMessageLike}}</p>
         <div style="display: flex;">
           <textarea appAutoResizeTextarea [formControl]="commentCtrl" placeholder="Type a comment .."></textarea>
           <button (click)="addComment()" mat-mini-fab style="border-radius: 4px;">
             <mat-icon>add</mat-icon>
           </button>
-          @if (successMessage) {
+          @if (success) {
             <p style="color: greenyellow;">Comment was created</p>
           }
-          @else if (successMessage === false) {
+          @else if (success === false) {
             <p style="color: red;">Comment wasn't created</p>
           }
         </div>
@@ -36,6 +39,6 @@
     </div>
 }
 @else {
-    <p>Not found</p>
+  <p>Not found</p>
 }
 

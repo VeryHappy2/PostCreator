@@ -3,16 +3,17 @@ using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Post.Host.Data;
 using Post.Host.Data.Entities;
+using Post.Host.Models.Dtos;
 using Post.Host.Repositories.Interfaces;
 using Post.Host.Services.Interfaces;
 
 namespace Post.Host.Services;
 
-public class PostCommentService : BaseDataService<ApplicationDbContext>, IService<PostCommentEntity>
+public class PostCommentService : BaseDataService<ApplicationDbContext>, IService<PostCommentEntity, PostCommentDto>
 {
     private readonly IDbContextWrapper<ApplicationDbContext> _dbContextWrapper;
     private readonly IRepository<PostCommentEntity> _repository;
-
+    private readonly IMapper _mapper;
     public PostCommentService(
         IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
         ILogger<BaseDataService<ApplicationDbContext>> logger,
@@ -20,6 +21,7 @@ public class PostCommentService : BaseDataService<ApplicationDbContext>, IServic
         IRepository<PostCommentEntity> repository)
         : base(dbContextWrapper, logger)
     {
+        _mapper = mapper;
         _dbContextWrapper = dbContextWrapper;
         _repository = repository;
     }
@@ -48,11 +50,11 @@ public class PostCommentService : BaseDataService<ApplicationDbContext>, IServic
         });
     }
 
-    public async Task<PostCommentEntity> GetByIdAsync(int id)
+    public async Task<PostCommentDto?> GetByIdAsync(int id)
     {
         return await ExecuteSafeAsync(async () =>
         {
-            return await _repository.GetByIdAsync(id);
+            return _mapper.Map<PostCommentDto>(await _repository.GetByIdAsync(id));
         });
     }
 }
