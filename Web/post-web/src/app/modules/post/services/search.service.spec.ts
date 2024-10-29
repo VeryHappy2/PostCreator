@@ -110,7 +110,7 @@ describe('SearchService', () => {
     spyOn(http, "post").and.returnValue(of(response));
 
     service.searchPostById(request).subscribe(respHttp => {
-      expect(http.post).toHaveBeenCalledOnceWith(`${postUrl}/postbff/getpostbyId`, request)
+      expect(http.post).toHaveBeenCalledOnceWith(`${postUrl}/postItem/getbyId`, request)
       expect(respHttp).toEqual(response);
     })
   });

@@ -20,7 +20,7 @@ export class DeleteUserComponent {
     private modificationSerivice: ModificationUserService,
     private errorHandler: ResponseErrorHandlerService) { }
 
-  protected async delete() {
+  protected delete() {
     const userName = this.searcherUserAdmin.fetchUserNameData();
     if (userName) {
       const request: IByNameRequest<string> = {
@@ -30,6 +30,9 @@ export class DeleteUserComponent {
       this.modificationSerivice.deleteUser(request)
         .pipe(take(1))
         .subscribe({
+          next: (resp) => {
+            this.check = resp
+          },
           error: (err) => {
             this.check = {
               flag: false,

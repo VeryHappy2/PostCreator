@@ -10,7 +10,7 @@ namespace Catalog.Host.Models.Requests
         public int PageSize { get; set; }
         public string? SearchByUserName { get; set; }
         public int? CategoryFilter { get; set; }
-        [MaxLength(150, ErrorMessage = @"The field ""Searching by title"" can has only 50 symbols")]
+        [MaxLength(150, ErrorMessage = @"The field ""Searching by title"" can has only 150 symbols")]
         public string? SearchByTitle { get; set; }
     }
 }

@@ -8,11 +8,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs/internal/observable/of';
 import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { HttpErrorResponse } from '@angular/common/http';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
 import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';
-import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
-
 
 describe('LoginComponent', () => {
   let component: any;

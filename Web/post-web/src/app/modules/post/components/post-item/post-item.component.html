@@ -12,7 +12,7 @@
         <p #content>{{post.data?.content}}</p>       
         <hr>
         <p>{{post.data?.likes}}</p>
-        <button (click)="addLike()">Like</button>
+        <button (click)="addLike()"><mat-icon>thumb_up</mat-icon></button>
         <p>{{nonSuccessMessageLike}}</p>
         <div style="display: flex;">
           <textarea appAutoResizeTextarea [formControl]="commentCtrl" placeholder="Type a comment .."></textarea>
@@ -29,11 +29,10 @@
         <hr>
         @if (post.data?.comments) {
             @for (comment of post.data?.comments; track comment.id) 
-            {
-                
-                <h2>{{comment.userName}}</h2>
-                <h4>{{comment.content}}</h4>
-                <hr>
+            {  
+              <h2>{{comment.userName}}</h2>
+              <h4>{{comment.content}}</h4>
+              <hr>
             }
         }
     </div>

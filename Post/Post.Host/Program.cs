@@ -108,24 +108,6 @@ app.UseCookiePolicy(new CookiePolicyOptions
     HttpOnly = HttpOnlyPolicy.Always,
 });
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Cookies.ContainsKey("token") &&
-       !context.Request.Headers.ContainsKey("Authorization"))
-    {
-        var token = context.Request.Cookies["token"];
-        context.Request.Headers.Add("Authorization", $"Bearer {token}");
-    }
-
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    var id = Guid.NewGuid();
-    LogRequest(logger, context.Request, id);
-
-    await next.Invoke();
-
-    LogResponse(logger, context.Response, id);
-});
-
 app
 .UseSwagger()
 .UseSwaggerUI(setup =>
@@ -146,6 +128,24 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute();
     endpoints.MapControllers();
+});
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Cookies.ContainsKey("token") &&
+       !context.Request.Headers.ContainsKey("Authorization"))
+    {
+        var token = context.Request.Cookies["token"];
+        context.Request.Headers.Add("Authorization", $"Bearer {token}");
+    }
+
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    var id = Guid.NewGuid();
+    LogRequest(logger, context.Request, id);
+
+    await next.Invoke();
+
+    LogResponse(logger, context.Response, id);
 });
 
 CreateDbIfNotExists(app);

@@ -10,6 +10,8 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { ReactiveFormsModule } from "@angular/forms";
 import { of } from "rxjs/internal/observable/of";
 import { ResponseErrorHandlerService } from "../../../../../services/error/response-error-handler.service";
+import { throwError } from "rxjs/internal/observable/throwError";
+import { HttpErrorResponse } from "@angular/common/http";
 
 describe('DeleteUserComponent', () => {
   let component: DeleteUserComponent;
@@ -41,10 +43,11 @@ describe('DeleteUserComponent', () => {
   it('should call deleteUserAsync with the correct request when delete is called', async () => {
     const mockUserName: string | null = 'testUser';
     spyOn(component.searcherUserAdmin, 'fetchUserNameData').and.returnValue(mockUserName);
+    
     const mockResponse: IGeneralResponse<null> = { message: 'User deleted', flag: true, data: null };
     spyOn(modificationUserService, "deleteUser").and.returnValue(of(mockResponse))
 
-    await component["delete"]();
+    component["delete"]();
 
     expect(component.searcherUserAdmin.fetchUserNameData).toHaveBeenCalled();
     expect(modificationUserService.deleteUser).toHaveBeenCalledWith({ name: mockUserName });
@@ -52,28 +55,47 @@ describe('DeleteUserComponent', () => {
   });
 
   it('should not call deleteUserAsync if fetchUserNameData returns null', async () => {
+    const check: IGeneralResponse<null> = {
+      flag: false,
+      message: "User name data is emtpy",
+    } 
+
     spyOn(component.searcherUserAdmin, 'fetchUserNameData').and.returnValue(null);
     spyOn(modificationUserService, 'deleteUser');
     spyOn(console, "warn")
 
-    await component["delete"]();
+    component["delete"]();
 
     expect(component.searcherUserAdmin.fetchUserNameData).toHaveBeenCalled();
     expect(modificationUserService.deleteUser).not.toHaveBeenCalled();
-    expect(component["check"]).toBeUndefined();
+    expect(component["check"]).toEqual(check);
     expect(console.warn).toHaveBeenCalledOnceWith("User name data is invalid")
   });
 
-  it('should handle unsuccessful deletion attempts correctly', async () => {
-    const mockUserName = 'testUser';
+  it('should handle unsuccessful deletion attempts correctly', () => {
+    const mockUserName = 'testUser';    
+    const mockErrorResponse = {
+      error: { 
+        errors: { 
+          name: ["User not found"] 
+        } 
+      },
+    };
+
+    const check = {
+      flag: false,
+      message: 'User not found',
+      data: null
+    }
+
     spyOn(component.searcherUserAdmin, 'fetchUserNameData').and.returnValue(mockUserName);
+    spyOn(modificationUserService, 'deleteUser').and.returnValue(throwError(mockErrorResponse));
+    spyOn(errorHandler, "GetMessageError").and.returnValue("User not found")
 
-    const mockResponse: IGeneralResponse<null> = { message: 'Failed to delete user', flag: false, data: null };
-    spyOn(modificationUserService, 'deleteUser').and.returnValue(of(mockResponse));
-
-    await component["delete"]();
+    component["delete"]();
 
     expect(modificationUserService.deleteUser).toHaveBeenCalledOnceWith({ name: mockUserName });
-    expect(component["check"]).toEqual(mockResponse);
+    expect(errorHandler.GetMessageError).toHaveBeenCalledOnceWith(mockErrorResponse.error)
+    expect(component["check"]).toEqual(check)
   });
 });

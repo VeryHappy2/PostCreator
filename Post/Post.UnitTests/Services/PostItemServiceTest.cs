@@ -2,18 +2,12 @@
 using Post.Host.Data.Entities;
 using Moq;
 using Post.Host.Repositories.Interfaces;
-using Infrastructure.Services.Interfaces;
-using Microsoft.Extensions.Logging;
-using Post.Host.Data;
-using AutoMapper;
-using Infrastructure.Services;
-using FluentAssertions;
+using Post.Host.Models.Dtos;
 
 namespace Post.UnitTests.Services
 {
-    public class PostItemServiceTest : ServiceTest<PostItemEntity, PostItemService>
+    public class PostItemServiceTest : ServiceTest<PostItemEntity, PostItemDto, PostItemService>
     {
-        private readonly Mock<IPostItemRepository> _postItemRepository;
         public PostItemServiceTest()
              : base((dbContextWrapper, logger, mapper, baseRepository) =>
             new PostItemService(
@@ -23,7 +17,6 @@ namespace Post.UnitTests.Services
                 baseRepository,
                 new Mock<IPostItemRepository>().Object))
         {
-            _postItemRepository = new Mock<IPostItemRepository>();
         }
 
         [Fact]

@@ -79,5 +79,8 @@ namespace Post.Host.Repositories
 
             return new PaginatedItems<PostItemEntity>() { TotalCount = totalItems, Data = itemsOnPage };
         }
+
+        public async Task<List<PostLikeEntity>> GetPostLikesByUserIdAsync(string id)
+            => await _dbContext.PostLikeEntity.Where(w => w.UserId == id).ToListAsync();
     }
 }

@@ -85,4 +85,17 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
             return _mapper.Map<List<PostCategoryDto>>(result).ToList();
         });
     }
+
+    public async Task<List<PostLikeDto>?> GetPostLikesByUserIdAsync(string id)
+    {
+        return await ExecuteSafeAsync(async () =>
+        {
+            var result = await _postBffRepository.GetPostLikesByUserIdAsync(id);
+
+            if (result == null)
+                return null;
+
+            return _mapper.Map<List<PostLikeDto>>(result).ToList();
+        });
+    }
 }

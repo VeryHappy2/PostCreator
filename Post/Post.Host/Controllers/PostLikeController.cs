@@ -34,12 +34,6 @@ namespace Post.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Add(ByIdRequest<int> request)
         {
-            if (request.Id == null)
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "Request is empty"));
-            }
-
             var response = await _postLikeService.AddAsync(new PostLikeEntity
             {
                 PostId = request.Id,
@@ -62,12 +56,6 @@ namespace Post.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Update(UpdatePostLikeRequest request)
         {
-            if (request == null)
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "Request is empty"));
-            }
-
             var response = await _postLikeService.UpdateAsync(new PostLikeEntity
             {
                 PostId = request.PostId,
@@ -90,18 +78,12 @@ namespace Post.Host.Controllers
         [ProducesResponseType(typeof(GeneralResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Delete(ByIdRequest<int> request)
         {
-            if (request == null)
-            {
-                _logger.LogError("Request is empty");
-                return BadRequest(new GeneralResponse(false, "Request is empty"));
-            }
-
             var response = await _postLikeService.DeleteAsync(request.Id);
 
             if (response == null)
             {
-                _logger.LogError($"Like wasn't update, not found, id of item: {request.Id}");
-                return NotFound(new GeneralResponse(false, $"Like wasn't update, not found id: {request.Id}"));
+                _logger.LogError($"Like wasn't delete, not found, id of item: {request.Id}");
+                return NotFound(new GeneralResponse(false, $"Like wasn't update, not found"));
             }
 
             return Ok(new GeneralResponse(true, $"Like was deleted"));

@@ -76,17 +76,26 @@ describe('RegisterComponent', () => {
 
     expect(auth.register).toHaveBeenCalledOnceWith(userRegister);
   });
-  it('should set `check` to error response on login failure', () => {
+
+  it('should set `check` to error response on register failure', () => {
     const errorResponse = new HttpErrorResponse({
       error: { message: 'Invalid credentials' },
       status: 401
     });
+
+    const check: IGeneralResponse<null> = {
+      flag: false,
+      message: 'Invalid credentials',
+      data: null
+    }
+
     component.userGroup.setValue({
       name: "name",
       password: "password",
       confirmPassword: "confirmpassword",
       email: "email"
     })
+    
     const request: IUserRegisterRequest = {
       name: component.userGroup.value.name!,
       email: component.userGroup.value.email!,
@@ -94,11 +103,12 @@ describe('RegisterComponent', () => {
       confirmPassword: component.userGroup.value.confirmPassword!
     };
 
+    spyOn(errorHandler, "GetMessageError").and.returnValue(errorResponse.error.message)
     spyOn(auth, "register").and.returnValue(throwError(() => errorResponse));
 
     component["signUp"]();
 
     expect(auth.register).toHaveBeenCalledOnceWith(request)
-    expect(component.check).toEqual(errorResponse.error);
+    expect(component.check).toEqual(check);
   });
 });

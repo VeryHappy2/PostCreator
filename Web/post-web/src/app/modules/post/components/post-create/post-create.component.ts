@@ -19,7 +19,7 @@ import { ResponseErrorHandlerService } from '../../../../services/error/response
 })
 export class PostCreateComponent implements OnInit {
   protected postGroup: FormGroup = new FormGroup ({
-    title: new FormControl("", [Validators.required, Validators.maxLength(50)]),
+    title: new FormControl("", [Validators.required, Validators.maxLength(150)]),
     content: new FormControl("", [Validators.required, Validators.maxLength(3000)]),
   })
 

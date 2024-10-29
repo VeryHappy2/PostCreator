@@ -18,13 +18,13 @@ describe('SessionService', () => {
   });
 
   it("get data from the sessionStorage", () => {
-    const data: string = "400";
+    const data: string = JSON.stringify(400);
 
     spyOn(sessionStorage, "getItem").and.returnValue(data);
-    const result: string | null = service.getData<string>("item");
+    const result: number | null = service.getData<number>("item");
 
-    expect(result).toEqual(JSON.stringify("400"));  // Очікуємо, що результат буде рядком "400"
-    expect(sessionStorage.getItem).toHaveBeenCalledWith("item");  // Виправлено на sessionStorage.getItem
+    expect(result).toEqual(400);
+    expect(sessionStorage.getItem).toHaveBeenCalledWith("item");
   });
 
   it('should save data to sessionStorage', () => {

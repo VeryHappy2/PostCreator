@@ -4,4 +4,8 @@
   <app-search-user-admin #search />
 
   <button (click)="delete()">Delete user</button>
+
+  @if(check?.flag) {
+    <p>{{check?.message}}</p>
+  } 
 </form>

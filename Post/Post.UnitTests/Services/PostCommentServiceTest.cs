@@ -7,10 +7,11 @@ using Microsoft.Extensions.Logging;
 using Infrastructure.Services;
 using Post.Host.Data;
 using Infrastructure.Services.Interfaces;
+using Post.Host.Models.Dtos;
 
 namespace Post.UnitTests.Services
 {
-    public class PostCommentServiceTest : ServiceTest<PostCommentEntity, PostCommentService>
+    public class PostCommentServiceTest : ServiceTest<PostCommentEntity, PostCommentDto, PostCommentService>
     {
         public PostCommentServiceTest() : base((dbContextWrapper, logger, mapper, baseRepository) =>
             new PostCommentService(

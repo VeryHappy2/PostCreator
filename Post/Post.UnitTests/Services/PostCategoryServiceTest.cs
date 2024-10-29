@@ -1,9 +1,10 @@
 ﻿using Post.Host.Data.Entities;
+using Post.Host.Models.Dtos;
 using Post.Host.Services;
 
 namespace Post.UnitTests.Services
 {
-    public class PostCategoryServiceTest : ServiceTest<PostCategoryEntity, PostCategoryService>
+    public class PostCategoryServiceTest : ServiceTest<PostCategoryEntity, PostCategoryDto, PostCategoryService>
     {
         public PostCategoryServiceTest() : base((dbContextWrapper, logger, mapper, baseRepository) =>
             new PostCategoryService(

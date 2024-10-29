@@ -9,12 +9,14 @@ using Post.Host.Services.Interfaces;
 using Post.Host.Data;
 using Infrastructure.Services;
 using FluentAssertions;
+using Post.Host.Models.Dtos;
 
 namespace Post.UnitTests.Services
 {
-    public class ServiceTest<TEntity, TService>
+    public class ServiceTest<TEntity, TDto, TService>
         where TEntity : BaseEntity, new()
-        where TService : BaseDataService<ApplicationDbContext>, IService<TEntity>
+        where TDto : BaseDto, new()
+        where TService : BaseDataService<ApplicationDbContext>, IService<TEntity, TDto>
     {
         protected readonly Mock<IDbContextWrapper<ApplicationDbContext>> DbContextWrapper;
         protected readonly Mock<ILogger<TService>> Logger;
@@ -42,14 +44,16 @@ namespace Post.UnitTests.Services
         public async Task GetByIdAsync_Success_Test()
         {
             var entity = new TEntity();
+            var dto = new TDto();
             int id = 2;
 
             BaseRepository.Setup(x => x.GetByIdAsync(
                 It.Is<int>(x => x == id))).ReturnsAsync(entity);
+            Mapper.Setup(x => x.Map<TDto>(It.IsAny<TEntity>())).Returns(dto);
 
             var result = await Service.GetByIdAsync(id);
 
-            result.Should().Be(entity);
+            result.Should().Be(dto);
         }
 
         public async Task GetByIdAsync_Failed_Test()

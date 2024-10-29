@@ -35,11 +35,12 @@ namespace Post.Host.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PostCategoryEntity");
+                    b.ToTable("PostCategory", (string)null);
                 });
 
             modelBuilder.Entity("Post.Host.Data.Entities.PostCommentEntity", b =>
@@ -52,10 +53,16 @@ namespace Post.Host.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<int>("PostId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.HasKey("Id");
 
@@ -85,8 +92,8 @@ namespace Post.Host.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -96,11 +103,38 @@ namespace Post.Host.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Views")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.ToTable("PostItem", (string)null);
+                });
+
+            modelBuilder.Entity("Post.Host.Data.Entities.PostLikeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseHiLo(b.Property<int>("Id"));
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("PostLikeEntity");
                 });
 
             modelBuilder.Entity("Post.Host.Data.Entities.PostCommentEntity", b =>
@@ -123,9 +157,20 @@ namespace Post.Host.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Post.Host.Data.Entities.PostLikeEntity", b =>
+                {
+                    b.HasOne("Post.Host.Data.Entities.PostItemEntity", null)
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Post.Host.Data.Entities.PostItemEntity", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
         }
