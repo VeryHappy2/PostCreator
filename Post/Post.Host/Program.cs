@@ -121,22 +121,13 @@ app.UseRouting();
 app.UseRateLimiter();
 app.UseCors("CorsPolicy");
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapDefaultControllerRoute();
-    endpoints.MapControllers();
-});
-
 app.Use(async (context, next) =>
 {
     if (context.Request.Cookies.ContainsKey("token") &&
        !context.Request.Headers.ContainsKey("Authorization"))
     {
         var token = context.Request.Cookies["token"];
-        context.Request.Headers.Add("Authorization", $"Bearer {token}");
+        context.Request.Headers.Append("Authorization", $"Bearer {token}");
     }
 
     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
@@ -146,6 +137,15 @@ app.Use(async (context, next) =>
     await next.Invoke();
 
     LogResponse(logger, context.Response, id);
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute();
+    endpoints.MapControllers();
 });
 
 CreateDbIfNotExists(app);
