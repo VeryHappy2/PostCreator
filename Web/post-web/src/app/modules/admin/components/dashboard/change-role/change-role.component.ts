@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../../../../services/http.service';
 import { identityServerUrl } from '../../../../../../env/urls';
 import { Observable, take } from 'rxjs';
-import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../../../models/responses/GeneralResponse';
 import { MatSelectChange } from '@angular/material/select';
 import { IChangeRoleRequest } from '../../../../../models/requests/user/ChangeRoleRequest';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { take } from 'rxjs';
 import { TokenStorageService } from '../auth/token-storage.service';
 import { ErrorService } from './error.service';
-import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../models/responses/GeneralResponse';
 import { identityServerUrl } from '../../../env/urls';
 import { HttpService } from '../http.service';
 

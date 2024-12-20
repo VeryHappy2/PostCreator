@@ -3,11 +3,11 @@ import { HttpService } from '../../../services/http.service';
 import { Router } from '@angular/router';
 import { TokenStorageService } from '../../../services/auth/token-storage.service';
 import { IUserLoginRequest } from '../../../models/requests/user/UserLoginRequest';
-import { ILogInResponse } from '../../../models/reponses/LogInResponse';
+import { ILogInResponse } from '../../../models/responses/LogInResponse';
 import { identityServerUrl } from '../../../../env/urls';
 import { take } from 'rxjs/internal/operators/take';
 import { HttpErrorResponse } from '@angular/common/http';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../models/requests/user/UserRegisterRequest';
 import { catchError, Observable, of, tap } from 'rxjs';
 

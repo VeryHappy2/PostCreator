@@ -1,8 +1,8 @@
 import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { IPostItem } from '../../../../models/enities/PostItem';
+import { IPostItem } from '../../../../models/entities/PostItem';
 import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
-import { IGeneralResponse as IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
+import { IGeneralResponse as IGeneralResponse } from '../../../../models/responses/GeneralResponse';
 import { FormControl} from '@angular/forms';
 import { IPostCommentRequest } from '../../../../models/requests/CommentRequest';
 import { Observable } from 'rxjs/internal/Observable';

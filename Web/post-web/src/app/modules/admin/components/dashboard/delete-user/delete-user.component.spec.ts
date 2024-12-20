@@ -3,7 +3,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ModificationUserService } from "../../../services/modification-user.service";
 import { DeleteUserComponent } from "./delete-user.component";
-import { IGeneralResponse } from "../../../../../models/reponses/GeneralResponse";
+import { IGeneralResponse } from "../../../../../models/responses/GeneralResponse";
 import { SearchUserAdminComponent } from "../../search-user-admin/search-user-admin.component";
 import { SearchService } from "../../../services/search.service";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";

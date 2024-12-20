@@ -3,7 +3,7 @@ import { HttpService } from '../http.service';
 import { identityServerUrl } from '../../../env/urls';
 import { IUser } from '../../models/User';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../models/responses/GeneralResponse';
 import { take } from 'rxjs/internal/operators/take';
 
 const ID_KEY = "authid"

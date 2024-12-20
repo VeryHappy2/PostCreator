@@ -6,7 +6,7 @@ import { provideRouter, Router } from '@angular/router';
 import { HttpService } from '../../../services/http.service';
 import { TokenStorageService } from '../../../services/auth/token-storage.service';
 import { IUserLoginRequest } from '../../../models/requests/user/UserLoginRequest';
-import { ILogInResponse } from '../../../models/reponses/LogInResponse';
+import { ILogInResponse } from '../../../models/responses/LogInResponse';
 import { identityServerUrl } from '../../../../env/urls';
 import { of } from 'rxjs/internal/observable/of';
 import { Component } from '@angular/core';

@@ -4,7 +4,7 @@ import { TokenStorageService } from './token-storage.service';
 import { HttpService } from '../http.service';
 import { identityServerUrl } from '../../../env/urls';
 import { of } from 'rxjs/internal/observable/of';
-import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../models/responses/GeneralResponse';
 import { throwError } from 'rxjs';
 
 const ID_KEY = "authid"

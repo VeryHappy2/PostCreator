@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IGeneralResponse } from '../../../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../../../models/responses/GeneralResponse';
 import { IByNameRequest } from '../../../../../models/requests/user/ByNameRequest';
 import { SearchUserAdminComponent } from '../../search-user-admin/search-user-admin.component';
 import { take } from 'rxjs';

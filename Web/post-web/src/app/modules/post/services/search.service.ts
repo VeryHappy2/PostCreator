@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
-import { IPaginatedItemsResponse } from '../../../models/reponses/PaginatedItemsResponse';
-import { IPostItem } from '../../../models/enities/PostItem';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
+import { IPaginatedItemsResponse } from '../../../models/responses/PaginatedItemsResponse';
+import { IPostItem } from '../../../models/entities/PostItem';
 import { identityServerUrl, postUrl } from '../../../../env/urls';
 import { IPageItemsRequest } from '../../../models/requests/PageItemRequest';
 import { map, Observable } from 'rxjs';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
 import { SessionSearchService } from '../../../services/session/session-search.service';
-import { ISearchUserResponse } from '../../../models/reponses/SearchUserResponse';
+import { ISearchUserResponse } from '../../../models/responses/SearchUserResponse';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
 
 @Injectable()

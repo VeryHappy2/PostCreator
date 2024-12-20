@@ -9,7 +9,7 @@ import { IByNameRequest } from '../../../../models/requests/user/ByNameRequest';
 import { HttpService } from '../../../../services/http.service';
 import { of } from 'rxjs/internal/observable/of';
 import { SessionSearchService } from '../../../../services/session/session-search.service';
-import { ISearchUserResponse } from '../../../../models/reponses/SearchUserResponse';
+import { ISearchUserResponse } from '../../../../models/responses/SearchUserResponse';
 import { SearchService } from '../../services/search.service';
 
 @Component({

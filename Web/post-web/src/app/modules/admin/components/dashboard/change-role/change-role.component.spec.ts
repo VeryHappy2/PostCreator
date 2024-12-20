@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ChangeRoleComponent } from "./change-role.component";
 import { HttpService } from "../../../../../services/http.service";
 import { ModificationUserService } from "../../../services/modification-user.service";
-import { IGeneralResponse } from "../../../../../models/reponses/GeneralResponse";
+import { IGeneralResponse } from "../../../../../models/responses/GeneralResponse";
 import { of } from "rxjs";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { identityServerUrl } from "../../../../../../env/urls";

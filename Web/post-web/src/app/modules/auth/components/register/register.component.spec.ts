@@ -3,7 +3,7 @@ import { RegisterComponent } from './register.component';
 import { By } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { of } from 'rxjs/internal/observable/of';
-import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../../models/responses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';

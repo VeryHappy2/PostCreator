@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { IChangeRoleRequest } from '../../../models/requests/user/ChangeRoleRequest';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { take } from 'rxjs/internal/operators/take';
 import { lastValueFrom, Observable } from 'rxjs';
 import { identityServerUrl } from '../../../../env/urls';

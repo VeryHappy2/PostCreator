@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IPostItem } from '../../../../models/enities/PostItem';
+import { IPostItem } from '../../../../models/entities/PostItem';
 import { Router } from '@angular/router';
 
 @Component({

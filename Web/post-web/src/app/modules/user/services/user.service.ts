@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { postUrl } from '../../../../env/urls';
 import { Observable } from 'rxjs';
-import { IPostItem } from '../../../models/enities/PostItem';
+import { IPostItem } from '../../../models/entities/PostItem';
 
 @Injectable()
 export class UserService {

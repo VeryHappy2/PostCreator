@@ -6,7 +6,7 @@ import { By } from '@angular/platform-browser';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs/internal/observable/of';
-import { ILogInResponse } from '../../../../models/reponses/LogInResponse';
+import { ILogInResponse } from '../../../../models/responses/LogInResponse';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { IUserLoginRequest } from '../../../../models/requests/user/UserLoginRequest';
 import { ResponseErrorHandlerService } from '../../../../services/error/response-error-handler.service';

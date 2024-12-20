@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import { IPostCommentRequest } from '../../../models/requests/CommentRequest';
 import { Observable } from 'rxjs';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { postUrl } from '../../../../env/urls';
 import { IPostItemRequest } from '../../../models/requests/PostItemRequest';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';

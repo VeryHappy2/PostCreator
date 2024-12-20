@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
-import { IPostItem } from '../../../../models/enities/PostItem';
+import { IPostItem } from '../../../../models/entities/PostItem';
 import { take } from 'rxjs/internal/operators/take';
 import { UserService } from '../../services/user.service';
 

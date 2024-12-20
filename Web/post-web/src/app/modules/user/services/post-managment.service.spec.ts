@@ -4,7 +4,7 @@ import { PostManagmentService } from './post-managment.service';
 import { HttpService } from '../../../services/http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IByIdRequest } from '../../../models/requests/ByIdRequest';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { of } from 'rxjs/internal/observable/of';
 import { postUrl } from '../../../../env/urls';
 

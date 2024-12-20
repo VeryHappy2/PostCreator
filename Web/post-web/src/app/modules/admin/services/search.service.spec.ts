@@ -4,10 +4,10 @@ import { SearchService } from './search.service';
 import { SessionSearchService } from '../../../services/session/session-search.service';
 import { HttpService } from '../../../services/http.service';
 import { IByNameRequest } from '../../../models/requests/user/ByNameRequest';
-import { ISearchAdminUserResponse } from '../../../models/reponses/SearchAdminUserResponse';
+import { ISearchAdminUserResponse } from '../../../models/responses/SearchAdminUserResponse';
 import { identityServerUrl } from '../../../../env/urls';
 import { of } from 'rxjs/internal/observable/of';
-import { IGeneralResponse } from '../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../models/responses/GeneralResponse';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SearchService', () => {

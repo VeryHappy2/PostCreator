@@ -4,7 +4,7 @@ import { ErrorService } from './error.service';
 import { HttpService } from '../http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
-import { IGeneralResponse } from '../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../models/responses/GeneralResponse';
 import { of } from 'rxjs/internal/observable/of';
 import { throwError } from 'rxjs';
 import { TokenStorageService } from '../auth/token-storage.service';

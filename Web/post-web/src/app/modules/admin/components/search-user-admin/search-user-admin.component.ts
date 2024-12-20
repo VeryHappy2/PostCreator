@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { ISearchAdminUserResponse } from '../../../../models/reponses/SearchAdminUserResponse';
+import { ISearchAdminUserResponse } from '../../../../models/responses/SearchAdminUserResponse';
 import { FormControl } from '@angular/forms';
 import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';

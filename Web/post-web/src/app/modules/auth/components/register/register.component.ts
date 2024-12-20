@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IGeneralResponse } from '../../../../models/reponses/GeneralResponse';
+import { IGeneralResponse } from '../../../../models/responses/GeneralResponse';
 import { IUserRegisterRequest } from '../../../../models/requests/user/UserRegisterRequest';
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/internal/operators/take';
