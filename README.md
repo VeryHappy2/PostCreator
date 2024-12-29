@@ -20,4 +20,4 @@ Need to path these lines
 # Step 5 (Start docker)
 1. Open the cmd
 2. Select the path of the project "PostCreator"
-3. docker-compose up
+3. Command: docker-compose up
