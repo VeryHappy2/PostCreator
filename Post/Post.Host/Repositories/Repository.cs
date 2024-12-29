@@ -23,9 +23,7 @@ namespace Post.Host.Repositories
             var item = await _dbset.AddAsync(entity);
 
             if (item == null)
-            {
                 return null;
-            }
 
             await _dbContext.SaveChangesAsync();
             return item.Entity.Id;
@@ -59,6 +57,6 @@ namespace Post.Host.Repositories
             return null;
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id) => await _dbset.FindAsync(id);
+        public async Task<T?> GetByIdAsync(int id) => await _dbset.FindAsync(id);
     }
 }

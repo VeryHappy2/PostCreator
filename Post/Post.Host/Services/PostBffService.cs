@@ -39,19 +39,6 @@ public class PostBffService : BaseDataService<ApplicationDbContext>, IPostBffSer
 		});
     }
 
-	public async Task<PostItemDto?> GetPostByIdAsync(int id)
-	{
-		return await ExecuteSafeAsync(async () =>
-		{
-			var result = await _postBffRepository.GetPostByIdAsync(id);
-
-            if (result == null)
-                return null;
-
-            return _mapper.Map<PostItemDto?>(result);
-		});
-	}
-
     public async Task<PaginatedResponse<PostItemDto>?> GetPostByPageAsync(PageItemRequest pageItemRequest)
     {
         return await ExecuteSafeAsync(async () =>

@@ -7,7 +7,6 @@ namespace Post.Host.Services.Interfaces
     public interface IPostBffService
     {
 		Task<List<PostItemDto>?> GetPostsByUserIdAsync(string userId);
-		Task<PostItemDto?> GetPostByIdAsync(int id);
 		Task<PaginatedResponse<PostItemDto>> GetPostByPageAsync(PageItemRequest pageItemRequest);
 		Task<List<PostCategoryDto>?> GetPostCategoriesAsync();
 		Task<List<PostLikeDto>> GetPostLikesByUserIdAsync(string id);

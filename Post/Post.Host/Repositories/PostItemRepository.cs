@@ -10,14 +10,10 @@ namespace Post.Host.Repositories
     public class PostItemRepository : IPostItemRepository
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger<PostBffRepository> _logger;
         private readonly DbSet<PostItemEntity> _dbSet;
 
-        public PostItemRepository(
-            IDbContextWrapper<ApplicationDbContext> context,
-            ILogger<PostBffRepository> logger)
+        public PostItemRepository(IDbContextWrapper<ApplicationDbContext> context)
         {
-            _logger = logger;
             _dbContext = context.DbContext;
             _dbSet = context.DbContext.Set<PostItemEntity>();
         }
@@ -40,6 +36,10 @@ namespace Post.Host.Repositories
         }
 
         public async Task<PostItemEntity> GetByIdAsync(int id)
-            => await _dbSet.Include(x => x.Likes).FirstOrDefaultAsync(x => x.Id == id);
+            => await _dbSet
+                .Include(x => x.Likes)
+                .Include(x => x.Category)
+                .Include(x => x.Comments)
+                .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

@@ -4,6 +4,7 @@ import { IPostItem } from '../../../../models/entities/PostItem';
 import { IByIdRequest } from '../../../../models/requests/ByIdRequest';
 import { IGeneralResponse as IGeneralResponse } from '../../../../models/responses/GeneralResponse';
 import { FormControl} from '@angular/forms';
+import { IPostComment } from '../../../../models/entities/PostComment';
 import { IPostCommentRequest } from '../../../../models/requests/CommentRequest';
 import { Observable } from 'rxjs/internal/Observable';
 import { take } from 'rxjs/internal/operators/take';
@@ -11,6 +12,7 @@ import { ManagementService } from '../../services/management.service';
 import { SearchService } from '../../services/search.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TokenStorageService } from '../../../../services/auth/token-storage.service';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Component({
   selector: 'app-post-item',
@@ -19,16 +21,16 @@ import { TokenStorageService } from '../../../../services/auth/token-storage.ser
 })
 export class PostItemComponent implements OnInit, AfterViewInit {
   @ViewChild('content', { static: false }) contentElement!: ElementRef;
-  protected commentCtrl = new FormControl('')
-  protected post$?: Observable<IGeneralResponse<IPostItem>>
-  protected success?: boolean
+  public commentCtrl = new FormControl('')
+  private postSubject = new BehaviorSubject<any>(null);
+  public post$?: Observable<IGeneralResponse<IPostItem>> = this.postSubject.asObservable()
+  public success?: boolean
   public id?: IByIdRequest<number>
+  public nonSuccessMessageLike?: string
   private timeForReading?: number
   private timeStarted: boolean = false
-  public nonSuccessMessageLike?: string
-  timer: any;
-
   private postId!: number
+  timer: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,8 +40,6 @@ export class PostItemComponent implements OnInit, AfterViewInit {
     private token: TokenStorageService,
   ) { }
 
-  
-
   ngOnInit(): void {
     this.route.params.subscribe((p: Params) => {
       this.id = {
@@ -48,7 +48,7 @@ export class PostItemComponent implements OnInit, AfterViewInit {
 
       if (this.id) {
         this.post$ = this.searchService.searchPostById(this.id)
-      
+
         this.post$
           .subscribe({
             next: (resp) => {
@@ -65,8 +65,6 @@ export class PostItemComponent implements OnInit, AfterViewInit {
         this.router.navigate(['no-page'])
       }
     });
-
-
   }
 
   ngAfterViewInit(): void {
@@ -78,7 +76,7 @@ export class PostItemComponent implements OnInit, AfterViewInit {
             }
           });
         });
-    
+
         if (this.contentElement) {
           observer.observe(this.contentElement.nativeElement);
         }
@@ -107,14 +105,27 @@ export class PostItemComponent implements OnInit, AfterViewInit {
     if (this.commentCtrl.value) {
       const comment: IPostCommentRequest = {
         postId: this.postId,
-        content: this.commentCtrl.value
+        content: this.commentCtrl.value,
       }
 
       this.managementService.addComment(comment)
         .pipe(take(1))
         .subscribe({
-          next: resp => this.success = resp.flag,
-          error: err => this.success = false
+          next: resp => {
+            this.success = resp.flag
+            this.commentCtrl.reset()
+            const updatedPost: IGeneralResponse<IPostItem> = {
+              ...this.postSubject.getValue(),
+              comments: [...(this.postSubject.getValue().comments! || []), {
+                id: resp.data,
+                postId: this.postId,
+                content: comment.content,
+                userName: this.token.getUsername()
+              } as IPostComment]
+            }
+            this.postSubject.next(updatedPost)
+          },
+          error: () => this.success = false
         })
     }
   }
@@ -122,11 +133,11 @@ export class PostItemComponent implements OnInit, AfterViewInit {
   public addLike(): void {
     if (this.token.getUsername()) {
       this.managementService.addLike(this.id!).subscribe(
-        { 
+        {
           next: (value) => {
             console.log(value.message)
           },
-          error: (err: HttpErrorResponse) => { 
+          error: (err: HttpErrorResponse) => {
             this.nonSuccessMessageLike = err.error.message
           }
         })

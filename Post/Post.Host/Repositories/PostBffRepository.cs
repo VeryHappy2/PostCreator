@@ -21,14 +21,6 @@ namespace Post.Host.Repositories
             _dbContext = context.DbContext;
         }
 
-        public async Task<PostItemEntity?> GetPostByIdAsync(int id)
-        {
-            return await _dbContext.PostItemEntity
-                .Include(x => x.Category)
-                .Include(x => x.Comments)
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
-
         public async Task<List<PostItemEntity>?> GetPostsByUserIdAsync(string userId)
         {
             return await _dbContext.PostItemEntity
